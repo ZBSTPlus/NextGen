@@ -1,0 +1,123 @@
+---
+layout: default
+title: Nim
+---
+    <div class="container mt-5">
+        <div class="jumbotron">
+            <h1 class="display-4">Nim Game</h1>
+            <p class="lead">Remove dots from rows. Leave the last dot for the other player to win.</p>
+        </div>
+        <div id="game">
+            <div id="player-turn" class="mb-3 my-5">
+                Player 1's Turn
+            </div>
+
+                <div class="row my-3">
+
+                    <div id="row-1" class="col-9 text-center dots">
+                        <!-- Initial configuration: 1 dot -->
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                    </div>
+                    <button class="btn btn-primary col-3" id="row-1-button">Remove</button>
+                </div>
+                <div class="row my-3">
+
+                    <div id="row-2" class="col-9 text-center dots">
+                        <!-- Initial configuration: 3 dots -->
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                    </div>
+                    <button class="btn btn-primary col-3" id="row-2-button">Remove</button>
+                </div>
+                <div class="row my-3">
+                    <div id="row-3" class="col-9 text-center dots">
+                        <!-- Initial configuration: 5 dots -->
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                    </div>
+                    <button class="btn btn-primary col-3" id="row-3-button">Remove</button>
+                </div>
+                <div class="row my-3">
+                    <div id="row-4" class="dots col-9 text-center dots">
+                        <!-- Initial configuration: 7 dots -->
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                        <div class="spinner-grow text-primary dot" role="status"></div>
+                    </div>
+                    <button class="btn btn-primary col-3" id="row-4-button">Remove</button>
+                </div>
+
+            <button class="btn btn-success" id="confirm-move">Confirm Move</button>
+        </div>
+    </div>
+
+    <script>
+        let rows = [1, 3, 5, 7]; // Initial configuration
+        let currentPlayer = 1;
+
+        function updatePlayerTurn() {
+            document.getElementById("player-turn").innerText = `Player ${currentPlayer}'s Turn`;
+        }
+        function disableButtons(){
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`row-${i}-button`).disabled = true;
+            }
+        }
+
+        function removeDots(rowIndex, numToRemove) {
+            const row = document.getElementById(`row-${rowIndex}`);
+            const dots = row.getElementsByClassName("dot");
+
+            for (let i = 0; i < numToRemove; i++) {
+                if (dots.length > 0) {
+                    row.removeChild(dots[0]);
+                }
+            }
+
+            rows[rowIndex - 1] -= numToRemove;
+            if(rows[rowIndex-1] == 0){
+                document.getElementById(`row-${rowIndex}-button`).disabled = true;
+            }
+        }
+
+        function checkWinCondition() {
+            // if (rows.every(row => row === 0)) {
+            //     document.getElementById("player-turn").innerText = `Player ${currentPlayer} Wins!`;
+            //     document.getElementById("confirm-move").disabled = true;
+            // }else
+            console.log(rows,rows.reduce((a,b)=>a+b))
+            if(rows.reduce((a,b)=>a+b) == 1 ){
+                disableButtons();
+                document.getElementById("player-turn").innerHTML = `<div class="display-2 text-success"> Player ${currentPlayer} Wins! </>`;
+                document.getElementById("confirm-move").disabled = true;                
+            }
+        }
+
+        document.getElementById("confirm-move").addEventListener("click", () => {
+            currentPlayer = 3 - currentPlayer; // Switch player (1 -> 2, 2 -> 1)
+
+            updatePlayerTurn();
+            checkWinCondition();
+        });
+
+        // Add event listeners to row buttons
+        for (let i = 1; i <= 4; i++) {
+            const rowButton = document.getElementById(`row-${i}-button`);
+            rowButton.addEventListener("click", () => {
+                    removeDots(i, 1);
+                    updatePlayerTurn();
+                    checkWinCondition();
+            });
+        }
+
+        
+        updatePlayerTurn();
+    </script>
