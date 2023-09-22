@@ -2,7 +2,6 @@
 layout: default
 title: Bagels
 ---
-
 <div class="container mt-5">
     <div class="jumbotron">
         <h1 class="display-4">Pico, Fermi, Bagels Game</h1>
@@ -21,6 +20,19 @@ title: Bagels
             <div class="alert alert-info" id="attempts" role="alert"></div>
         </div>
     </div>
+    <hr>
+    <h3>Guess History</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Guess</th>
+                <th>Outcome</th>
+            </tr>
+        </thead>
+        <tbody id="history">
+            <!-- Guess history rows will be added here -->
+        </tbody>
+    </table>
 </div>
 <script>
     let secretNumber = generateSecretNumber(3); // Change the number of digits here
@@ -34,6 +46,8 @@ title: Bagels
         document.getElementById("message").innerHTML = result;
         document.getElementById("attempts").innerHTML = `Attempts: ${attempts}`;
 
+        addToHistory(guess, result);
+
         if (result.includes("Fermi Fermi Fermi")) {
             document.getElementById("message").innerHTML = "Congratulations! You guessed the correct number!";
             document.getElementById("submitGuess").disabled = true;
@@ -43,6 +57,14 @@ title: Bagels
         }
     });
 
+    function addToHistory(guess, outcome) {
+        const historyTable = document.getElementById("history");
+        const newRow = historyTable.insertRow();
+        const cell1 = newRow.insertCell(0);
+        const cell2 = newRow.insertCell(1);
+        cell1.innerHTML = guess;
+        cell2.innerHTML = outcome;
+    }
     function generateSecretNumber(digits) {
         let secret = "";
         while (secret.length < digits) {
