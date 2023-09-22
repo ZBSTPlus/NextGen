@@ -1,0 +1,77 @@
+---
+layout: default
+title: Bagels
+---
+
+<div class="container mt-5">
+    <div class="jumbotron">
+        <h1 class="display-4">Pico, Fermi, Bagels Game</h1>
+        <p class="lead">Guess the secret number!</p>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="guessInput">Enter your guess:</label>
+                <input type="text" id="guessInput" class="form-control">
+            </div>
+            <button id="submitGuess" class="btn btn-primary">Submit Guess</button>
+        </div>
+        <div class="col-md-6">
+            <div class="alert alert-success" id="message" role="alert"></div>
+            <div class="alert alert-info" id="attempts" role="alert"></div>
+        </div>
+    </div>
+</div>
+<script>
+    let secretNumber = generateSecretNumber(3); // Change the number of digits here
+    let attempts = 0;
+    let maxAttempts = 10; // Change the maximum number of guesses here
+
+    document.getElementById("submitGuess").addEventListener("click", () => {
+        const guess = document.getElementById("guessInput").value;
+        const result = checkGuess(guess);
+
+        document.getElementById("message").innerHTML = result;
+        document.getElementById("attempts").innerHTML = `Attempts: ${attempts}`;
+
+        if (result.includes("Fermi Fermi Fermi")) {
+            document.getElementById("message").innerHTML = "Congratulations! You guessed the correct number!";
+            document.getElementById("submitGuess").disabled = true;
+        } else if (attempts >= maxAttempts) {
+            document.getElementById("message").innerHTML = `Out of attempts. The correct number was ${secretNumber}.`;
+            document.getElementById("submitGuess").disabled = true;
+        }
+    });
+
+    function generateSecretNumber(digits) {
+        let secret = "";
+        while (secret.length < digits) {
+            const digit = Math.floor(Math.random() * 10).toString();
+            if (!secret.includes(digit)) {
+                secret += digit;
+            }
+        }
+        return secret;
+    }
+
+    function checkGuess(guess) {
+        attempts++;
+        let fermi = 0;
+        let pico = 0;
+        for (let i = 0; i < guess.length; i++) {
+            if (guess[i] === secretNumber[i]) {
+                fermi++;
+            } else if (secretNumber.includes(guess[i])) {
+                pico++;
+            }
+        }
+
+        if (fermi === 0 && pico === 0) {
+            return "Bagels";
+        }
+
+        const fermiText = "Fermi ".repeat(fermi).trim();
+        const picoText = "Pico ".repeat(pico).trim();
+        return `${fermiText} ${picoText}`;
+    }
+</script>
