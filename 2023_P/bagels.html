@@ -18,6 +18,7 @@ title: Bagels
         <div class="col-md-6">
             <div class="alert alert-success" id="message" role="alert"></div>
             <div class="alert alert-info" id="attempts" role="alert"></div>
+            <div class="alert alert-warning" id="guessesLeft" role="alert"></div>
         </div>
     </div>
     <hr>
@@ -34,33 +35,43 @@ title: Bagels
         </tbody>
     </table>
     <hr>
-    <h3>Game Configuration</h3>
-    <form>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="numDigits" id="threeDigits" value="3" checked>
-            <label class="form-check-label" for="threeDigits">
-                3 Digits
-            </label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="numDigits" id="fourDigits" value="4">
-            <label class="form-check-label" for="fourDigits">
-                4 Digits
-            </label>
-        </div>
-        <div class="form-group mt-3">
-            <label for="numGuesses">Number of Guesses:</label>
-            <input type="range" class="form-range" id="numGuesses" min="1" max="20">
-            <span id="numGuessesValue">10</span>
-        </div>
-    </form>
-    <button class="btn btn-primary" id="applyConfig">Apply Configuration</button>
-</div>
 
+    <button id="restartGame" class="btn btn-danger">Restart Game</button>
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">
+          Game Configuration
+        </button>
+        <div class="collapse" id="collapseWidthExample">
+          <div class="card card-body">
+            <form>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="numDigits" id="threeDigits" value="3" checked>
+                    <label class="form-check-label" for="threeDigits">
+                        3 Digits
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="numDigits" id="fourDigits" value="4">
+                    <label class="form-check-label" for="fourDigits">
+                        4 Digits
+                    </label>
+                </div>
+                <div class="form-group mt-3">
+                    <label for="numGuesses">Number of Guesses:</label>
+                    <input type="range" class="form-control-range" id="numGuesses" min="1" max="20">
+                    <span id="numGuessesValue">10</span>
+                </div>
+            </form>
+            <button class="btn btn-primary" id="applyConfig">Apply Configuration</button>        
+        </div>
+      </div>
+    
+
+</div>
 <script>
     let secretNumber = generateSecretNumber(3); // Change the number of digits here
     let attempts = 0;
     let maxAttempts = 10; // Change the maximum number of guesses here
+    updateGuessesLeft();
 
     document.getElementById("submitGuess").addEventListener("click", () => {
         const guess = document.getElementById("guessInput").value;
@@ -70,6 +81,7 @@ title: Bagels
         document.getElementById("attempts").innerHTML = `Attempts: ${attempts}`;
 
         addToHistory(guess, result);
+        updateGuessesLeft();
 
         if (result.includes("Fermi Fermi Fermi")) {
             document.getElementById("message").innerHTML = "Congratulations! You guessed the correct number!";
@@ -127,6 +139,7 @@ title: Bagels
 
         // Restart the game
         document.querySelector("#restartGame").addEventListener("click", () => {
+            const selectedNumDigits = document.querySelector('input[name="numDigits"]:checked').value;
             secretNumber = generateSecretNumber(selectedNumDigits);
             attempts = 0;
             document.getElementById("guessInput").value = "";
@@ -134,6 +147,7 @@ title: Bagels
             document.getElementById("attempts").innerHTML = "";
             document.getElementById("history").innerHTML = "";
             updateGuessesLeft();
+            document.getElementById("submitGuess").disabled = false;
         });
 
     document.querySelector("#numGuesses").addEventListener("input", () => {
@@ -151,6 +165,7 @@ title: Bagels
                 secretNumber = generateSecretNumber(selectedNumDigits);
                 maxAttempts = newNumGuesses;
                 attempts = 0;
+                updateGuessesLeft();
             }
         });
 
