@@ -33,7 +33,30 @@ title: Bagels
             <!-- Guess history rows will be added here -->
         </tbody>
     </table>
+    <hr>
+    <h3>Game Configuration</h3>
+    <form>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="numDigits" id="threeDigits" value="3" checked>
+            <label class="form-check-label" for="threeDigits">
+                3 Digits
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="numDigits" id="fourDigits" value="4">
+            <label class="form-check-label" for="fourDigits">
+                4 Digits
+            </label>
+        </div>
+        <div class="form-group mt-3">
+            <label for="numGuesses">Number of Guesses:</label>
+            <input type="range" class="form-range" id="numGuesses" min="1" max="20">
+            <span id="numGuessesValue">10</span>
+        </div>
+    </form>
+    <button class="btn btn-primary" id="applyConfig">Apply Configuration</button>
 </div>
+
 <script>
     let secretNumber = generateSecretNumber(3); // Change the number of digits here
     let attempts = 0;
@@ -96,4 +119,40 @@ title: Bagels
         const picoText = "Pico ".repeat(pico).trim();
         return `${fermiText} ${picoText}`;
     }
+
+    function updateGuessesLeft() {
+            const guessesLeft = maxAttempts - attempts;
+            document.querySelector("#guessesLeft").innerHTML = `Guesses Left: ${guessesLeft}`;
+        }
+
+        // Restart the game
+        document.querySelector("#restartGame").addEventListener("click", () => {
+            secretNumber = generateSecretNumber(selectedNumDigits);
+            attempts = 0;
+            document.getElementById("guessInput").value = "";
+            document.getElementById("message").innerHTML = "";
+            document.getElementById("attempts").innerHTML = "";
+            document.getElementById("history").innerHTML = "";
+            updateGuessesLeft();
+        });
+
+    document.querySelector("#numGuesses").addEventListener("input", () => {
+            const numGuessesValue = document.querySelector("#numGuesses").value;
+            document.querySelector("#numGuessesValue").textContent = numGuessesValue;
+        });
+
+        // Apply the new configuration based on radio buttons and range slider
+        document.querySelector("#applyConfig").addEventListener("click", () => {
+            const selectedNumDigits = document.querySelector('input[name="numDigits"]:checked').value;
+            const newNumGuesses = parseInt(document.querySelector("#numGuesses").value);
+
+            // Validate and update the configuration
+            if (!isNaN(selectedNumDigits) && !isNaN(newNumGuesses)) {
+                secretNumber = generateSecretNumber(selectedNumDigits);
+                maxAttempts = newNumGuesses;
+                attempts = 0;
+            }
+        });
+
+
 </script>
