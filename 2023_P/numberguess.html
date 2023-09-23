@@ -1,11 +1,11 @@
 ---
 layout: default
-title: Bagels
+title: Number Guessing Game
 ---
 <div class="container mt-5">
     <div class="jumbotron">
-        <h1 class="display-4">Pico, Fermi, Bagels Game</h1>
-        <p class="lead">Guess the secret number!</p>
+        <h1 class="display-4">Number Guessing Game</h1>
+        <p class="lead">Guess the secret number between 1 and 100!</p>
     </div>
     <div class="row">
         <div class="col-md-6">
@@ -35,7 +35,6 @@ title: Bagels
         </tbody>
     </table>
     <hr>
-
     <button id="restartGame" class="btn btn-danger">Restart Game</button>
     <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample"
         aria-expanded="false" aria-controls="collapseWidthExample">
@@ -44,34 +43,24 @@ title: Bagels
     <div class="collapse" id="collapseWidthExample">
         <div class="card card-body">
             <form>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="numDigits" id="threeDigits" value="3" checked>
-                    <label class="form-check-label" for="threeDigits">
-                        3 Digits
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="numDigits" id="fourDigits" value="4">
-                    <label class="form-check-label" for="fourDigits">
-                        4 Digits
-                    </label>
+                <div class="form-group mt-3">
+                    <label for="numLimit">Random Number Limit:</label>
+                    <input type="number" class="form-control" id="numLimit" placeholder="Ex: 100" min="1" max="500">
                 </div>
                 <div class="form-group mt-3">
                     <label for="numGuesses">Number of Guesses:</label>
-                    <input type="range" class="form-control-range" id="numGuesses" min="1" max="20">
-                    <span id="numGuessesValue">10</span>
+                    <input type="number" class="form-control" id="numGuesses" min="50" max="200"
+                        placeholder="No.of guesses needed to find the secret no">
                 </div>
             </form>
-            <button class="btn btn-primary" id="applyConfig">Apply Configuration</button>
+            <button class="btn btn-primary m-3" id="applyConfig">Apply Configuration</button>
         </div>
     </div>
-
-
 </div>
 <script>
-    let secretNumber = generateSecretNumber(3); // Change the number of digits here
+    let secretNumber = generateSecretNumber(100);
     let attempts = 0;
-    let maxAttempts = 10; // Change the maximum number of guesses here
+    let maxAttempts = 7;
     updateGuessesLeft();
 
     document.getElementById("submitGuess").addEventListener("click", () => {
@@ -84,8 +73,9 @@ title: Bagels
         addToHistory(guess, result);
         updateGuessesLeft();
 
-        if (result.includes("Fermi Fermi Fermi")) {
-            document.getElementById("message").innerHTML = "Congratulations! You guessed the correct number!";
+        document.getElementById("message").innerHTML = result;
+
+        if (result.includes("Congratulations!")) {
             document.getElementById("submitGuess").disabled = true;
         } else if (attempts >= maxAttempts) {
             document.getElementById("message").innerHTML = `Out of attempts. The correct number was ${secretNumber}.`;
@@ -101,36 +91,28 @@ title: Bagels
         cell1.innerHTML = guess;
         cell2.innerHTML = outcome;
     }
-    function generateSecretNumber(digits) {
-        let secret = "";
-        while (secret.length < digits) {
-            const digit = Math.floor(Math.random() * 10).toString();
-            if (!secret.includes(digit)) {
-                secret += digit;
-            }
-        }
-        return secret;
+
+    function generateSecretNumber(maxRange) {
+        return Math.floor(Math.random() * maxRange) + 1; // Generates a random number between 1 and 100
     }
 
     function checkGuess(guess) {
         attempts++;
-        let fermi = 0;
-        let pico = 0;
-        for (let i = 0; i < guess.length; i++) {
-            if (guess[i] === secretNumber[i]) {
-                fermi++;
-            } else if (secretNumber.includes(guess[i])) {
-                pico++;
-            }
+
+        // Convert the guess to a number
+        const guessNumber = parseInt(guess);
+
+        if (isNaN(guessNumber)) {
+            return "Invalid input. Please enter a number.";
         }
 
-        if (fermi === 0 && pico === 0) {
-            return "Bagels";
+        if (guessNumber === secretNumber) {
+            return "Congratulations! You guessed the correct number!";
+        } else if (guessNumber < secretNumber) {
+            return "The secret number is greater.";
+        } else {
+            return "The secret number is smaller.";
         }
-
-        const fermiText = "Fermi ".repeat(fermi).trim();
-        const picoText = "Pico ".repeat(pico).trim();
-        return `${fermiText} ${picoText}`;
     }
 
     function updateGuessesLeft() {
@@ -140,7 +122,7 @@ title: Bagels
 
     // Restart the game
     document.querySelector("#restartGame").addEventListener("click", () => {
-        const selectedNumDigits = document.querySelector('input[name="numDigits"]:checked').value;
+        const selectedNumDigits = document.querySelector('#numLimit').value;
         secretNumber = generateSecretNumber(selectedNumDigits);
         attempts = 0;
         document.getElementById("guessInput").value = "";
@@ -151,24 +133,14 @@ title: Bagels
         document.getElementById("submitGuess").disabled = false;
     });
 
-    document.querySelector("#numGuesses").addEventListener("input", () => {
-        const numGuessesValue = document.querySelector("#numGuesses").value;
-        document.querySelector("#numGuessesValue").textContent = numGuessesValue;
-    });
-
-    // Apply the new configuration based on radio buttons and range slider
     document.querySelector("#applyConfig").addEventListener("click", () => {
-        const selectedNumDigits = document.querySelector('input[name="numDigits"]:checked').value;
+        const selectedNumDigits = document.querySelector('#numLimit').value;
         const newNumGuesses = parseInt(document.querySelector("#numGuesses").value);
 
-        // Validate and update the configuration
-        if (!isNaN(selectedNumDigits) && !isNaN(newNumGuesses)) {
-            secretNumber = generateSecretNumber(selectedNumDigits);
-            maxAttempts = newNumGuesses;
-            attempts = 0;
-            updateGuessesLeft();
-        }
+        secretNumber = generateSecretNumber(selectedNumDigits);
+        maxAttempts = newNumGuesses;
+        attempts = 0;
+        updateGuessesLeft();
     });
-
 
 </script>
