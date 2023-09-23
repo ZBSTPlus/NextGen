@@ -1,0 +1,97 @@
+---
+layout: default
+title: MasterMind
+---
+<div class="container mt-5">
+    <h1 class="text-center">Mastermind Game</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="guessInput">Enter your guess:</label>
+                <input type="text" id="guessInput" class="form-control" maxlength="4">
+            </div>
+            <div class="m-3">
+                <button id="submitGuess" class="btn btn-primary btn-block">Submit Guess</button>
+                <button id="newGame" class="btn btn-success btn-block">New Game</button>
+            </div>
+
+        </div>
+        <div class="col-md-4">
+            <div id="feedback" class="alert alert-info" role="alert"></div>
+            <ul id="guessList" class="list-group"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    let secretCode = generateSecretCode();
+    let attempts = 0;
+
+    document.getElementById("submitGuess").addEventListener("click", () => {
+        const guess = document.getElementById("guessInput").value;
+        if (guess.length !== 4 || !isValidGuess(guess)) {
+            alert("Please enter a valid 4-digit guess.");
+            return;
+        }
+
+        attempts++;
+        const feedback = checkGuess(guess);
+
+        document.getElementById("guessInput").value = "";
+        document.getElementById("feedback").innerHTML = feedback;
+        addToGuessList(guess, feedback);
+
+        if (feedback === "4B0W") {
+            document.getElementById("feedback").classList.add("alert-success");
+            document.getElementById("submitGuess").disabled = true;
+        } else if (attempts >= 10) {
+            document.getElementById("feedback").innerHTML = "Out of attempts. The secret code was " + secretCode + ".";
+            document.getElementById("submitGuess").disabled = true;
+        }
+    });
+
+    document.getElementById("newGame").addEventListener("click", () => {
+        secretCode = generateSecretCode();
+        attempts = 0;
+        document.getElementById("guessInput").value = "";
+        document.getElementById("feedback").innerHTML = "";
+        document.getElementById("guessList").innerHTML = "";
+        document.getElementById("feedback").classList.remove("alert-success");
+        document.getElementById("submitGuess").disabled = false;
+    });
+
+    function generateSecretCode() {
+        const code = [];
+        for (let i = 0; i < 4; i++) {
+            code.push(Math.floor(Math.random() * 10));
+        }
+        return code.join("");
+    }
+
+    function checkGuess(guess) {
+        let bulls = 0;
+        let cows = 0;
+
+        for (let i = 0; i < 4; i++) {
+            if (guess[i] === secretCode[i]) {
+                bulls++;
+            } else if (secretCode.includes(guess[i])) {
+                cows++;
+            }
+        }
+
+        return `${bulls}B${cows}W`;
+    }
+
+    function addToGuessList(guess, feedback) {
+        const guessList = document.getElementById("guessList");
+        const li = document.createElement("li");
+        li.classList.add("list-group-item");
+        li.textContent = `${guess} - ${feedback}`;
+        guessList.appendChild(li);
+    }
+
+    function isValidGuess(guess) {
+        return /^[0-9]{4}$/.test(guess);
+    }
+</script>

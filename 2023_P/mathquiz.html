@@ -1,0 +1,164 @@
+---
+layout: default
+title: Math Quiz
+---
+    <div class="container mt-5">
+        <h1 class="text-center">Math Quiz Game</h1>
+        <div class="text-center">
+            <button class="btn btn-primary" id="beginnerBtn">Beginner</button>
+            <button class="btn btn-danger" id="advancedBtn">Advanced</button>
+            <button class="btn btn-success" id="endlessBtn">Endless</button>
+            <button class="btn btn-warning" id="fastestFingersBtn">Fastest Fingers</button>
+        </div>
+        <div id="quizContainer" class="mt-4">
+            <h3 class="text-center" id="timer">Time Left: 60s</h3>
+            <h3 class="text-center" id="questionNumber"></h3>
+            <h2 class="text-center" id="question"></h2>
+            <div class="text-center">
+                <input type="number" id="answer" class="form-control d-inline-block" style="width: 100px;">
+            </div>
+            <h3 class="text-center" id="score">Score: 0</h3>
+        </div>
+        <div id="resultContainer" class="mt-4 text-center" style="display: none;">
+            <h3 id="resultMessage"></h3>
+            <h3 id="totalScore"></h3>
+        </div>
+    </div>
+
+    <script>
+        let timer;
+        let timeLeft;
+        let score = 0;
+        let questionNumber = 1;
+        let totalQuestions = 0;
+        let correctAnswers = 0;
+        let isAdvanced = false;
+        let isEndless = false;
+        let isFastestFingers = false;
+
+        function generateQuestion() {
+            const maxRange = isAdvanced ? 100 : 20;
+            const num1 = Math.floor(Math.random() * maxRange) + 1;
+            const num2 = Math.floor(Math.random() * maxRange) + 1;
+            const operation = ['+', '-', '*', '/'][Math.floor(Math.random() * 4)];
+
+            let questionText = `${num1} ${operation} ${num2} = ?`;
+            let answer;
+
+            switch (operation) {
+                case '+':
+                    answer = num1 + num2;
+                    break;
+                case '-':
+                    answer = num1 - num2;
+                    break;
+                case '*':
+                    answer = num1 * num2;
+                    break;
+                case '/':
+                    answer = Math.floor(num1 / num2);
+                    break;
+            }
+
+            document.getElementById("questionNumber").textContent = `Question ${questionNumber}`;
+            document.getElementById("question").textContent = questionText;
+            return answer;
+        }
+
+        function startQuiz() {
+            score = 0;
+            questionNumber = 1;
+            timeLeft = 60;
+            document.getElementById("score").textContent = "Score: 0";
+            document.getElementById("questionNumber").textContent = `Question ${questionNumber}`;
+            document.getElementById("timer").textContent = "Time Left: 60s";
+            document.getElementById("quizContainer").style.display = "block";
+            document.getElementById("resultContainer").style.display = "none";
+
+            const answerInput = document.getElementById("answer");
+            answerInput.value = "";
+            answerInput.focus();
+
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endQuiz();
+                }
+            }, 1000);
+
+            generateAndDisplayQuestion();
+        }
+
+        function generateAndDisplayQuestion() {
+            const correctAnswer = generateQuestion();
+
+            const answerInput = document.getElementById("answer");
+            answerInput.value = "";
+            answerInput.focus();
+            console.log('Pre',answerInput.value,correctAnswer)
+            answerInput.addEventListener("keyup", (event) => {
+                if (event.key == "Enter") {
+                    console.log('Entered',answerInput.value,correctAnswer)
+                    const userAnswer = parseInt(answerInput.value);
+                    if (!isNaN(userAnswer)) {
+                        totalQuestions++;
+                        if (userAnswer == correctAnswer) {
+                            score++;
+                            correctAnswers++;
+                            if (isFastestFingers) {
+                                timeLeft += 2;
+                            }
+                        } else if (isFastestFingers) {
+                            timeLeft -= 4;
+                        }
+                        document.getElementById("score").textContent = `Score: ${score}`;
+                        questionNumber++;
+                        if (questionNumber <= (isFastestFingers ? 50 : (isEndless ? 1000 : 10))) {
+                            generateAndDisplayQuestion();
+                        } else {
+                            endQuiz();
+                        }
+                    }
+                }
+            });
+        }
+
+        function endQuiz() {
+            clearInterval(timer);
+            document.getElementById("quizContainer").style.display = "none";
+            document.getElementById("resultContainer").style.display = "block";
+            document.getElementById("resultMessage").textContent = "Quiz Ended!";
+            document.getElementById("totalScore").textContent = `Score: ${score} / ${totalQuestions} | Correct Answers: ${correctAnswers}`;
+        }
+
+        document.getElementById("beginnerBtn").addEventListener("click", () => {
+            isAdvanced = false;
+            isEndless = false;
+            isFastestFingers = false;
+            startQuiz();
+        });
+
+        document.getElementById("advancedBtn").addEventListener("click", () => {
+            isAdvanced = true;
+            isEndless = false;
+            isFastestFingers = false;
+            startQuiz();
+        });
+
+        document.getElementById("endlessBtn").addEventListener("click", () => {
+            isAdvanced = false;
+            isEndless = true;
+            isFastestFingers = false;
+            startQuiz();
+        });
+
+        document.getElementById("fastestFingersBtn").addEventListener("click", () => {
+            isAdvanced = false;
+            isEndless = false;
+            isFastestFingers = true;
+            startQuiz();
+        });
+    </script>
