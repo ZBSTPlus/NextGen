@@ -61,11 +61,11 @@ title: MasterMind
     });
 
     function generateSecretCode() {
-        const code = [];
-        for (let i = 0; i < 4; i++) {
-            code.push(Math.floor(Math.random() * 10));
+        const code = new Set();
+        while (code.size < 4) {
+            code.add(Math.floor(Math.random() * 10));
         }
-        return code.join("");
+        return [...code].join("");
     }
 
     function checkGuess(guess) {
