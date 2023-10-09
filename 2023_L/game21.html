@@ -1,0 +1,115 @@
+---
+title: 21 Game
+layout: default
+---
+
+<div class="game-container">
+    <div class="game-mode">
+        <button onclick="startGame('player')">Player 1 vs Player 2</button>
+        <button onclick="startGame('computer')">Player vs Computer</button>
+    </div>
+    <div class="player-turn" id="player-turn"></div>
+    <button id="one" class="hidden" disabled="true" onclick="play(1)">1</button>
+    <button id="two" class="hidden" disabled="true" onclick="play(2)">2</button>
+    <button id="three" class="hidden" disabled="true" onclick="play(3)">3</button>
+    <div class="total" id="total">Total: 0</div>
+    <h2>Game History</h2>
+    <div class="game-history" id="game-history">
+        
+        <table>
+            <tr>
+                <th>Player</th>
+                <th>Number Added</th>
+                <th>Sum</th>
+            </tr>
+        </table>
+    </div>
+    <button id="restart" class="hidden"  onclick="resetGame()">Restart Game</button>
+</div>
+
+<script>
+    let currentPlayer;
+    let currentSum;
+    let totalSum;
+    const history = [];
+    let gameMode;
+
+    function startGame(mode) {
+        gameMode = mode;
+        currentPlayer = 1;
+        currentSum = 0;
+        totalSum = 0;
+        history.length = 0;
+        document.getElementById("player-turn").textContent = `Player ${currentPlayer}'s turn`;
+        document.getElementById("one").classList.remove("true");
+        document.getElementById("two").classList.remove("true");
+        document.getElementById("three").classList.remove("ture");
+        document.getElementById("restart").classList.remove("true");
+        document.querySelectorAll('button').forEach(button => {
+            button.disabled = false;
+        });
+        document.getElementById("game-history").innerHTML = "<table><tr><th>Player</th><th>Number Added</th><th>Sum</th></tr></table>";
+        updateTotal();
+    }
+
+    function play(number) {
+        currentSum += number;
+        totalSum += number;
+        history.push([currentPlayer, number, currentSum]);
+
+        if (currentSum >= 21) {
+            displayResult();
+            return;
+        }
+
+        currentPlayer = 3 - currentPlayer; // Switch player (1 -> 2, 2 -> 1)
+        updateGameInfo();
+        updateTotal();
+        if (currentPlayer === 2 && gameMode === "computer") {
+            computerPlay();
+        }
+    }
+
+    function updateTotal() {
+        document.getElementById("total").textContent = `Total: ${totalSum}`;
+    }
+
+    function computerPlay() {
+        setTimeout(function () {
+            const number = Math.floor(Math.random() * 3) + 1;
+            play(number);
+        }, 500);
+    }
+
+    function displayResult() {
+        const resultDiv = document.getElementById("player-turn");
+        resultDiv.textContent = `Player ${3 - currentPlayer} wins!`;
+
+        updateGameHistory();
+        disableButtons();
+    }
+
+    function updateGameInfo() {
+        const playerTurnDiv = document.getElementById("player-turn");
+        playerTurnDiv.textContent = `Player ${currentPlayer}'s turn`;
+
+        updateGameHistory();
+    }
+
+    function updateGameHistory() {
+        const historyDiv = document.getElementById("game-history");
+        const table = "<table><tr><th>Player</th><th>Number Added</th><th>Sum</th></tr>";
+        const rows = history.map(entry => `<tr><td>${entry[0]}</td><td>+${entry[1]}</td><td>${entry[2]}</td></tr>`).join('');
+        historyDiv.innerHTML = table + rows + "</table>";
+    }
+
+    function disableButtons() {
+        document.getElementById("one").disabled = true;
+        document.getElementById("two").disabled = true;
+        document.getElementById("three").disabled = true;
+    }
+
+    function resetGame() {
+        location.reload();
+    }
+</script>
