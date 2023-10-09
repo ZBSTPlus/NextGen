@@ -2,21 +2,21 @@
 title: 21 Game
 layout: default
 ---
-
+<h1>{{page.title}}</h1>
 <div class="game-container">
     <div class="game-mode">
-        <button onclick="startGame('player')">Player 1 vs Player 2</button>
-        <button onclick="startGame('computer')">Player vs Computer</button>
+        <button class="btn btn-primary" onclick="startGame('player')">Player 1 vs Player 2</button>
+        <button class="btn btn-primary" onclick="startGame('computer')">Player vs Computer</button>
     </div>
     <div class="player-turn" id="player-turn"></div>
-    <button id="one" class="hidden" disabled="true" onclick="play(1)">1</button>
-    <button id="two" class="hidden" disabled="true" onclick="play(2)">2</button>
-    <button id="three" class="hidden" disabled="true" onclick="play(3)">3</button>
+    <button id="one" class="hidden btn btn-danger" disabled="true" onclick="play(1)">1</button>
+    <button id="two" class="hidden btn btn-warning" disabled="true" onclick="play(2)">2</button>
+    <button id="three" class="hidden btn btn-info" disabled="true" onclick="play(3)">3</button>
     <div class="total" id="total">Total: 0</div>
     <h2>Game History</h2>
     <div class="game-history" id="game-history">
         
-        <table>
+        <table class="table">
             <tr>
                 <th>Player</th>
                 <th>Number Added</th>
@@ -24,7 +24,7 @@ layout: default
             </tr>
         </table>
     </div>
-    <button id="restart" class="hidden"  onclick="resetGame()">Restart Game</button>
+    <button id="restart" class="hidden btn btn-secondary"  onclick="resetGame()">Restart Game</button>
 </div>
 
 <script>
@@ -48,7 +48,7 @@ layout: default
         document.querySelectorAll('button').forEach(button => {
             button.disabled = false;
         });
-        document.getElementById("game-history").innerHTML = "<table><tr><th>Player</th><th>Number Added</th><th>Sum</th></tr></table>";
+        document.getElementById("game-history").innerHTML = '<table class="table"><tr><th>Player</th><th>Number Added</th><th>Sum</th></tr></table>';
         updateTotal();
     }
 
@@ -98,7 +98,7 @@ layout: default
 
     function updateGameHistory() {
         const historyDiv = document.getElementById("game-history");
-        const table = "<table><tr><th>Player</th><th>Number Added</th><th>Sum</th></tr>";
+        const table = '<table class="table"><tr><th>Player</th><th>Number Added</th><th>Sum</th></tr>';
         const rows = history.map(entry => `<tr><td>${entry[0]}</td><td>+${entry[1]}</td><td>${entry[2]}</td></tr>`).join('');
         historyDiv.innerHTML = table + rows + "</table>";
     }
