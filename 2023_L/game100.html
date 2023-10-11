@@ -101,6 +101,7 @@ title: 100 Game
     function displayResult() {
         const resultDiv = document.getElementById("player-turn");
         resultDiv.textContent = `Player ${currentPlayer} wins!`;
+        
         alert(`Player ${currentPlayer} wins!`);
         updateGameHistory();
         disableButtons();
