@@ -1,0 +1,132 @@
+---
+layout: default
+title: 100 Game
+---
+<h1>{{page.title}}</h1>
+<div class="game-container">
+    <div class="game-mode">
+        <button onclick="startGame('player')" class="btn btn-primary">Player 1 vs Player 2</button>
+        <button onclick="startGame('computer')" class="btn btn-primary">Player vs Computer</button>
+    </div>
+    <div class="hidden player-turn" id="player-turn"></div>
+     <div class="input-container col-xs-3" id="numberGame" >
+    <input type="number" id="number-input" class="form-control" min="1" max="10" placeholder="Enter a number" disabled="true">
+    <button id="add-btn" disabled="true" class="btn btn-success" >Add</button>
+</div>
+    
+    <div class="total" id="total">Total: 0</div>
+    <h2>Game History</h2>
+    <div class="game-history" id="game-history">
+        
+        <table class="table">
+            <tr>
+                <th>Player</th>
+                <th>Number Added</th>
+                <th>Sum</th>
+            </tr>
+        </table>
+    </div>
+    <button id="restart" class="hidden btn btn-danger"  onclick="resetGame()">Restart Game</button>
+</div>
+
+<script>
+    let currentPlayer;
+    let currentSum;
+    let totalSum;
+    const history = [];
+    let gameMode;
+
+    document.getElementById("add-btn").addEventListener("click", function() {
+        const numberInput = document.getElementById("number-input");
+        const number = parseInt(numberInput.value);
+        if (!isNaN(number) && number >= 1 && number <= 10) {
+            play(number);
+            numberInput.value = "";
+        } else {
+            alert("Please enter a valid number between 1 and 10.");
+        }
+    });
+    function startGame(mode) {
+        gameMode = mode;
+        currentPlayer = 1;
+        currentSum = 0;
+        totalSum = 0;
+        history.length = 0;
+        document.getElementById("player-turn").textContent = `Player ${currentPlayer}'s turn`;
+        // document.getElementById("one").classList.remove("true");
+        // document.getElementById("two").classList.remove("true");
+        // document.getElementById("three").classList.remove("ture");
+        //document.getElementById('numberGame').classList.remove("true");
+        document.getElementById("number-input").classList.remove("true");
+        document.getElementById("add-btn").classList.remove("true");
+        document.getElementById("restart").classList.remove("true");
+        document.querySelectorAll('button,input').forEach(button => {
+            button.disabled = false;
+        }
+        );
+
+        document.getElementById("game-history").innerHTML = '<table class="table"><tr><th>Player</th><th>Number Added</th><th>Sum</th></tr></table>';
+        updateTotal();
+    }
+
+    function play(number) {
+        currentSum += number;
+        totalSum += number;
+        history.push([currentPlayer, number, currentSum]);
+
+        if (currentSum > 99) {
+            displayResult();
+            return;
+        }
+
+        currentPlayer = 3 - currentPlayer; // Switch player (1 -> 2, 2 -> 1)
+        updateGameInfo();
+        updateTotal();
+        if (currentPlayer === 2 && gameMode === "computer") {
+            computerPlay();
+        }
+    }
+
+    function updateTotal() {
+        document.getElementById("total").textContent = `Total: ${totalSum}`;
+    }
+
+    function computerPlay() {
+        setTimeout(function () {
+            const number = Math.floor(Math.random() * 10) + 1;
+            play(number);
+        }, 500);
+    }
+
+    function displayResult() {
+        const resultDiv = document.getElementById("player-turn");
+        resultDiv.textContent = `Player ${3 - currentPlayer} wins!`;
+
+        updateGameHistory();
+        disableButtons();
+    }
+
+    function updateGameInfo() {
+        const playerTurnDiv = document.getElementById("player-turn");
+        playerTurnDiv.textContent = `Player ${currentPlayer}'s turn`;
+
+        updateGameHistory();
+    }
+
+    function updateGameHistory() {
+        const historyDiv = document.getElementById("game-history");
+        const table = '<table class="table"><tr><th>Player</th><th>Number Added</th><th>Sum</th></tr>';
+        const rows = history.map(entry => `<tr><td>${entry[0]}</td><td>+${entry[1]}</td><td>${entry[2]}</td></tr>`).join('');
+        historyDiv.innerHTML = table + rows + "</table>";
+    }
+
+    function disableButtons() {
+        document.getElementById("number-input").disabled = true;
+        document.getElementById("add-btn").disabled = true;
+        document.getElementById("three").disabled = true;
+    }
+
+    function resetGame() {
+        location.reload();
+    }
+</script>
