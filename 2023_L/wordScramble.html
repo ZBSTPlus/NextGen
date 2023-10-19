@@ -1,0 +1,79 @@
+---
+layout: default
+title: Word Scramble Game
+---
+<h1>{{page.title}}</h1>
+<div class="container">
+    <p><strong>Hint:</strong> <span id="hint"></span></p>
+    <div id="scrambled-word"></div>
+    <input type="text" id="guess" class="form-control mb-3" placeholder="Enter your guess">
+    <button class="btn btn-primary" onclick="checkGuess()">Submit Guess</button>
+    <button class="btn btn-secondary " onclick="resetGame()">Next Word</button>
+    <p id="message" class="mt-3"></p>
+    <p>Chances left: <span id="chances">4</span></p>
+</div>
+
+<script>
+    const words = [
+        { word: 'elephant', hint: 'A large mammal with a trunk' },
+        { word: 'computer', hint: 'An electronic device for processing data' },
+        { word: 'library', hint: 'A place with books for reading and studying' },
+        { word: 'sunflower', hint: 'A tall plant with large, yellow flowers' },
+        { word: 'giraffe', hint: 'A long-necked African mammal' },
+        { word: 'ocean', hint: 'A vast body of saltwater' },
+        { word: 'mountain', hint: 'A high, steep landform' },
+        { word: 'chocolate', hint: 'A sweet treat made from cacao beans' },
+        { word: 'ambigue', hint: 'An ambiguous expression or statement.' },
+        { word: 'functional', hint: 'Capable of or designed for a particular purpose'}
+    ];
+
+    let currentWordIndex = 0;
+    let scrambledWord = scrambleWord(words[currentWordIndex].word);
+    let chancesLeft = 4;
+
+    function scrambleWord(word) {
+        return word.split('').sort(function() {
+            return 0.5 - Math.random();
+        }).join('');
+    }
+
+    function displayScrambledWord() {
+        document.getElementById('scrambled-word').textContent = scrambledWord;
+    }
+
+    function setHint() {
+        document.getElementById('hint').textContent = words[currentWordIndex].hint;
+    }
+
+    function checkGuess() {
+        const guessInput = document.getElementById('guess').value.toLowerCase();
+        if (guessInput === words[currentWordIndex].word) {
+            document.getElementById('message').textContent = 'Correct! Well done!';
+            document.getElementById('guess').disabled = true;
+        } else {
+            chancesLeft--;
+            document.getElementById('chances').textContent = chancesLeft;
+            if (chancesLeft === 0) {
+                document.getElementById('message').textContent = `Sorry, the correct word was: ${words[currentWordIndex].word}`;
+                document.getElementById('guess').disabled = true;
+            } else {
+                document.getElementById('message').textContent = `Incorrect. ${chancesLeft} chances left. Try again!`;
+            }
+        }
+    }
+
+    function resetGame() {
+        chancesLeft = 4;
+        currentWordIndex = (currentWordIndex + 1) % words.length;
+        scrambledWord = scrambleWord(words[currentWordIndex].word);
+        document.getElementById('message').textContent = '';
+        document.getElementById('guess').value = '';
+        document.getElementById('guess').disabled = false;
+        document.getElementById('chances').textContent = chancesLeft;
+        displayScrambledWord();
+        setHint();
+    }
+
+    displayScrambledWord();
+    setHint();
+</script>
