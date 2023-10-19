@@ -1,0 +1,110 @@
+---
+layout: default
+title: Hangman Game
+---
+<h1>{{page.title}}</h1>
+
+<div class="container">
+    <p>Guess the word (6-7 letters):</p>
+    <div id="word"></div>
+    <p>Incorrect guesses: <span id="incorrect"></span></p>
+    <p>Hint: <span id="hint"></span></p>
+    <input type="text" id="guess" class="form-control mb-3">
+    <button class="btn btn-primary" onclick="checkGuess()">Submit Guess</button>
+    <button class="btn btn-secondary" onclick="resetGame()">Reset</button>
+    <div class="mt-3">
+        <div class="alert alert-success" id="success-message" style="display: none;">Congratulations! You guessed the word!</div>
+        <div class="alert alert-danger" id="danger-message" style="display: none;">Game Over! The word was "<span id="word-reveal"></span>"</div>
+    </div>
+</div>
+
+<script>
+    const words = [
+        { word: 'guitar', hint: 'A musical instrument with strings' },
+        { word: 'orange', hint: 'A citrus fruit' },
+        { word: 'rabbit', hint: 'A small mammal with long ears' },
+        { word: 'jacket', hint: 'An outer garment worn on the upper body' },
+        { word: 'rocket', hint: 'A vehicle that travels in space' },
+        { word: 'sunset', hint: 'The time when the sun disappears below the horizon' },
+        { word: 'tunnel', hint: 'A passage underground' },
+        { word: 'camera', hint: 'A device for capturing images or videos' }
+    ];
+
+    let selectedWord = getRandomWord();
+    let hint = getHint(selectedWord);
+    let guessedLetters = [];
+    let incorrectGuesses = 0;
+    console.log(selectedWord, hint);
+    function getRandomWord() {
+        const filteredWords = words.filter(word => word.word.length >= 6 && word.word.length <= 7);
+        return filteredWords[Math.floor(Math.random() * filteredWords.length)].word;
+    }
+
+    function getHint(word) {
+        const selectedWordObject = words.find(item => item.word === word);
+        return selectedWordObject.hint;
+    }
+
+    function displayWord() {
+        const wordContainer = document.getElementById('word');
+        console.log(wordContainer);
+        let disp = selectedWord.split('').map(letter => (guessedLetters.includes(letter) ? letter : '_')).join(' ');
+        wordContainer.innerHTML = disp;
+        console.log(wordContainer);
+        return disp;
+    }
+
+    function setHint() {
+        document.getElementById('hint').textContent = hint;
+    }
+
+    function checkGuess() {
+        const guessInput = document.getElementById('guess');
+        const guess = guessInput.value.toLowerCase();
+
+        if (guess.length === 1 && guessedLetters.indexOf(guess) === -1) {
+            guessedLetters.push(guess);
+
+            if (selectedWord.includes(guess)) {
+                displayWord();
+            } else {
+                incorrectGuesses++;
+                document.getElementById('incorrect').textContent = incorrectGuesses;
+            }
+
+            if (!displayWord().includes('_')) {
+                document.getElementById('success-message').style.display = 'block';
+                document.getElementById('danger-message').style.display = 'none';
+                document.getElementById('word-reveal').textContent = selectedWord;
+                guessInput.disabled = true;
+            } else if (incorrectGuesses >= 7) {
+                document.getElementById('danger-message').style.display = 'block';
+                document.getElementById('success-message').style.display = 'none';
+                document.getElementById('word-reveal').textContent = selectedWord;
+                guessInput.disabled = true;
+            }
+        } else {
+            alert('Invalid guess. Please enter a single letter you have not guessed before.');
+        }
+
+        guessInput.value = '';
+        console.log(guessedLetters);
+    }
+
+    function resetGame() {
+        guessedLetters = [];
+        incorrectGuesses = 0;
+        selectedWord = getRandomWord();
+        hint = getHint(selectedWord);
+        displayWord();
+        setHint();
+        document.getElementById('guess').disabled = false;
+        document.getElementById('incorrect').textContent = '0';
+        document.getElementById('message').textContent = '';
+        document.getElementById('success-message').style.display = 'none';
+        document.getElementById('danger-message').style.display = 'none';
+    }
+
+    displayWord();
+    setHint();
+</script>
