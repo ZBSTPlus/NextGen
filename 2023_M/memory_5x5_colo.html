@@ -1,0 +1,134 @@
+---
+layout: default
+title: 5X5 Color Memory
+---
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .heading {
+            margin-top: 50px;
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+        }
+
+        .card {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+
+    <div class="container">
+        <div class="text-center heading">
+            <h1>Memory Matching Game</h1>
+            <p>Score: <span id="score">0</span></p>
+            <div class="card-container mt-4" id="game-board"></div>
+            <button class="btn btn-primary mt-2" id="reset-button">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        const gameBoard = document.getElementById('game-board');
+        const resetButton = document.getElementById('reset-button');
+        let cards = [];
+        let flippedCards = [];
+        let matches = 0;
+        let moves = 0;
+        const scoreDisplay = document.getElementById('score');
+
+        function incrementScore() {
+            moves++;
+            scoreDisplay.textContent = moves;
+        }
+
+        function initializeBoard() {
+            let colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'gray', 'cyan', 'magenta', 'lime'];
+            colors = colors.concat(colors);
+            colors = shuffleArray(colors);
+
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 5; j++) {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    card.dataset.value = colors[i * 5 + j];
+                    card.dataset.state = 'hidden';
+                    card.style.backgroundColor = 'gray';
+                    card.addEventListener('click', flipCard);
+                    gameBoard.appendChild(card);
+                    cards.push(card);
+                }
+            }
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function flipCard() {
+            if (flippedCards.length >= 2) {
+                return;
+            }
+            if (this.dataset.state === 'hidden') {
+                this.style.backgroundColor = this.dataset.value;
+                this.dataset.state = 'visible';
+                flippedCards.push(this);
+                incrementScore();
+            }
+
+            if (flippedCards.length === 2) {
+                setTimeout(checkMatch, 1000);
+            }
+        }
+
+        function checkMatch() {
+            if (flippedCards[0].dataset.value === flippedCards[1].dataset.value) {
+                flippedCards[0].style.backgroundColor = 'white';
+                flippedCards[1].style.backgroundColor = 'white';
+                flippedCards = [];
+                matches++;
+
+                if (matches === 12) {
+                    alert('Congratulations! You won!');
+                }
+            } else {
+                flippedCards[0].style.backgroundColor = 'gray';
+                flippedCards[1].style.backgroundColor = 'gray';
+                flippedCards[0].dataset.state = 'hidden';
+                flippedCards[1].dataset.state = 'hidden';
+                flippedCards = [];
+            }
+        }
+
+        function resetGame() {
+            gameBoard.innerHTML = '';
+            cards = [];
+            flippedCards = [];
+            matches = 0;
+            moves = 0;
+            scoreDisplay.textContent = moves;
+            initializeBoard();
+        }
+
+        initializeBoard();
+        resetButton.addEventListener('click', resetGame);
+    </script>
+

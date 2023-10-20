@@ -1,3 +1,8 @@
 name,url
 3x3 Memory,memory_3x3
-4X4 Color Memory,memory_4x4_colo
+3X3 Memory Colour,memory_3x3_colo
+4x4 Memory,memory_4x4
+4X4 Colour Memory,memory_4x4_colo
+5x5 Memory,memory_5x5
+5x5 Memory_colo,memory_5x5_colo
+
