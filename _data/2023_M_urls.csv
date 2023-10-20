@@ -4,5 +4,6 @@ name,url
 4x4 Memory,memory_4x4
 4X4 Colour Memory,memory_4x4_colo
 5x5 Memory,memory_5x5
-5x5 Memory_colo,memory_5x5_colo
-
+5x5 Memory Colour,memory_5x5_colo
+6x6 Memory,memory_6x6
+6x6 Memory Color,memory_6x6_colo
