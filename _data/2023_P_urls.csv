@@ -2,3 +2,5 @@ name,url
 Pico Fermi Bagels,bagels.html
 Number Guessing game,numberguess
 ArithmeticRun,mathquiz
+Classic Josephus problem,jp_Flip
+Extended Josephus problem,jp_K

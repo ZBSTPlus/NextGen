@@ -1,6 +1,6 @@
 ---
 layout: default
-title: 4X4 Color Memory
+title: 4X4 Memory
 ---
     <style>
         .container {
@@ -27,7 +27,9 @@ title: 4X4 Color Memory
             justify-content: center;
             align-items: center;
             font-size: 24px;
-            cursor: pointer;
+            background-color: #007BFF; /* Background color of the cards */
+            color: white; /* Text color of the cards */
+            cursor: pointer; /* Change cursor to pointer on hover */
         }
     </style>
 
@@ -55,17 +57,16 @@ title: 4X4 Color Memory
         }
 
         function initializeBoard() {
-            let colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown'];
-            colors = colors.concat(colors); // Duplicate the colors for matching
-            colors = shuffleArray(colors);
+            let numbers = [...Array(8).keys(), ...Array(8).keys()];
+            numbers = shuffleArray(numbers);
 
             for (let i = 0; i < 4; i++) {
                 for (let j = 0; j < 4; j++) {
                     const card = document.createElement('div');
                     card.classList.add('card');
-                    card.dataset.value = colors[i * 4 + j];
+                    card.dataset.value = numbers[i * 4 + j];
                     card.dataset.state = 'hidden';
-                    card.style.backgroundColor = 'gray'; // Set a default background color for covered cards
+                    card.textContent = '?';
                     card.addEventListener('click', flipCard);
                     gameBoard.appendChild(card);
                     cards.push(card);
@@ -86,7 +87,7 @@ title: 4X4 Color Memory
                 return;
             }
             if (this.dataset.state === 'hidden') {
-                this.style.backgroundColor = this.dataset.value;
+                this.textContent = this.dataset.value;
                 this.dataset.state = 'visible';
                 flippedCards.push(this);
                 incrementScore();
@@ -99,8 +100,10 @@ title: 4X4 Color Memory
 
         function checkMatch() {
             if (flippedCards[0].dataset.value === flippedCards[1].dataset.value) {
-                flippedCards[0].style.backgroundColor = 'white';
-                flippedCards[1].style.backgroundColor = 'white';
+                flippedCards[0].classList.remove('bg-primary', 'text-white');
+                flippedCards[1].classList.remove('bg-primary', 'text-white');
+                flippedCards[0].classList.add('bg-success', 'text-white');
+                flippedCards[1].classList.add('bg-success', 'text-white');
                 flippedCards = [];
                 matches++;
 
@@ -108,8 +111,8 @@ title: 4X4 Color Memory
                     alert('Congratulations! You won!');
                 }
             } else {
-                flippedCards[0].style.backgroundColor = 'gray';
-                flippedCards[1].style.backgroundColor = 'gray';
+                flippedCards[0].textContent = '?';
+                flippedCards[1].textContent = '?';
                 flippedCards[0].dataset.state = 'hidden';
                 flippedCards[1].dataset.state = 'hidden';
                 flippedCards = [];
@@ -129,4 +132,3 @@ title: 4X4 Color Memory
         initializeBoard();
         resetButton.addEventListener('click', resetGame);
     </script>
-

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: 4X4 Color Memory
+title: 3X3 Memory Color
 ---
     <style>
         .container {
@@ -16,7 +16,7 @@ title: 4X4 Color Memory
 
         .card-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 5px;
         }
 
@@ -27,9 +27,9 @@ title: 4X4 Color Memory
             justify-content: center;
             align-items: center;
             font-size: 24px;
-            cursor: pointer;
         }
     </style>
+
 
     <div class="container">
         <div class="text-center heading">
@@ -41,31 +41,28 @@ title: 4X4 Color Memory
     </div>
 
     <script>
+        // JavaScript code for the game
         const gameBoard = document.getElementById('game-board');
         const resetButton = document.getElementById('reset-button');
+        const scoreDisplay = document.getElementById('score');
         let cards = [];
         let flippedCards = [];
         let matches = 0;
-        let moves = 0;
-        const scoreDisplay = document.getElementById('score');
+        let score = 0;
 
-        function incrementScore() {
-            moves++;
-            scoreDisplay.textContent = moves;
-        }
-
+        // Initialize the game board with colors
         function initializeBoard() {
-            let colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown'];
-            colors = colors.concat(colors); // Duplicate the colors for matching
+            let colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'gray'];
+            colors = colors.concat(colors);
             colors = shuffleArray(colors);
 
-            for (let i = 0; i < 4; i++) {
-                for (let j = 0; j < 4; j++) {
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
                     const card = document.createElement('div');
                     card.classList.add('card');
-                    card.dataset.value = colors[i * 4 + j];
+                    card.dataset.value = colors[i * 3 + j];
                     card.dataset.state = 'hidden';
-                    card.style.backgroundColor = 'gray'; // Set a default background color for covered cards
+                    card.style.backgroundColor = 'gray';
                     card.addEventListener('click', flipCard);
                     gameBoard.appendChild(card);
                     cards.push(card);
@@ -73,6 +70,7 @@ title: 4X4 Color Memory
             }
         }
 
+        // Shuffle the card order
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -81,6 +79,7 @@ title: 4X4 Color Memory
             return array;
         }
 
+        // Flip a card
         function flipCard() {
             if (flippedCards.length >= 2) {
                 return;
@@ -89,7 +88,10 @@ title: 4X4 Color Memory
                 this.style.backgroundColor = this.dataset.value;
                 this.dataset.state = 'visible';
                 flippedCards.push(this);
-                incrementScore();
+
+                // Increase the score when a tile is touched
+                score++;
+                scoreDisplay.textContent = score;
             }
 
             if (flippedCards.length === 2) {
@@ -97,6 +99,7 @@ title: 4X4 Color Memory
             }
         }
 
+        // Check if two flipped cards are a match
         function checkMatch() {
             if (flippedCards[0].dataset.value === flippedCards[1].dataset.value) {
                 flippedCards[0].style.backgroundColor = 'white';
@@ -104,7 +107,7 @@ title: 4X4 Color Memory
                 flippedCards = [];
                 matches++;
 
-                if (matches === 8) {
+                if (matches === 3) {
                     alert('Congratulations! You won!');
                 }
             } else {
@@ -116,17 +119,18 @@ title: 4X4 Color Memory
             }
         }
 
+        // Reset the game
         function resetGame() {
             gameBoard.innerHTML = '';
             cards = [];
             flippedCards = [];
             matches = 0;
-            moves = 0;
-            scoreDisplay.textContent = moves;
+            score = 0;
+            scoreDisplay.textContent = score;
             initializeBoard();
         }
 
+        // Initialize the game board and button click event
         initializeBoard();
         resetButton.addEventListener('click', resetGame);
     </script>
-
