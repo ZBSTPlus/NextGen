@@ -1,55 +1,8 @@
 ---
 layout: default
-title: 3X3 Memory Color
+title: 3X3 Memory Matching Game with Colors 
 ---
-    <style>
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .heading {
-            margin-top: 1px;
-        }
-
-        .card-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
-        }
-
-        .card {
-            width: 100px;
-            height: 100px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-        }
-    </style>
-
-
-    <div class="container">
-        <div class="text-center heading">
-            <h1>Memory Matching Game</h1>
-            <p>Score: <span id="score">0</span></p>
-            <div class="card-container mt-4" id="game-board"></div>
-            <button class="btn btn-primary mt-2" id="reset-button">Reset</button>
-        </div>
-    </div>
-
     <script>
-        // JavaScript code for the game
-        const gameBoard = document.getElementById('game-board');
-        const resetButton = document.getElementById('reset-button');
-        const scoreDisplay = document.getElementById('score');
-        let cards = [];
-        let flippedCards = [];
-        let matches = 0;
-        let score = 0;
-
         // Initialize the game board with colors
         function initializeBoard() {
             let colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'gray'];
@@ -69,16 +22,7 @@ title: 3X3 Memory Color
                 }
             }
         }
-
-        // Shuffle the card order
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
+        
         // Flip a card
         function flipCard() {
             if (flippedCards.length >= 2) {
@@ -118,19 +62,6 @@ title: 3X3 Memory Color
                 flippedCards = [];
             }
         }
-
-        // Reset the game
-        function resetGame() {
-            gameBoard.innerHTML = '';
-            cards = [];
-            flippedCards = [];
-            matches = 0;
-            score = 0;
-            scoreDisplay.textContent = score;
-            initializeBoard();
-        }
-
-        // Initialize the game board and button click event
-        initializeBoard();
-        resetButton.addEventListener('click', resetGame);
     </script>
+
+{% include components/grid.html %}

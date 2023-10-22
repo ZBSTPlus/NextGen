@@ -1,6 +1,70 @@
 ---
-title: NextGen++
-layout: default
+title: Provoke by NextGen+ 
+layout: default-g3fix
 ---
+<script type="module">
+    import * as THREE from 'three';
+    import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+    import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-Welcome Home
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    // Create a renderer
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Create 3D text
+    const loader = new FontLoader();
+    loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+      const textGeometry = new TextGeometry('Provoke+', {
+        font: font,
+        size: 2,
+        height: 0.1,
+      });
+      const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+      scene.add(textMesh);
+
+      // Position the text
+      textMesh.position.x = -5;
+      textMesh.position.y = 0;
+
+      // Add lighting
+      const ambientLight = new THREE.AmbientLight(0xff0000);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0x00ffff);
+      directionalLight.position.set(1, 1, 1);
+      scene.add(directionalLight);
+
+      // Create an orbit control for easy camera navigation
+      const controls = new OrbitControls(camera, renderer.domElement);
+
+      // Animation loop
+      const animate = function () {
+        requestAnimationFrame(animate);
+
+        // Rotate the text
+        textMesh.rotation.x += 0.001;
+        textMesh.rotation.y += 0.001;
+
+        renderer.render(scene, camera);
+      };
+
+      animate();
+    });
+
+    // // Handle window resizing
+    // window.addEventListener('resize', function () {
+    //   const newWidth = window.innerWidth;
+    //   const newHeight = window.innerHeight;
+
+    //   renderer.setSize(newWidth, newHeight);
+    //   camera.aspect = newWidth / newHeight;
+    //   camera.updateProjectionMatrix();
+    // });
+  </script>
