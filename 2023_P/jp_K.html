@@ -2,126 +2,124 @@
 layout: default
 title: Extended Josephus problem
 ---
-    <style>
-        .circle {
-            fill: lightblue;
-            cursor: pointer;
-        }
+<style>
+    .circle {
+        fill: lightblue;
+        cursor: pointer;
+    }
 
-        .circle:hover,
-        .selected {
-            fill: yellow; /* Change color to yellow on hover and when selected */
-        }
+    .circle:hover,
+    .selected {
+        fill: yellow;
+        /* Change color to yellow on hover and when selected */
+    }
 
-        .eliminated {
-            fill: red;
-        }
-    </style>
+    .eliminated {
+        fill: red;
+    }
+</style>
 
-
-<!--<body class="container text-center">-->
-    <h1 class="my-10">{{page.title}}</h1>
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <svg id="circle" width="400" height="400"></svg>
-        </div>
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <svg id="circle" width="400" height="400"></svg>
     </div>
-    <div class="row justify-content-center my-4">
-        <div class="col-md-6">
-            <p>Enter the number of circles:</p>
-            <input type="number" id="totalCircles" class="form-control mb-3" placeholder="Enter the number of circles">
-            <p>Enter the value of k (k > 1):</p>
-            <input type="number" id="kValue" class="form-control mb-3" placeholder="Enter k value">
-            <h2 class="mt-3" id="result"></h2>
-            <button class="btn btn-primary mt-3" onclick="startGame()">Start Game</button>
-            <button class="btn btn-secondary mt-3" onclick="restartGame()">Restart</button>
-            <p>Guess the survivor position (starting from 1):</p>
-            <input type="number" id="guess" class="form-control mb-3" placeholder="Enter your guess">
-            <button class="btn btn-primary mt-3" onclick="submitGuess()">Submit Guess</button>
-        </div>
+</div>
+<div class="row justify-content-center my-4">
+    <div class="col-md-6">
+        <p>Enter the number of circles:</p>
+        <input type="number" id="totalCircles" class="form-control mb-3" placeholder="Enter the number of circles">
+        <p>Enter the value of k (k > 1):</p>
+        <input type="number" id="kValue" class="form-control mb-3" placeholder="Enter k value">
+        <h2 class="mt-3" id="result"></h2>
+        <button class="btn btn-primary mt-3" onclick="startGame()">Start Game</button>
+        <button class="btn btn-secondary mt-3" onclick="restartGame()">Restart</button>
+        <p>Guess the survivor position (starting from 1):</p>
+        <input type="number" id="guess" class="form-control mb-3" placeholder="Enter your guess">
+        <button class="btn btn-primary mt-3" onclick="submitGuess()">Submit Guess</button>
     </div>
+</div>
 
-    <script>
-        const svg = document.getElementById("circle");
-        let selectedCircles = [];
-        let totalCircles;
-        let kValue;
+<script>
+    const svg = document.getElementById("circle");
+    let selectedCircles = [];
+    let totalCircles;
+    let kValue;
 
-        function createCircle(numCircles) {
-            let circle = '';
-            for (let i = 0; i < numCircles; i++) {
-                const angle = (2 * Math.PI / numCircles) * i;
-                const x = 200 + 150 * Math.cos(angle);
-                const y = 200 + 150 * Math.sin(angle);
-                circle += `<circle class="circle" cx="${x}" cy="${y}" r="20" data-position="${i + 1}" />
+    function createCircle(numCircles) {
+        let circle = '';
+        for (let i = 0; i < numCircles; i++) {
+            const angle = (2 * Math.PI / numCircles) * i;
+            const x = 200 + 150 * Math.cos(angle);
+            const y = 200 + 150 * Math.sin(angle);
+            circle += `<circle class="circle" cx="${x}" cy="${y}" r="20" data-position="${i + 1}" />
                             <text x="${x}" y="${y + 7}" font-size="16" text-anchor="middle">${i + 1}</text>`;
-            }
-
-            svg.innerHTML = circle;
-            addCircleListeners();
         }
 
-        function addCircleListeners() {
-            const circles = svg.getElementsByClassName("circle");
-            Array.from(circles).forEach(circle => {
-                circle.addEventListener("click", function () {
-                    const position = parseInt(this.getAttribute("data-position"));
-                    if (selectedCircles.includes(position)) {
-                        selectedCircles = selectedCircles.filter(num => num !== position);
-                        this.classList.remove("selected");
-                    } else {
-                        selectedCircles.push(position);
-                        this.classList.add("selected");
-                    }
-                    document.getElementById("result").textContent = "";
-                });
+        svg.innerHTML = circle;
+        addCircleListeners();
+    }
+
+    function addCircleListeners() {
+        const circles = svg.getElementsByClassName("circle");
+        Array.from(circles).forEach(circle => {
+            circle.addEventListener("click", function () {
+                const position = parseInt(this.getAttribute("data-position"));
+                if (selectedCircles.includes(position)) {
+                    selectedCircles = selectedCircles.filter(num => num !== position);
+                    this.classList.remove("selected");
+                } else {
+                    selectedCircles.push(position);
+                    this.classList.add("selected");
+                }
+                document.getElementById("result").textContent = "";
             });
+        });
+    }
+
+    function startGame() {
+        totalCircles = parseInt(document.getElementById("totalCircles").value);
+        kValue = parseInt(document.getElementById("kValue").value);
+
+        if (isNaN(totalCircles) || totalCircles < 1 || isNaN(kValue) || kValue < 2) {
+            alert("Please enter valid numbers for total circles and k value.");
+            return;
         }
 
-        function startGame() {
-            totalCircles = parseInt(document.getElementById("totalCircles").value);
-            kValue = parseInt(document.getElementById("kValue").value);
+        selectedCircles = [];
+        document.getElementById("result").textContent = "";
+        createCircle(totalCircles);
+    }
 
-            if (isNaN(totalCircles) || totalCircles < 1 || isNaN(kValue) || kValue < 2) {
-                alert("Please enter valid numbers for total circles and k value.");
-                return;
-            }
-
-            selectedCircles = [];
-            document.getElementById("result").textContent = "";
-            createCircle(totalCircles);
+    function submitGuess() {
+        const guessedPosition = parseInt(document.getElementById("guess").value);
+        if (isNaN(guessedPosition) || guessedPosition < 1 || guessedPosition > totalCircles) {
+            alert("Invalid guess. Please enter a number between 1 and " + totalCircles + ".");
+            return;
         }
 
-        function submitGuess() {
-            const guessedPosition = parseInt(document.getElementById("guess").value);
-            if (isNaN(guessedPosition) || guessedPosition < 1 || guessedPosition > totalCircles) {
-                alert("Invalid guess. Please enter a number between 1 and " + totalCircles + ".");
-                return;
-            }
-
-            const survivorPosition = josephus(totalCircles, kValue);
-            const resultDiv = document.getElementById("result");
-            if (guessedPosition === survivorPosition) {
-                resultDiv.textContent = `Congratulations! Your guess ${guessedPosition} is correct. The survivor is in position ${survivorPosition}.`;
-            } else {
-                resultDiv.textContent = `Sorry, your guess ${guessedPosition} is incorrect. The survivor is in position ${survivorPosition}.`;
-            }
+        const survivorPosition = josephus(totalCircles, kValue);
+        const resultDiv = document.getElementById("result");
+        if (guessedPosition === survivorPosition) {
+            resultDiv.textContent = `Congratulations! Your guess ${guessedPosition} is correct. The survivor is in position ${survivorPosition}.`;
+        } else {
+            resultDiv.textContent = `Sorry, your guess ${guessedPosition} is incorrect. The survivor is in position ${survivorPosition}.`;
         }
+    }
 
-        function josephus(n, k) {
-            if (n === 1) {
-                return 1;
-            } else {
-                return (josephus(n - 1, k) + k - 1) % n + 1;
-            }
+    function josephus(n, k) {
+        if (n === 1) {
+            return 1;
+        } else {
+            return (josephus(n - 1, k) + k - 1) % n + 1;
         }
+    }
 
-        function restartGame() {
-            document.getElementById("totalCircles").value = "";
-            document.getElementById("kValue").value = "";
-            document.getElementById("guess").value = "";
-            selectedCircles = [];
-            document.getElementById("result").textContent = "";
-            svg.innerHTML = "";
-        }
-    </script>
+    function restartGame() {
+        document.getElementById("totalCircles").value = "";
+        document.getElementById("kValue").value = "";
+        document.getElementById("guess").value = "";
+        selectedCircles = [];
+        document.getElementById("result").textContent = "";
+        svg.innerHTML = "";
+    }
+</script>

@@ -1,134 +1,62 @@
 ---
-layout: default
+layout: memory_game/grid
 title: 4X4 Memory
+gs: 4
 ---
-    <style>
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+<script>
 
-        .heading {
-            margin-top: 1px;
-        }
+    function initializeBoard() {
+        let numbers = [...Array(8).keys(), ...Array(8).keys()];
+        numbers = shuffleArray(numbers);
 
-        .card-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-        }
-
-        .card {
-            width: 100px;
-            height: 100px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            background-color: #007BFF; /* Background color of the cards */
-            color: white; /* Text color of the cards */
-            cursor: pointer; /* Change cursor to pointer on hover */
-        }
-    </style>
-
-    <div class="container">
-        <div class="text-center heading">
-            <h1>Memory Matching Game</h1>
-            <p>Score: <span id="score">0</span></p>
-            <div class="card-container mt-4" id="game-board"></div>
-            <button class="btn btn-primary mt-2" id="reset-button">Reset</button>
-        </div>
-    </div>
-
-    <script>
-        const gameBoard = document.getElementById('game-board');
-        const resetButton = document.getElementById('reset-button');
-        let cards = [];
-        let flippedCards = [];
-        let matches = 0;
-        let moves = 0;
-        const scoreDisplay = document.getElementById('score');
-
-        function incrementScore() {
-            moves++;
-            scoreDisplay.textContent = moves;
-        }
-
-        function initializeBoard() {
-            let numbers = [...Array(8).keys(), ...Array(8).keys()];
-            numbers = shuffleArray(numbers);
-
-            for (let i = 0; i < 4; i++) {
-                for (let j = 0; j < 4; j++) {
-                    const card = document.createElement('div');
-                    card.classList.add('card');
-                    card.dataset.value = numbers[i * 4 + j];
-                    card.dataset.state = 'hidden';
-                    card.textContent = '?';
-                    card.addEventListener('click', flipCard);
-                    gameBoard.appendChild(card);
-                    cards.push(card);
-                }
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.value = numbers[i * 4 + j];
+                card.dataset.state = 'hidden';
+                card.textContent = '?';
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+                cards.push(card);
             }
         }
+    }
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
+    function flipCard() {
+        if (flippedCards.length >= 2) {
+            return;
+        }
+        if (this.dataset.state === 'hidden') {
+            this.textContent = this.dataset.value;
+            this.dataset.state = 'visible';
+            flippedCards.push(this);
+            incrementScore();
         }
 
-        function flipCard() {
-            if (flippedCards.length >= 2) {
-                return;
-            }
-            if (this.dataset.state === 'hidden') {
-                this.textContent = this.dataset.value;
-                this.dataset.state = 'visible';
-                flippedCards.push(this);
-                incrementScore();
-            }
-
-            if (flippedCards.length === 2) {
-                setTimeout(checkMatch, 1000);
-            }
+        if (flippedCards.length === 2) {
+            setTimeout(checkMatch, 1000);
         }
+    }
 
-        function checkMatch() {
-            if (flippedCards[0].dataset.value === flippedCards[1].dataset.value) {
-                flippedCards[0].classList.remove('bg-primary', 'text-white');
-                flippedCards[1].classList.remove('bg-primary', 'text-white');
-                flippedCards[0].classList.add('bg-success', 'text-white');
-                flippedCards[1].classList.add('bg-success', 'text-white');
-                flippedCards = [];
-                matches++;
-
-                if (matches === 8) {
-                    alert('Congratulations! You won!');
-                }
-            } else {
-                flippedCards[0].textContent = '?';
-                flippedCards[1].textContent = '?';
-                flippedCards[0].dataset.state = 'hidden';
-                flippedCards[1].dataset.state = 'hidden';
-                flippedCards = [];
-            }
-        }
-
-        function resetGame() {
-            gameBoard.innerHTML = '';
-            cards = [];
+    function checkMatch() {
+        if (flippedCards[0].dataset.value === flippedCards[1].dataset.value) {
+            flippedCards[0].classList.remove('bg-primary', 'text-white');
+            flippedCards[1].classList.remove('bg-primary', 'text-white');
+            flippedCards[0].classList.add('bg-success', 'text-white');
+            flippedCards[1].classList.add('bg-success', 'text-white');
             flippedCards = [];
-            matches = 0;
-            moves = 0;
-            scoreDisplay.textContent = moves;
-            initializeBoard();
-        }
+            matches++;
 
-        initializeBoard();
-        resetButton.addEventListener('click', resetGame);
-    </script>
+            if (matches === 8) {
+                alert('Congratulations! You won!');
+            }
+        } else {
+            flippedCards[0].textContent = '?';
+            flippedCards[1].textContent = '?';
+            flippedCards[0].dataset.state = 'hidden';
+            flippedCards[1].dataset.state = 'hidden';
+            flippedCards = [];
+        }
+    }
+</script>
