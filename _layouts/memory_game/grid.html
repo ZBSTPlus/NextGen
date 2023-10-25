@@ -1,18 +1,11 @@
+---
+layout: default
+---
+
 <style>
-    .container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-
-    .heading {
-        margin-top: 1px;
-    }
-
     .card-container {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat({{page.gs}}, 1fr);
         gap: 5px;
     }
 
@@ -28,13 +21,12 @@
 
 <div class="container">
     <div class="text-center heading">
-        <h1>{{page.title}}</h1>
         <p>Score: <span id="score">0</span></p>
         <div class="card-container mt-4" id="game-board"></div>
         <button class="btn btn-primary mt-2" id="reset-button">Reset</button>
     </div>
 </div>
-
+{{ content }}
 <script>
     const gameBoard = document.getElementById('game-board');
     const resetButton = document.getElementById('reset-button');
@@ -44,7 +36,6 @@
     let matches = 0;
     let score = 0;
     let moves = 0;
-
 
     function incrementScore() {
         moves++;

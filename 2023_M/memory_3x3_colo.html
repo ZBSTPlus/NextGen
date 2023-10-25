@@ -1,67 +1,68 @@
 ---
-layout: default
-title: 3X3 Memory Matching Game with Colors 
+layout: memory_game/grid
+title: 3X3 Memory Matching Game with Colors
+description: Put Valid description and other game rules here
+gs: 3
 ---
-    <script>
-        // Initialize the game board with colors
-        function initializeBoard() {
-            let colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'gray'];
-            colors = colors.concat(colors);
-            colors = shuffleArray(colors);
+<script>
+    // Initialize the game board with colors
+    function initializeBoard() {
+        let colors = ['red', 'blue', 'green','yellow']; //, 'yellow', 'orange', 'purple', 'pink', 'brown', 'gray'
+        colors = colors.concat(colors);
+        colors.push('black');
+        colors = shuffleArray(colors);
 
-            for (let i = 0; i < 3; i++) {
-                for (let j = 0; j < 3; j++) {
-                    const card = document.createElement('div');
-                    card.classList.add('card');
-                    card.dataset.value = colors[i * 3 + j];
-                    card.dataset.state = 'hidden';
-                    card.style.backgroundColor = 'gray';
-                    card.addEventListener('click', flipCard);
-                    gameBoard.appendChild(card);
-                    cards.push(card);
-                }
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.value = colors[i * 3 + j];
+                card.dataset.state = 'hidden';
+                card.style.backgroundColor = 'gray';
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+                cards.push(card);
             }
         }
-        
-        // Flip a card
-        function flipCard() {
-            if (flippedCards.length >= 2) {
-                return;
-            }
-            if (this.dataset.state === 'hidden') {
-                this.style.backgroundColor = this.dataset.value;
-                this.dataset.state = 'visible';
-                flippedCards.push(this);
+    }
 
-                // Increase the score when a tile is touched
-                score++;
-                scoreDisplay.textContent = score;
-            }
+    // Flip a card
+    function flipCard() {
+        if (flippedCards.length >= 2) {
+            return;
+        }
+        if (this.dataset.state === 'hidden') {
+            this.style.backgroundColor = this.dataset.value;
+            this.dataset.state = 'visible';
+            flippedCards.push(this);
 
-            if (flippedCards.length === 2) {
-                setTimeout(checkMatch, 1000);
-            }
+            // Increase the score when a tile is touched
+            score++;
+            scoreDisplay.textContent = score;
         }
 
-        // Check if two flipped cards are a match
-        function checkMatch() {
-            if (flippedCards[0].dataset.value === flippedCards[1].dataset.value) {
-                flippedCards[0].style.backgroundColor = 'white';
-                flippedCards[1].style.backgroundColor = 'white';
-                flippedCards = [];
-                matches++;
-
-                if (matches === 3) {
-                    alert('Congratulations! You won!');
-                }
-            } else {
-                flippedCards[0].style.backgroundColor = 'gray';
-                flippedCards[1].style.backgroundColor = 'gray';
-                flippedCards[0].dataset.state = 'hidden';
-                flippedCards[1].dataset.state = 'hidden';
-                flippedCards = [];
-            }
+        if (flippedCards.length === 2) {
+            setTimeout(checkMatch, 1000);
         }
-    </script>
+    }
 
-{% include components/grid.html %}
+    // Check if two flipped cards are a match
+    function checkMatch() {
+        if (flippedCards[0].dataset.value === flippedCards[1].dataset.value) {
+            flippedCards[0].style.backgroundColor = 'white';
+            flippedCards[1].style.backgroundColor = 'white';
+            flippedCards = [];
+            matches++;
+
+            if (matches === 4) {
+                alert('Congratulations! You won!');
+            }
+        } else {
+            flippedCards[0].style.backgroundColor = 'gray';
+            flippedCards[1].style.backgroundColor = 'gray';
+            flippedCards[0].dataset.state = 'hidden';
+            flippedCards[1].dataset.state = 'hidden';
+            flippedCards = [];
+        }
+    }
+</script>

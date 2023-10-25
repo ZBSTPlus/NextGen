@@ -1,6 +1,7 @@
 ---
-layout: default
+layout: memory_game/grid
 title: 6X6 Memory
+gs: 6
 ---
 <script>
 
@@ -47,7 +48,7 @@ title: 6X6 Memory
             flippedCards = [];
             matches++;
 
-            if (matches === 18) { // 18 pairs, as there are 36 tiles
+            if (matches === 18) { 
                 alert('Congratulations! You won!');
             }
         } else {
@@ -59,4 +60,3 @@ title: 6X6 Memory
         }
     }
 </script>
-{% include components/grid.html %}

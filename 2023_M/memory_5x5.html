@@ -1,10 +1,11 @@
 ---
-layout: default
+layout: memory_game/grid
 title: 5X5 Memory
+gs: 5
 ---
 <script>
     function initializeBoard() {
-        let numbers = [...Array(12).keys(), ...Array(12).keys()];
+        let numbers = [...Array(12).keys(), ...Array(12).keys(),'X'];
         numbers = shuffleArray(numbers);
 
         for (let i = 0; i < 5; i++) {
@@ -59,4 +60,3 @@ title: 5X5 Memory
     }
 
 </script>
-{% include components/grid.html %}

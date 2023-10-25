@@ -1,12 +1,13 @@
 ---
-layout: default
+layout: memory_game/grid
 title: 4X4 Color Memory
+gs: 4
 ---
 <script>
 
     function initializeBoard() {
         let colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown'];
-        colors = colors.concat(colors); // Duplicate the colors for matching
+        colors = colors.concat(colors); 
         colors = shuffleArray(colors);
 
         for (let i = 0; i < 4; i++) {
@@ -59,4 +60,3 @@ title: 4X4 Color Memory
         }
     }
 </script>
-{% include components/grid.html %}

@@ -1,12 +1,14 @@
 ---
-layout: default
+layout: memory_game/grid
 title: 5X5 Color Memory
+gs: 5
 ---
 <script>
 
     function initializeBoard() {
         let colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'gray', 'cyan', 'magenta', 'lime'];
         colors = colors.concat(colors);
+        colors.push('black');
         colors = shuffleArray(colors);
 
         for (let i = 0; i < 5; i++) {
@@ -58,4 +60,3 @@ title: 5X5 Color Memory
         }
     }
 </script>
-{% include components/grid.html %}

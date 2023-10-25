@@ -1,10 +1,12 @@
 ---
-layout: default
+layout: memory_game/grid
 title: 3X3 Memory Matching game
+gs: 3
 ---
+
 <script>
     function initializeBoard() {
-        let numbers = [...Array(4).keys(), ...Array(4).keys()];
+        let numbers = [...Array(4).keys(), ...Array(4).keys(),'X'];
         numbers = shuffleArray(numbers);
 
         for (let i = 0; i < 3; i++) {
@@ -60,4 +62,3 @@ title: 3X3 Memory Matching game
         }
     }
 </script>
-{% include components/grid.html %}
