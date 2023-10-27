@@ -2,7 +2,6 @@
 layout: default
 title: Hangman Game
 ---
-
 <div class="container">
     <p>Guess the word (6-7 letters):</p>
     <div id="word"></div>
@@ -33,7 +32,7 @@ title: Hangman Game
     let hint = getHint(selectedWord);
     let guessedLetters = [];
     let incorrectGuesses = 0;
-    console.log(selectedWord, hint);
+
     function getRandomWord() {
         const filteredWords = words.filter(word => word.word.length >= 6 && word.word.length <= 7);
         return filteredWords[Math.floor(Math.random() * filteredWords.length)].word;
@@ -46,10 +45,8 @@ title: Hangman Game
 
     function displayWord() {
         const wordContainer = document.getElementById('word');
-        console.log(wordContainer);
         let disp = selectedWord.split('').map(letter => (guessedLetters.includes(letter) ? letter : '_')).join(' ');
         wordContainer.innerHTML = disp;
-        console.log(wordContainer);
         return disp;
     }
 
@@ -87,7 +84,6 @@ title: Hangman Game
         }
 
         guessInput.value = '';
-        console.log(guessedLetters);
     }
 
     function resetGame() {
