@@ -2,8 +2,6 @@
 layout: default
 title: Hangman Game
 ---
-<h1>{{page.title}}</h1>
-
 <div class="container">
     <p>Guess the word (6-7 letters):</p>
     <div id="word"></div>
@@ -29,12 +27,12 @@ title: Hangman Game
         { word: 'tunnel', hint: 'A passage underground' },
         { word: 'camera', hint: 'A device for capturing images or videos' }
     ];
-    
 
     let selectedWord = getRandomWord();
     let hint = getHint(selectedWord);
     let guessedLetters = [];
     let incorrectGuesses = 0;
+
     function getRandomWord() {
         const filteredWords = words.filter(word => word.word.length >= 6 && word.word.length <= 7);
         return filteredWords[Math.floor(Math.random() * filteredWords.length)].word;

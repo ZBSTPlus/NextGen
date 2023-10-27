@@ -1,0 +1,62 @@
+---
+layout: memory_game/grid
+title: 5X5 Color Memory
+gs: 5
+---
+<script>
+
+    function initializeBoard() {
+        let colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'gray', 'cyan', 'magenta', 'lime'];
+        colors = colors.concat(colors);
+        colors.push('black');
+        colors = shuffleArray(colors);
+
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 5; j++) {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.value = colors[i * 5 + j];
+                card.dataset.state = 'hidden';
+                card.style.backgroundColor = 'gray';
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+                cards.push(card);
+            }
+        }
+    }
+
+    function flipCard() {
+        if (flippedCards.length >= 2) {
+            return;
+        }
+        if (this.dataset.state === 'hidden') {
+            this.style.backgroundColor = this.dataset.value;
+            this.dataset.state = 'visible';
+            flippedCards.push(this);
+            incrementScore();
+        }
+
+        if (flippedCards.length === 2) {
+            setTimeout(checkMatch, 1000);
+        }
+    }
+
+    function checkMatch() {
+        if (flippedCards[0].dataset.value === flippedCards[1].dataset.value) {
+            flippedCards[0].style.backgroundColor = 'white';
+            flippedCards[1].style.backgroundColor = 'white';
+            flippedCards = [];
+            matches++;
+
+            if (matches === 12) {
+                alert('Congratulations! You won!');
+            }
+        } else {
+            flippedCards[0].style.backgroundColor = 'gray';
+            flippedCards[1].style.backgroundColor = 'gray';
+            flippedCards[0].dataset.state = 'hidden';
+            flippedCards[1].dataset.state = 'hidden';
+            flippedCards = [];
+        }
+    }
+</script>

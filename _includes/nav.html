@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">NextGenPlus</a>
+        <a class="navbar-brand" href="#">Provoke by NextGen+</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -32,6 +32,19 @@
                     <ul class="dropdown-menu">
                         {% for link in site.data.2023_P_urls %}
                         <li><a class="dropdown-item" href="{{site.url}}/NextGen/2023_P/{{link.url}}">{{link.name}}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Memory Training 
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% for link in site.data.2023_M_urls %}
+                        <li><a class="dropdown-item" href="{{site.url}}/NextGen/2023_M/{{link.url}}">{{link.name}}</a>
                         </li>
                         {% endfor %}
                     </ul>

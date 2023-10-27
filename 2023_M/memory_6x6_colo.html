@@ -1,0 +1,63 @@
+---
+layout: memory_game/grid
+title: 6X6 Color Memory
+gs: 6
+---
+
+<script>
+
+    function initializeBoard() {
+        let colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'gray', 'cyan', 'magenta', 'lime', 'teal', 'indigo', 'violet', 'olive', 'coral', 'salmon'];
+        colors = colors.concat(colors); // Duplicate the colors for matching
+        colors = shuffleArray(colors);
+
+        for (let i = 0; i < 6; i++) {
+            for (let j = 0; j < 6; j++) {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.value = colors[i * 6 + j];
+                card.dataset.state = 'hidden';
+                card.style.backgroundColor = 'gray'; // Set a default background color for covered cards
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+                cards.push(card);
+            }
+        }
+    }
+
+    function flipCard() {
+        if (flippedCards.length >= 2) {
+            return;
+        }
+        if (this.dataset.state === 'hidden') {
+            this.style.backgroundColor = this.dataset.value;
+            this.dataset.state = 'visible';
+            flippedCards.push(this);
+            incrementScore();
+        }
+
+        if (flippedCards.length === 2) {
+            setTimeout(checkMatch, 1000);
+        }
+    }
+
+    function checkMatch() {
+        if (flippedCards[0].dataset.value === flippedCards[1].dataset.value) {
+            flippedCards[0].style.backgroundColor = 'white';
+            flippedCards[1].style.backgroundColor = 'white';
+            flippedCards = [];
+            matches++;
+
+            if (matches === 18) {
+                alert('Congratulations! You won!');
+            }
+        } else {
+            flippedCards[0].style.backgroundColor = 'gray';
+            flippedCards[1].style.backgroundColor = 'gray';
+            flippedCards[0].dataset.state = 'hidden';
+            flippedCards[1].dataset.state = 'hidden';
+            flippedCards = [];
+        }
+    }
+
+</script>
