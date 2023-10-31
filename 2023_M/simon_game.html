@@ -1,0 +1,163 @@
+---
+title: Simon Game
+description: game description
+layout: default
+rules: rule 1 and rule2
+---
+<style>
+    .button-container {
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        position: relative;
+        margin: 0 auto;
+    }
+    .button {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        position: absolute;
+    }
+    .red { background-color: red; }
+    .green { background-color: green; }
+    .blue { background-color: blue; }
+    .yellow { background-color: yellow; }
+</style>
+
+<div class="container text-center mt-5">
+    <button id="startButton" class="btn btn-primary mt-3">Start</button>
+    <button id="resetButton" class="btn btn-danger mt-3 ml-2">Reset</button>
+    <div class="row mt-4">
+        <div class="col">
+            <h3>Level: <span id="level">1</span></h3>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="button-container">
+                <button id="red" class="button red" style="top: 0; left: 100px;"></button>
+                <button id="green" class="button green" style="top: 100px; left: 0;"></button>
+                <button id="blue" class="button blue" style="top: 200px; left: 100px;"></button>
+                <button id="yellow" class="button yellow" style="top: 100px; left: 200px;"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<audio id="redSound" src="https://s3.amazonaws.com/freecodecamp/simonSound1.mp3"></audio>
+<audio id="greenSound" src="https://s3.amazonaws.com/freecodecamp/simonSound2.mp3"></audio>
+<audio id="blueSound" src="https://s3.amazonaws.com/freecodecamp/simonSound3.mp3"></audio>
+<audio id="yellowSound" src="https://s3.amazonaws.com/freecodecamp/simonSound4.mp3"></audio>
+
+<script>
+    const colors = ["red", "green", "blue", "yellow"];
+    const simonSequence = [];
+    let playerSequence = [];
+    let level = 1;
+    let sequenceIndex = 0;
+
+    function playSound(color) {
+        const audio = document.getElementById(`${color}Sound`);
+        audio.play();
+    }
+
+    function generateSimonSequence() {
+        simonSequence.push(colors[Math.floor(Math.random() * 4)]);
+    }
+
+    function playSequence() {
+        let i = 0;
+        const interval = setInterval(() => {
+            if (i < simonSequence.length) {
+                flashColor(simonSequence[i]);
+                playSound(simonSequence[i]);
+                i++;
+            } else {
+                clearInterval(interval);
+                enablePlayerInput();
+            }
+        }, 1000);
+    }
+
+    function flashColor(color) {
+        const button = document.getElementById(color);
+        button.style.opacity = 1;
+        setTimeout(() => {
+            button.style.opacity = 0.6;
+        }, 500);
+    }
+
+    function enablePlayerInput() {
+        sequenceIndex = 0;
+        colors.forEach((color) => {
+            document.getElementById(color).addEventListener('click', handleColorClick);
+        });
+    }
+
+    function disablePlayerInput() {
+        colors.forEach((color) => {
+            document.getElementById(color).removeEventListener('click', handleColorClick);
+        });
+    }
+
+    function handleColorClick(event) {
+        const selectedColor = event.target.id;
+        flashColor(selectedColor);
+        playSound(selectedColor);
+        playerSequence.push(selectedColor);
+
+        if (playerSequence[sequenceIndex] === simonSequence[sequenceIndex]) {
+            sequenceIndex++;
+
+            if (sequenceIndex === simonSequence.length) {
+                if (level === 20) {
+                    alert("Congratulations! You won!");
+                    startGame();
+                } else {
+                    level++;
+                    document.getElementById('level').textContent = level;
+                    playerSequence = [];
+                    setTimeout(() => {
+                        playGameRound();
+                    }, 1000);
+                }
+            }
+        } else {
+            handleIncorrectSequence();
+        }
+    }
+
+    function handleIncorrectSequence() {
+        disablePlayerInput();
+        alert("Wrong sequence! Try again.");
+        playerSequence = [];
+        sequenceIndex = 0;
+        setTimeout(() => {
+            playSequence();
+        }, 1000);
+    }
+
+    function startGame() {
+        simonSequence.length = 0;
+        playerSequence.length = 0;
+        level = 1;
+        document.getElementById('level').textContent = level;
+        playGameRound();
+    }
+
+    function playGameRound() {
+        generateSimonSequence();
+        disablePlayerInput();
+        playSequence();
+    }
+
+    function resetGame() {
+        simonSequence.length = 0;
+        playerSequence.length = 0;
+        level = 1;
+        document.getElementById('level').textContent = level;
+    }
+
+    document.getElementById('startButton').addEventListener('click', startGame);
+    document.getElementById('resetButton').addEventListener('click', resetGame);
+</script>
