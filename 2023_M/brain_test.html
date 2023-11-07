@@ -1,0 +1,321 @@
+---
+title: Brain Test
+layout: defualt
+description: my name is rafi.
+rules: im from bangladesh.
+---
+<style>
+    .animal-button {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .input {
+      width: 50%;
+    }
+
+    .container {
+      width: 50%;
+    }
+
+    @media (max-width: 576px) {
+      .container {
+        width: 100%; /* Set to 100% on small screens */
+      }
+    }
+    @media (max-width: 576px) {
+      .input {
+        width: 100%; /* Set to 100% on small screens */
+      }
+    }
+  </style>
+
+  <div class="container w-50 w-md-100">
+    <h1 class="text-center">Remember these numbers</h1>
+    <div class="bg-body-secondary text-center p-3">
+      <div id="animal-display" style="font-size: 30px"></div>
+      <div id="user-input">
+        <label for="animal-input">Write these numbers:</label>
+        <input
+          type="text"
+          class="form-control border-black bg-body-tertiary mx-auto input"
+          id="animal-input"
+          disabled
+        />
+      </div>
+      <div class="my-3">
+        <button class="btn btn-outline-info me-2 btn-sm" id="easyBtn">
+          Easy
+        </button>
+        <button class="btn btn-outline-info me-2 btn-sm" id="mediumBtn">
+          Medium
+        </button>
+        <button class="btn btn-outline-info me-2 btn-sm" id="hardBtn">
+          Hard
+        </button>
+      </div>
+      <br />
+      <div
+        class="d-flex row justify-content-center flex-wrap text-center"
+        id="animal-buttons"
+      ></div>
+      <button class="btn btn-primary mt-3" onclick="startGame()">
+        Start Game
+      </button>
+      <button class="btn btn-danger mt-3" onclick="resetGame()">
+        Reset Game
+      </button>
+      <button
+        class="btn btn-warning mt-3"
+        id="remove"
+        onclick="removeLastElement()"
+      >
+        Remove Last Element
+      </button>
+      <button
+        class="btn btn-success mt-3"
+        id="submit"
+        onclick="submitGuess()"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+
+  
+  <script>
+    const easy = [
+      200, 300, 401, 242, 453, 546, 546, 243, 345, 354, 562, 457, 874, 464,
+      544, 445, 665, 333, 543, 365, 732, 647, 463, 666, 232, 567, 142, 112,
+      242, 517,
+    ];
+    const medium = [
+      20014, 30014, 40014, 24244, 34534, 35464, 54634, 24344, 34564, 23544,
+      56234, 45724, 87424, 46454, 54464, 44544, 66544, 33334, 65434, 36544,
+      73234, 64714, 46344, 66664, 23234, 56744, 14264, 11214, 24234, 51744,
+    ];
+    const hard = [
+      2001671, 3001672, 4001673, 2424674, 3453675, 3546676, 5463677, 2434678,
+      3456679, 2354670, 5623172, 4572272, 8742372, 4645472, 5446572, 4454672,
+      6654772, 3333872, 6543972, 3654072, 7323602, 6471612, 4634622, 6666632,
+      2323642, 5674652, 1426662, 1121672, 2423682, 5174692,
+    ];
+
+    let sequence = [];
+    let userInput = [];
+    let chances = 3;
+
+    const easyBtn = document.getElementById("easyBtn");
+    const mediumBtn = document.getElementById("mediumBtn");
+    const hardBtn = document.getElementById("hardBtn");
+
+    let levelOfGame;
+    let time;
+    function selectLevel(level) {
+      let gameLevel = level;
+      switch (level) {
+        case "easy":
+          gameLevel = easy;
+          levelOfGame = "easy";
+          easyBtn.classList.add("bg-dark");
+          mediumBtn.classList.add("bg-transparent");
+          hardBtn.classList.add("bg-transparent");
+          mediumBtn.disabled = true;
+          hardBtn.disabled = true;
+          time = 4000;
+          break;
+        case "medium":
+          gameLevel = medium;
+          levelOfGame = "medium";
+          mediumBtn.classList.add("bg-dark");
+          easyBtn.classList.add("bg-transparent");
+          hardBtn.classList.add("bg-transparent");
+          easyBtn.disabled = true;
+          hardBtn.disabled = true;
+          time = 2500;
+          break;
+        case "hard":
+          gameLevel = hard;
+          levelOfGame = "hard";
+          hardBtn.classList.add("bg-dark");
+          mediumBtn.classList.add("bg-transparent");
+          easyBtn.classList.add("bg-transparent");
+          easyBtn.disabled = true;
+          mediumBtn.disabled = true;
+          time = 1500;
+          break;
+        default:
+          levelOfGame = "easy";
+          easyBtn.classList.add("bg-dark");
+      }
+    }
+
+    selectLevel();
+    easyBtn.addEventListener("click", () => selectLevel("easy"));
+    mediumBtn.addEventListener("click", () => selectLevel("medium"));
+    hardBtn.addEventListener("click", () => selectLevel("hard"));
+
+    function startGame() {
+      sequence = [];
+      userInput = [];
+      document.getElementById("animal-input").value = "";
+      document.getElementById("animal-input").disabled = true;
+      document.getElementById("animal-buttons").innerHTML = "";
+      document.getElementById("animal-display").textContent = "";
+      displaySequence();
+      enableAnimalButtons();
+    }
+
+    function displaySequence() {
+      let index = 0;
+      const displayedAnimals = []; // Keep track of displayed animals
+      const interval = setInterval(function () {
+        if (index < 6) {
+          let randomAnimal;
+          do {
+            if (levelOfGame === "easy") {
+              randomAnimal = easy[Math.floor(Math.random() * easy.length)];
+            } else if (levelOfGame === "medium") {
+              randomAnimal =
+                medium[Math.floor(Math.random() * medium.length)];
+            } else {
+              randomAnimal = hard[Math.floor(Math.random() * hard.length)];
+            }
+          } while (displayedAnimals.includes(randomAnimal)); // Choose a new random animal if it's already displayed
+          displayedAnimals.push(randomAnimal); // Add the animal to the displayed list
+          sequence.push(randomAnimal);
+          document.getElementById("animal-display").textContent =
+            randomAnimal;
+          index++;
+        } else {
+          clearInterval(interval);
+          displayAnimalButtons();
+          document.getElementById("animal-input").disabled = false;
+        }
+        if (index === 6) {
+          document.getElementById("animal-display").textContent = "";
+        }
+      }, time);
+    }
+
+    function displayAnimalButtons() {
+      const animalButtonsDiv = document.getElementById("animal-buttons");
+      const buttonWidth = 120; // Set the desired fixed width for the buttons (in pixels)
+      let randomAnimal;
+      if (levelOfGame === "easy") {
+        randomAnimal = easy;
+      } else if (levelOfGame === "medium") {
+        randomAnimal = medium;
+      } else {
+        randomAnimal = hard;
+      }
+      // Create a row div for each 5 buttons
+      for (let i = 0; i < randomAnimal.length; i += 5) {
+        const buttonRow = document.createElement("div");
+        buttonRow.className = "row mb-2 ";
+
+        // Add buttons to the row
+        for (let j = i; j < i + 5 && j < randomAnimal.length; j++) {
+          const buttonCol = document.createElement("div");
+          buttonCol.className = "col-6 col-md-2 mx-auto mb-2"; // Assuming 5 buttons per row, adjust as needed
+          const button = document.createElement("button");
+          button.textContent = randomAnimal[j];
+          button.className = "btn btn-dark animal-button btn-sm";
+          button.style.width = `${buttonWidth}px`; // Set fixed width for the button
+          button.onclick = () => addToInput(randomAnimal[j]);
+          buttonCol.appendChild(button);
+          buttonRow.appendChild(buttonCol);
+        }
+
+        // Add the row to the animalButtonsDiv
+        animalButtonsDiv.appendChild(buttonRow);
+      }
+    }
+
+    function addToInput(animal) {
+      const inputElement = document.getElementById("animal-input");
+      if (inputElement.value === "") {
+        inputElement.value = animal;
+      } else {
+        inputElement.value += ` -> ${animal}`;
+      }
+    }
+    function disableAnimalButtons() {
+      let buttons = document.getElementsByClassName("animal-button");
+      for (let button of buttons) {
+        button.disabled = true;
+      }
+      let buttons1 = document.getElementById("submit");
+      buttons1.disabled = true;
+      let buttons2 = document.getElementById("remove");
+      buttons2.disabled = true;
+    }
+    function enableAnimalButtons() {
+      let buttons = document.getElementsByClassName("animal-button");
+      for (let button of buttons) {
+        button.disabled = false;
+      }
+      let buttons1 = document.getElementById("submit");
+      buttons1.disabled = false;
+      let buttons2 = document.getElementById("remove");
+      buttons2.disabled = false;
+    }
+
+    function submitGuess() {
+      const userSequence = document
+        .getElementById("animal-input")
+        .value.toLowerCase()
+        .split(" -> ");
+      if (arraysEqual(sequence, userSequence)) {
+        alert("Congratulations! You guessed the correct sequence.");
+        disableAnimalButtons();
+      } else {
+        chances--;
+        if (chances > 0) {
+          alert(
+            `Sorry, your guess is incorrect. ${chances} chances left. Try again.`
+          );
+        } else {
+          alert(
+            `Sorry, you've used all your chances. The correct sequence was: ${sequence.join(
+              " -> "
+            )}`
+          );
+          disableAnimalButtons();
+        }
+      }
+    }
+
+    function removeLastElement() {
+      const inputElement = document.getElementById("animal-input");
+      const inputValue = inputElement.value;
+      const lastArrowIndex = inputValue.lastIndexOf("->");
+      if (lastArrowIndex !== -1) {
+        inputElement.value = inputValue.substring(0, lastArrowIndex).trim();
+      } else {
+        inputElement.value = "";
+      }
+    }
+
+    function resetGame() {
+      chances = 3;
+      document.getElementById("animal-input").value = "";
+      document.getElementById("animal-input").disabled = true;
+      document.getElementById("animal-buttons").innerHTML = "";
+      document.getElementById("animal-display").textContent = "";
+      easyBtn.disabled = false;
+      mediumBtn.disabled = false;
+      hardBtn.disabled = false;
+    }
+
+    function arraysEqual(arr1, arr2) {
+      if (arr1.length !== arr2.length) return false;
+      for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) return false;
+      }
+      return true;
+    }
+
+    // startGame();
+  </script>
