@@ -1,6 +1,6 @@
 ---
 title: Brain Test
-layout: defualt
+layout: default
 description: my name is rafi.
 rules: im from bangladesh.
 ---
@@ -10,28 +10,9 @@ rules: im from bangladesh.
       white-space: nowrap;
       text-overflow: ellipsis;
     }
-
-    .input {
-      width: 50%;
-    }
-
-    .container {
-      width: 50%;
-    }
-
-    @media (max-width: 576px) {
-      .container {
-        width: 100%; /* Set to 100% on small screens */
-      }
-    }
-    @media (max-width: 576px) {
-      .input {
-        width: 100%; /* Set to 100% on small screens */
-      }
-    }
   </style>
 
-  <div class="container w-50 w-md-100">
+  <div class="container">
     <h1 class="text-center">Remember these numbers</h1>
     <div class="bg-body-secondary text-center p-3">
       <div id="animal-display" style="font-size: 30px"></div>
@@ -85,22 +66,10 @@ rules: im from bangladesh.
 
   
   <script>
-    const easy = [
-      200, 300, 401, 242, 453, 546, 546, 243, 345, 354, 562, 457, 874, 464,
-      544, 445, 665, 333, 543, 365, 732, 647, 463, 666, 232, 567, 142, 112,
-      242, 517,
-    ];
-    const medium = [
-      20014, 30014, 40014, 24244, 34534, 35464, 54634, 24344, 34564, 23544,
-      56234, 45724, 87424, 46454, 54464, 44544, 66544, 33334, 65434, 36544,
-      73234, 64714, 46344, 66664, 23234, 56744, 14264, 11214, 24234, 51744,
-    ];
-    const hard = [
-      2001671, 3001672, 4001673, 2424674, 3453675, 3546676, 5463677, 2434678,
-      3456679, 2354670, 5623172, 4572272, 8742372, 4645472, 5446572, 4454672,
-      6654772, 3333872, 6543972, 3654072, 7323602, 6471612, 4634622, 6666632,
-      2323642, 5674652, 1426662, 1121672, 2423682, 5174692,
-    ];
+    const arrayLen = 15;
+    const easy = Array.from({ length: arrayLen }, () => Math.floor(Math.random() * 100));
+    const medium = Array.from({ length: arrayLen }, () => Math.floor(Math.random() * 1000));
+    const hard = Array.from({ length: arrayLen }, () => Math.floor(Math.random() * 4000));
 
     let sequence = [];
     let userInput = [];
@@ -147,6 +116,7 @@ rules: im from bangladesh.
           break;
         default:
           levelOfGame = "easy";
+          time = 4000;
           easyBtn.classList.add("bg-dark");
       }
     }
@@ -185,8 +155,7 @@ rules: im from bangladesh.
           } while (displayedAnimals.includes(randomAnimal)); // Choose a new random animal if it's already displayed
           displayedAnimals.push(randomAnimal); // Add the animal to the displayed list
           sequence.push(randomAnimal);
-          document.getElementById("animal-display").textContent =
-            randomAnimal;
+          document.getElementById("animal-display").textContent = randomAnimal;
           index++;
         } else {
           clearInterval(interval);
