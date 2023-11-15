@@ -21,8 +21,8 @@ rules: |
     <br>
     <div class="row justify-content-center content" id="animal-buttons"></div>
     <button class="btn btn-danger mt-3" onclick="resetGame()">Reset Game</button>
-    <button class="btn btn-warning mt-3" id="remove" onclick="removeLastElement()">Remove Last Element</button>
-    <button class="btn btn-success mt-3" id="submit" onclick="submitGuess()">Submit</button>
+    <button class="btn btn-warning mt-3" id="remove" onclick="removeLastElement()" disabled>Remove Last Element</button>
+    <button class="btn btn-success mt-3" id="submit" onclick="submitGuess()" disabled>Submit</button>
 </div>
 
 <script>
@@ -33,6 +33,7 @@ rules: |
     let chances = 3;
     let wordsCount = 0;
     function startGame(wordsCount) {
+        disableAnimalButtons();
         sequence = [];
         userInput = [];
         document.getElementById('animal-input').value = '';
@@ -40,13 +41,13 @@ rules: |
         document.getElementById('animal-buttons').innerHTML = '';
         document.getElementById('animal-display').textContent = '';
         displaySequence(wordsCount);            
-        enableAnimalButtons();
+        
     }
 
     function displaySequence(wordsCount) {
         let index = 0;
         const displayedAnimals = []; // Keep track of displayed animals
-        let time = 1000;
+        let time = 2000;
         const interval = setInterval(function () {
             if(index === 1){time = 1000;}
         if (index < wordsCount) {
@@ -61,6 +62,7 @@ rules: |
         } else {
             clearInterval(interval);
             displayAnimalButtons();
+            enableAnimalButtons();
             document.getElementById('animal-input').disabled = false;
             }
         }, time);
