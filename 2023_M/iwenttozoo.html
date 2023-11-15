@@ -1,0 +1,194 @@
+---
+layout: default
+title: I Went To Zoo
+description: |
+    I Went to a Zoo game is a word memory game.
+    Memorize the words.
+rules: |
+    You will be provided with some words based on Easy, Medium and Hard buttons.
+    Memorize each word and add the words in an order in the input using Animal Buttons.
+---
+<div class="container">
+    <button type="button" class="btn btn-primary" id="easy" >Easy</button>
+    <button type="button" class="btn btn-primary" id="medium">Medium</button>
+    <button type="button" class="btn btn-primary" id="hard">Hard</button>
+
+    <div id="animal-display" style="font-size: 30px;"></div>
+    <div id="user-input">
+        <label for="animal-input">Your Guess:</label>
+        <input type="text" class="form-control" id="animal-input" disabled>
+    </div>
+    <br>
+    <div class="row justify-content-center content" id="animal-buttons"></div>
+    <button class="btn btn-danger mt-3" onclick="resetGame()">Reset Game</button>
+    <button class="btn btn-warning mt-3" id="remove" onclick="removeLastElement()" disabled>Remove Last Element</button>
+    <button class="btn btn-success mt-3" id="submit" onclick="submitGuess()" disabled>Submit</button>
+</div>
+
+<script>
+    const animals = ['lion', 'tiger', 'elephant', 'giraffe', 'zebra', 'monkey', 'kangaroo', 'panda', 'koala', 'hippo', 'camel', 'gorilla', 'rhinoceros', 'cheetah', 'crocodile', 'dolphin', 'penguin', 'parrot', 'snail', 'turtle', 'octopus', 'koala', 'seagull', 'elephant', 'panther'];
+
+    let sequence = [];
+    let userInput = [];
+    let chances = 3;
+    let wordsCount = 0;
+    function startGame(wordsCount) {
+        disableAnimalButtons();
+        sequence = [];
+        userInput = [];
+        document.getElementById('animal-input').value = '';
+        document.getElementById('animal-input').disabled = true;
+        document.getElementById('animal-buttons').innerHTML = '';
+        document.getElementById('animal-display').textContent = '';
+        displaySequence(wordsCount);            
+        
+    }
+
+    function displaySequence(wordsCount) {
+        let index = 0;
+        const displayedAnimals = []; // Keep track of displayed animals
+        let time = 2000;
+        const interval = setInterval(function () {
+            if(index === 1){time = 1000;}
+        if (index < wordsCount) {
+            let randomAnimal;
+            do {
+                randomAnimal = animals[Math.floor(Math.random() * animals.length)];
+            } while (displayedAnimals.includes(randomAnimal)); // Choose a new random animal if it's already displayed
+            displayedAnimals.push(randomAnimal); // Add the animal to the displayed list
+            sequence.push(randomAnimal);
+            document.getElementById('animal-display').textContent = randomAnimal;
+            index++;
+        } else {
+            clearInterval(interval);
+            displayAnimalButtons();
+            enableAnimalButtons();
+            document.getElementById('animal-input').disabled = false;
+            }
+        }, time);
+    }
+
+
+function displayAnimalButtons() {
+const animalButtonsDiv = document.getElementById('animal-buttons');
+
+// Find the maximum width needed for the buttons
+let maxWidth = 0;
+for (let i = 0; i < animals.length; i++) {
+    const tempButton = document.createElement('button');
+    tempButton.className = 'btn btn-primary animal-button btn-md btn-block';
+    tempButton.style.display = 'inline-block'; // Make the button inline to measure its width
+    tempButton.textContent = animals[i];
+    document.body.appendChild(tempButton); // Append to body to get accurate width
+    maxWidth = Math.max(maxWidth, tempButton.offsetWidth);
+    document.body.removeChild(tempButton); // Remove the temporary button from the body
+}
+
+// Create buttons with the calculated maximum width
+for (let i = 0; i < animals.length; i += 5) {
+    const buttonRow = document.createElement('div');
+    buttonRow.className = 'row mb-2';
+
+    // Add buttons to the row
+    for (let j = i; j < i + 5 && j < animals.length; j++) {
+        const buttonCol = document.createElement('div');
+        buttonCol.className = 'col-2 mb-2';
+        const button = document.createElement('button');
+        button.textContent = animals[j];
+        button.className = 'btn btn-primary animal-button btn-md btn-block';
+        button.style.width = `${maxWidth}px`; // Set fixed width for the button
+        button.onclick = () => addToInput(animals[j]);
+        buttonCol.appendChild(button);
+        buttonRow.appendChild(buttonCol);
+    }
+
+    // Add the row to the animalButtonsDiv
+    animalButtonsDiv.appendChild(buttonRow);
+}
+}
+
+    function addToInput(animal) {
+        const inputElement = document.getElementById('animal-input');
+        if (inputElement.value === '') {
+            inputElement.value = animal;
+        } else {
+            inputElement.value += ` -> ${animal}`;
+        }
+    }
+    function disableAnimalButtons() {
+        let buttons = document.getElementsByClassName('animal-button');
+        for (let button of buttons) {
+            button.disabled = true;
+        }
+        let buttons1 = document.getElementById('submit');
+        buttons1.disabled = true;
+        let buttons2 = document.getElementById('remove');
+        buttons2.disabled = true;
+    }
+    function enableAnimalButtons() {
+        let buttons = document.getElementsByClassName('animal-button');
+        for (let button of buttons) {
+            button.disabled = false;
+        }
+        let buttons1 = document.getElementById('submit');
+        buttons1.disabled = false;
+        let buttons2 = document.getElementById('remove');
+        buttons2.disabled = false;
+    }
+
+    function submitGuess() {
+        const userSequence = document.getElementById('animal-input').value.toLowerCase().split(' -> ');
+        if (arraysEqual(sequence, userSequence)) {
+            alert('Congratulations! You guessed the correct sequence.');
+            disableAnimalButtons();
+
+        } else {
+            chances--;
+            if (chances > 0) {
+                alert(`Sorry, your guess is incorrect. ${chances} chances left. Try again.`);
+            } else {
+                alert(`Sorry, you've used all your chances. The correct sequence was: ${sequence.join(' -> ')}`);
+                disableAnimalButtons();
+
+            }
+        }
+    }
+
+    function removeLastElement() {
+        const inputElement = document.getElementById('animal-input');
+        const inputValue = inputElement.value;
+        const lastArrowIndex = inputValue.lastIndexOf('->');
+        if (lastArrowIndex !== -1) {
+            inputElement.value = inputValue.substring(0, lastArrowIndex).trim();
+        } else {
+            inputElement.value = '';
+        }
+    }
+
+    function resetGame() {
+        chances = 3;
+        startGame(wordsCount);
+    }
+
+    function arraysEqual(arr1, arr2) {
+        if (arr1.length !== arr2.length) return false;
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i] !== arr2[i]) return false;
+        }
+        return true;
+    }
+    document.getElementById('easy').addEventListener('click', function() {
+        wordsCount = 5;
+        startGame(5); // Easy: 5 words
+    });
+
+    document.getElementById('medium').addEventListener('click', function() {
+        wordsCount = 7;
+        startGame(7); // Medium: 7 words
+    });
+
+    document.getElementById('hard').addEventListener('click', function() {
+        wordsCount = 12;
+        startGame(12); // Hard: 12 words
+    });
+</script>
