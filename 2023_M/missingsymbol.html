@@ -1,0 +1,130 @@
+---
+layout: default
+title: Missing Symbol Game
+description: |
+    In the Missing symbol game, you have to identify which symbol is missing in each sequence.
+    This game helps many people to memorize the sequence.
+rules: |
+    Memorize the symbol sequence shown at first.
+    Find the missing symbol shown in the next sequence.
+---
+
+
+    
+    <div class="alert alert-info" id="original-word"></div>
+    <div class="alert alert-warning" id="missing-letter-word" style="display: none;"></div>
+    <div class="col-5">
+    <div class="btn-group row-5 row-col-5" id="letter-buttons"></div></div>
+    <div class="mt-3" id="chances"></div>
+
+    <div class="mt-3" id="result"></div>
+    <button class="btn btn-secondary mt-3" onclick="startGame()">Start Game</button>
+    <button class="btn btn-danger mt-3 ml-3" onclick="resetGame()">Reset Game</button>
+
+
+<script>
+    var word;
+    var missingLetterIndex;
+    var missingLetter;
+    var allLetters = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '[', ']', '{', '}', '<', '>', '/', '|', '+', '-', '=', '_', ',', '.', ';'];
+    var chances = 4;
+    function startGame() {
+        var selectedLetters = allLetters.sort(function() { return 0.5 - Math.random() }).slice(0, 8);
+        word = selectedLetters.join('');
+        missingLetterIndex = Math.floor(Math.random() * word.length);
+        missingLetter = word[missingLetterIndex];
+        
+        var originalWordDisplay = document.getElementById("original-word");
+        originalWordDisplay.innerText = "Original Word: " + word;
+
+        var missingLetterWordDisplay = document.getElementById("missing-letter-word");
+        missingLetterWordDisplay.innerText = "Missing Letter Word: " + word.substring(0, missingLetterIndex) + word.substring(missingLetterIndex + 1);
+        originalWordDisplay.style.display = "block";
+        missingLetterWordDisplay.style.display = "none";
+
+        setTimeout(function() {
+            originalWordDisplay.style.display = "none";
+            missingLetterWordDisplay.style.display = "block";
+            displayLetterButtons();
+        }, 1000);
+    }
+
+    function displayLetterButtons() {
+        var letterButtonsDiv = document.getElementById("letter-buttons");
+        letterButtonsDiv.innerHTML = '';
+
+        var numRows =5;
+        var numCols = 5;
+
+        for (var i = 0; i < numRows; i++) {
+            var row = document.createElement("div");
+            row.className = "row";
+
+            for (var j = 0; j < numCols; j++) {
+                var index = i * numCols + j;
+                if (index < allLetters.length) {
+                    var letterButton = document.createElement("button");
+                    letterButton.className = "btn btn-primary btn-block m-1";
+                    letterButton.innerText = allLetters[index];
+                    letterButton.id = "size-button"
+                    letterButton.onclick = function() {
+                        checkAnswer(this.innerText);
+                    };
+                var col = document.createElement("div");
+                col.className = "col-auto";
+                col.appendChild(letterButton);
+                row.appendChild(col);
+                }
+        
+            }
+
+            letterButtonsDiv.appendChild(row);
+        }
+
+        var chancesDisplay = document.getElementById("chances");
+        chancesDisplay.innerText = "Chances: " + chances;
+    }
+
+function checkAnswer(answer) {
+var resultDiv = document.getElementById("result");
+var chancesDisplay = document.getElementById("chances");
+
+if (chances === 1) {
+    resultDiv.innerHTML = "<div class='alert alert-danger'>Sorry, you have no more chances. The correct letter was " + missingLetter + ".</div>";
+    disableButtons();
+} else if (answer === missingLetter) {
+    resultDiv.innerHTML = "<div class='alert alert-success'>Correct! Well done.</div>";
+    disableButtons();
+} else {
+    resultDiv.innerHTML = "<div class='alert alert-danger'>Incorrect. Try again!</div>";
+    chances--;
+    chancesDisplay.innerText = "Chances: " + chances;
+}
+}
+
+function disableButtons() {
+var letterButtons = document.querySelectorAll("#letter-buttons button");
+letterButtons.forEach(function(button) {
+    button.disabled = true;
+});
+}
+function resetGame() {
+document.getElementById("original-word").style.display = "none";
+document.getElementById("missing-letter-word").style.display = "none";
+document.getElementById("result").innerHTML = "";
+document.getElementById("chances").innerText = "";
+document.getElementById("letter-buttons").innerHTML = "";
+chances = 4;
+startGame();
+}
+</script>
+<style>
+     #size-button {
+            width: 70px;
+            
+        }
+        .content {
+  max-width: 500px;
+  margin: auto;
+}
+</style>
