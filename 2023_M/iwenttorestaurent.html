@@ -11,8 +11,19 @@ description: |
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
+                <div class="card-header">
+                    <div class="">
+                        <div class="row">
+                          <div class="col">
+                            <h2 >Items List</h3>
+                          </div>
+                          <div class="col " style=" text-align: right;">
+                            <p id="timerLabel">Timer: <span id="timer" class="blink big-timer" style="font-size: 25px; font-weight: bold;      color: #f00;">30</span> seconds</p>
+                          </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card-body">
-                    <h2>Items List</h2>
                     <table class="table table-bordered" id="items-table">
                         <thead>
                             <tr>
@@ -28,12 +39,14 @@ description: |
                     <div id="result" class="mt-2 text-center"></div>
                     <div id="completed-questions" class="mt-2 text-center"></div>
                     <div id="questions-left" class="mt-2 text-center"></div>
-                    <div id="question-options" class="mt-2"></div>
+                
+                    <div id="question-options" class="mt-2" ></div>
+                   
                 </div>
                 <div class="card-footer">
                     <div class="row m-1">
-                    <button class="btn btn-primary col m-1" onclick="startGame()">Start Game</button>
-                    <button class="btn btn-primary col m-1" onclick="startGame()">Reset Game</button>
+                    <button class="btn btn-primary col m-1" onclick="startGame()" id="start">Start Game</button>
+                    <button class="btn btn-primary col m-1" onclick="resetGame()" id="reset" disabled>Reset Game</button>
                     <button class="btn btn-primary col m-1" id="submitAnswerButton" onclick="submitAnswer()" disabled>Submit Answer</button>
                     </div>
                 </div>
@@ -50,20 +63,26 @@ description: |
         { name: 'Salad', price: 0 },
         { name: 'Drink', price: 0 }
     ];
+    var timer = 30;
+    var interval;
 
     var currentQuestionIndex = 0;
     var questions = [];
     var specialQuestionInterval = 5;
 
+    const timerLabel = document.getElementById("timerLabel");
+    const timerDisplay = document.getElementById("timer");
+
+
     var modalQuestionsTemplate = [
-        "addition for {4} {0} and {5} {1}?",
-        "multiplication for question {4} * {1}?",
-        "subtraction for {4} {0} and {5} {1}?",
-        "Which item has the value \"{3}\" ?",
+        "What is the price of {4} {0} and {5} {1}?",
+        "What is the price of {4} * {1}?",
+        "What is the price of {4} {0} and {5} {1}?",
+        "Which item has the value {3} ?",
         "Sum of all Item Prices?"
     ];
     var totalQuestionsAdded = 0;
-var correctAnswersCount = 0;
+    var correctAnswersCount = 0;
     var modalQuestions = [];
     var correctOptions = [];
     function getRandomItem() {
@@ -98,6 +117,7 @@ var correctAnswersCount = 0;
     }
 
     function displayItemsList() {
+      interval = setInterval(updateTimer, 1000);
         var itemsTableBody = document.getElementById("items-table-body");
         itemsTableBody.innerHTML = '';
 
@@ -109,7 +129,7 @@ var correctAnswersCount = 0;
 
             // Generate a unique random price
             do {
-                randomPrice = Math.floor(Math.random() * 10) + 1;
+                randomPrice = Math.floor(Math.random() * 20) + 1;
             } while (usedPrices.includes(randomPrice));
 
             // Add the generated price to the used prices list
@@ -122,7 +142,7 @@ var correctAnswersCount = 0;
             var priceCell = document.createElement("td");
 
             nameCell.innerText = itemsList[i].name;
-            priceCell.innerText = '$' + itemsList[i].price;
+            priceCell.innerText = '₹' + itemsList[i].price;
 
             row.appendChild(nameCell);
             row.appendChild(priceCell);
@@ -139,26 +159,47 @@ var correctAnswersCount = 0;
     }
 
     function startGame() {
+      document.getElementById('start').style = "display : none;";
       var itemsTable = document.getElementById("items-table");
         itemsTable.style.display = 'table';
         currentQuestionIndex = 0;
         questions = [];
+        //interval = setInterval(updateTimer, 1000);
         displayItemsList();
-        setTimeout(hideItemsList, 9000);
+        setTimeout(hideItemsList, 31000);
         document.getElementById("result").innerText = '';
         document.getElementById("completed-questions").innerText = '';
         document.getElementById("questions-left").innerText = '';
         document.getElementById("question-options").innerHTML = '';
         disableGameButtons();
-        
-
-
     }
 
-    function updateStats() {
-var statsDiv = document.getElementById("questions-stats");
-statsDiv.innerText = "Questions Added: " + totalQuestionsAdded + " | Correct Answers: " + correctAnswersCount;
+    function resetGame(){
+        totalQuestionsAdded = 0;
+        correctAnswersCount = 0;
+        startGame();
+        timerLabel.classList.remove("blink");
+        timer = 30;
+        document.getElementById("questions-stats").innerText = "Questions Added: 0 | Correct Answers: 0";
+    }
+    function updateTimer() {
+   timerDisplay.innerText = Math.floor(timer); 
+  if (timer <= 5) {
+    timerLabel.classList.add("blink");
+  } else {
+    timerLabel.classList.remove("blink");
+  }
+  
+  if (timer <= 0) {
+    clearInterval(interval);
+    
+  }
+  timer -= 1;
 }
+    function updateStats() {
+        var statsDiv = document.getElementById("questions-stats");
+        statsDiv.innerText = "Questions Added: " + totalQuestionsAdded + " | Correct Answers: " + correctAnswersCount;
+    }
     function displayQuestions() {
         var questionOptionsContainer = document.getElementById("question-options");
         questionOptionsContainer.innerHTML = '';
@@ -187,7 +228,7 @@ statsDiv.innerText = "Questions Added: " + totalQuestionsAdded + " | Correct Ans
             var correctAnswer = itemsList.reduce(function (total, item) {
                 return total + item.price;
             }, 0);
-            
+            console.log(correctAnswer);
             options.push(correctAnswer);
             options.push(correctAnswer + 62);
             options.push(correctAnswer - 19);
@@ -217,7 +258,6 @@ statsDiv.innerText = "Questions Added: " + totalQuestionsAdded + " | Correct Ans
          else {
             // For other questions, add one correct answer and three random numbers
             var correctAnswer = correctAnswerQuestion(questionText);
-          
             options.push(correctAnswer);
             correctOptions.push(correctAnswer);
             options.push(correctAnswer + 56);
@@ -237,7 +277,7 @@ var itemNames = questionText.match(/[a-zA-Z]+/g);
 
 // Convert item names to lowercase for case-insensitive matching
 var lowercaseItemNames = itemNames.filter(function (name) {
-return !name.match(/[0-9]|addition|multiplication|subtraction|answer|for|and|question/gi); // Filter out names containing numbers and specified keywords
+return !name.match(/[0-9]|what|is|price|the|of|for|and/gi); // Filter out names containing numbers and specified keywords
 }).map(function (filteredName) {
 return filteredName.toLowerCase(); // Convert to lowercase
 });
@@ -247,19 +287,13 @@ return itemsList.find(item => item.name.toLowerCase() === name).price;
 
 
 var result;
-switch (itemNames[0]) {
-    case 'addition':
-        result = (parseInt(numbers[0])*lowercaseItemPrices[0]) + (parseInt(numbers[1])*lowercaseItemPrices[1]);
-        break;
-    case 'multiplication':
-        result = parseInt(numbers[0]) * lowercaseItemPrices[0];
-        break;
-    case 'subtraction':
-        result = (parseInt(numbers[0])*lowercaseItemPrices[0]) - (parseInt(numbers[1])*lowercaseItemPrices[1]);
-        if(result<0){result*-1;}
-        break;
-    // Add more cases as needed for other operations
+if(numbers[1]){
+  result = (parseInt(numbers[0])*lowercaseItemPrices[0]) + (parseInt(numbers[1])*lowercaseItemPrices[1]);
 }
+else{
+result = parseInt(numbers[0]) * lowercaseItemPrices[0];
+}
+
 
 return result;
 }
@@ -273,6 +307,7 @@ return result;
         for (var i = 0; i < question.options.length; i++) {
             var optionButton = document.createElement("button");
             optionButton.className = "btn btn-primary m-1 col-2";
+            
             optionButton.innerText = question.options[i];
             optionButton.onclick = function () {
                 checkAnswer(this.innerText);
@@ -299,21 +334,22 @@ return result;
     }
 
     function submitAnswer() {
+     
         var resultDiv = document.getElementById("result");
         var completedQuestionsDiv = document.getElementById("completed-questions");
         var questionsLeftDiv = document.getElementById("questions-left");
-// Get the correct option from the shuffled options
-var shuffledOptions = questions[currentQuestionIndex - 1].options;
-var correctOption =  correctOptions.pop();
-//var correctOption = shuffledOptions.find(option => typeof option === 'string' && option.includes("Correct Answer:"));
+        // Get the correct option from the shuffled options
+        var shuffledOptions = questions[currentQuestionIndex - 1].options;
+        var correctOption =  correctOptions.pop();
+        //var correctOption = shuffledOptions.find(option => typeof option === 'string' && option.includes("Correct Answer:"));
 
-// Check if the selected answer is correct
+        // Check if the selected answer is correct
         var selectedAnswer = getSelectedAnswer();
-// Extract the actual correct answer from the string
-//var actualCorrectAnswer = correctOption ? correctOption.replace("Correct Answer: ", "") : null;
+        // Extract the actual correct answer from the string
+        //var actualCorrectAnswer = correctOption ? correctOption.replace("Correct Answer: ", "") : null;
 
-// Check if the selected answer is correct
-var isCorrect = selectedAnswer == correctOption;
+        // Check if the selected answer is correct
+        var isCorrect = selectedAnswer == correctOption;
 
         if (isCorrect) {
             resultDiv.innerHTML = "<div class='alert alert-success'>Correct! Well done.</div>";
@@ -328,11 +364,21 @@ var isCorrect = selectedAnswer == correctOption;
             displayQuestions();
         } else {
             completedQuestionsDiv.innerText = "Game Over! You answered all questions.";
+            document.getElementById('reset').disabled = false;
+            disableOptions();
             disableGameButtons();
         }
+       
         totalQuestionsAdded++;
         updateStats();
         
+    }
+    
+     function disableOptions() {
+        var optionButtons = document.querySelectorAll(".btn.btn-primary.m-1");
+        optionButtons.forEach(function (button) {
+            button.disabled = true;
+        });
     }
     // Utility function to get the selected answer
     function getSelectedAnswer() {
@@ -343,7 +389,7 @@ var isCorrect = selectedAnswer == correctOption;
     function disableGameButtons() {
         var submitAnswerButton = document.getElementById("submitAnswerButton");
         var nextButton = document.getElementById("nextButton");
-
+        document.getElementById('reset').disabled = false;
         submitAnswerButton.disabled = true;
     }
 
