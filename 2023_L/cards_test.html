@@ -1,0 +1,20 @@
+---
+layout: default
+title: Random Colored Cards
+---
+
+<div class="container mt-5 text-center">
+    <div class="row row-cols-6 gx-5 gy-5">
+        {% for _ in (1..24) %}
+        <div class="col card display-1 p-3">X</div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    const colors = ["text-primary", "text-danger"];
+    const cards = document.querySelectorAll(".card");
+    cards.forEach((card) => {
+        card.classList.add(colors[Math.floor(Math.random() * colors.length)]);
+    });
+</script>
