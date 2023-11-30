@@ -6,14 +6,21 @@ description: |
     Players take turns adding numbers from 1 to 3 to the running total, to win the player must make the other player to reach '21'.
 ---
 <div class="game-container">
-    <div class="game-mode">
-        <button class="btn btn-primary" onclick="startGame('player')">Player 1 vs Player 2</button>
-        <button class="btn btn-primary" onclick="startGame('computer')">Player vs Computer</button>
+    <div class="game-mode row">
+        <button class="btn btn-primary col-3" onclick="startGame('player')" id="player">Player 1 vs Player 2</button>
+        <button class="btn btn-primary col-3" onclick="startGame('computer')" id="computer">Player vs Computer</button>
     </div>
+    <h5 id="playerVsCom"></h5>
+    <div class="row">
+        <button class="btn btn-primary col-3" onclick = "modeGame('easy')" id="easy" style="display:none;">Easy</button>
+        <button class="btn btn-primary col-3" onclick="modeGame('hard')" id="hard" style="display:none;">Hard</button>
+    </div>
+    <h5 id = "game"></h5>
+
     <div class="player-turn" id="player-turn"></div>
-    <button id="one" class="hidden btn btn-danger" disabled="true" onclick="play(1)">1</button>
-    <button id="two" class="hidden btn btn-warning" disabled="true" onclick="play(2)">2</button>
-    <button id="three" class="hidden btn btn-info" disabled="true" onclick="play(3)">3</button>
+    <button id="one" class="hidden btn btn-danger" disabled onclick="play(1)">1</button>
+    <button id="two" class="hidden btn btn-warning" disabled onclick="play(2)">2</button>
+    <button id="three" class="hidden btn btn-info" disabled onclick="play(3)">3</button>
     <div class="total" id="total">Total: 0</div>
     <h2>Game History</h2>
     <div class="game-history" id="game-history">
@@ -26,7 +33,7 @@ description: |
             </tr>
         </table>
     </div>
-    <button id="restart" class="hidden btn btn-secondary"  onclick="resetGame()">Restart Game</button>
+    <button id="restart" class="hidden btn btn-secondary"  onclick="resetGame()" disabled>Restart Game</button>
 </div>
 
 <script>
@@ -35,20 +42,40 @@ description: |
     let totalSum;
     const history = [];
     let gameMode;
-
+    var modeForComputer;
+    function modeGame(value){
+        modeForComputer = value === 'easy' ? 'easy' : 'hard';
+        document.getElementById('game').innerHTML = `Selected Game mode is "${modeForComputer.toUpperCase()}"`;
+        document.getElementById('easy').disabled = true;
+        document.getElementById('hard').disabled = true;
+    }
     function startGame(mode) {
+        if(mode === 'computer'){
+            document.getElementById('easy').style = "display : block";
+            document.getElementById('hard').style = "display : block";
+        }
+
+        if(mode == 'player'){document.getElementById('playerVsCom').innerHTML = `Selected game player is "Player Vs Player" <br>Select the Mode of the computer:`;}
+        else{document.getElementById('playerVsCom').innerHTML = `Selected game player is "Player Vs Computer" <br> Select the game mode:`}
+
         gameMode = mode;
         currentPlayer = 1;
         currentSum = 0;
         totalSum = 0;
         history.length = 0;
+        document.getElementById("player").disabled = true;
+        document.getElementById("computer").disabled = true;
         document.getElementById("player-turn").textContent = `Player ${currentPlayer}'s turn`;
         document.getElementById("one").classList.remove("true");
         document.getElementById("two").classList.remove("true");
-        document.getElementById("three").classList.remove("ture");
+        document.getElementById("three").classList.remove("true");
         document.getElementById("restart").classList.remove("true");
         document.querySelectorAll('button').forEach(button => {
-            button.disabled = false;
+            if(button.id == "player" || button.id == "computer"){
+                button.disabled = true;
+            }
+            else{
+            button.disabled = false;}
         });
         document.getElementById("game-history").innerHTML = '<table class="table"><tr><th>Player</th><th>Number Added</th><th>Sum</th></tr></table>';
         updateTotal();
@@ -68,7 +95,7 @@ description: |
         updateGameInfo();
         updateTotal();
         if (currentPlayer === 2 && gameMode === "computer") {
-            computerPlay();
+            computerPlay(modeForComputer,currentSum);
         }
     }
 
@@ -76,11 +103,27 @@ description: |
         document.getElementById("total").textContent = `Total: ${totalSum}`;
     }
 
-    function computerPlay() {
-        setTimeout(function () {
+    function computerPlay(modeForComputer,currentSum) {
+        console.log(modeForComputer);
+        if(modeForComputer === 'easy'){
+            setTimeout(function () {
             const number = Math.floor(Math.random() * 3) + 1;
             play(number);
         }, 500);
+        }
+        else{
+            var num = currentSum;
+            setTimeout(function () {
+            for(var i = 1;i<=3;i++){
+                if((num+i)%4 == 0){
+                    play(i);
+                    break;
+                }
+            }
+             }, 500);
+        }
+        
+        
     }
 
     function displayResult() {

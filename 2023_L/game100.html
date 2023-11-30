@@ -7,10 +7,18 @@ rules: |
     Just add the numbers until you get the 100 as your sum. 
 ---
 <div class="game-container">
-    <div class="game-mode">
-        <button onclick="startGame('player')" class="btn btn-primary">Player 1 vs Player 2</button>
-        <button onclick="startGame('computer')" class="btn btn-primary">Player vs Computer</button>
+    <div class="game-mode row">
+        <button onclick="startGame('player')" id="player" class="btn btn-primary col-3">Player 1 vs Player 2</button>
+        <button onclick="startGame('computer')" id="computer" class="btn btn-primary col-3">Player vs Computer</button>
     </div>
+    <h5 id="gameModePlayer"></h5>
+
+    <div class="row">
+        <button class="btn btn-primary col-3" onclick = "modeGame('easy')" id="easy" style="display:none;">Easy</button>
+        <button class="btn btn-primary col-3" onclick="modeGame('hard')" id="hard" style="display:none;">Hard</button>
+    </div>
+    <h5 id = "game"></h5>
+
     <div class="hidden player-turn" id="player-turn"></div>
     <div class="hidden player-turn alert alert-success mt-3 d-none" id="player-result"></div>
     <div class="input-container col-xs-3" id="numberGame" >
@@ -39,7 +47,7 @@ rules: |
     let totalSum;
     const history = [];
     let gameMode;
-
+    var modeForComputer;
     document.getElementById("add-btn").addEventListener("click", function() {
         const numberInput = document.getElementById("number-input");
         const number = parseInt(numberInput.value);
@@ -50,24 +58,33 @@ rules: |
             alert("Please enter a valid number between 1 and 10.");
         }
     });
+    function modeGame(value){
+        modeForComputer = value === 'easy' ? 'easy' : 'hard';
+        document.getElementById('game').innerHTML = `Selected Game mode is "${modeForComputer.toUpperCase()}"`;
+        document.getElementById('easy').disabled = true;
+        document.getElementById('hard').disabled = true;
+        enableButtons();
+    }
     function startGame(mode) {
+        if(mode == 'computer'){
+            document.getElementById('easy').style ='display : block';
+            document.getElementById('hard').style ='display : block';
+        }
         gameMode = mode;
         currentPlayer = 1;
         currentSum = 0;
         totalSum = 0;
         history.length = 0;
+        if(mode == 'player'){document.getElementById("gameModePlayer").innerHTML = 'You have Selected "Player vs Player mode" ';}
+        else {document.getElementById("gameModePlayer").innerHTML = 'You have Selected "Player vs Computer mode" ';}
+        document.getElementById("player").disabled = true;
+        document.getElementById("computer").disabled = true;
         document.getElementById("player-turn").textContent = `Player ${currentPlayer}'s turn`;
-        // document.getElementById("one").classList.remove("true");
-        // document.getElementById("two").classList.remove("true");
-        // document.getElementById("three").classList.remove("ture");
-        //document.getElementById('numberGame').classList.remove("true");
         document.getElementById("number-input").classList.remove("true");
         document.getElementById("add-btn").classList.remove("true");
         document.getElementById("restart").classList.remove("true");
-        document.querySelectorAll('button,input').forEach(button => {
-            button.disabled = false;
-        }
-        );
+        
+        if(mode == 'player'){enableButtons();}
 
         document.getElementById("game-history").innerHTML = '<table class="table"><tr><th>Player</th><th>Number Added</th><th>Sum</th></tr></table>';
         updateTotal();
@@ -87,7 +104,7 @@ rules: |
         updateGameInfo();
         updateTotal();
         if (currentPlayer === 2 && gameMode === "computer") {
-            computerPlay();
+            computerPlay(modeForComputer,currentSum);
         }
     }
 
@@ -95,11 +112,29 @@ rules: |
         document.getElementById("total").textContent = `Total: ${totalSum}`;
     }
 
-    function computerPlay() {
-        setTimeout(function () {
-            const number = Math.floor(Math.random() * 10) + 1;
-            play(number);
-        }, 500);
+    function computerPlay(modeForComputer,currentSum) {
+        if(modeForComputer == 'easy'){
+            setTimeout(function () {
+                const number = Math.floor(Math.random() * 10) + 1;
+                play(number);
+            }, 500);
+        }
+        else{
+            var num = currentSum;
+            setTimeout(function () {
+            for(var i = 1;i<=10;i++){
+                console.log("i ="+ i);
+                if((num+i)%11 == 0){
+                    play(i+1);
+                    break;
+                }
+                else if(num%11 == 0){
+                    play(i);
+                    break;
+                }
+            }
+             }, 500);
+        }
     }
 
     function displayResult() {
@@ -123,11 +158,13 @@ rules: |
         const rows = history.map(entry => `<tr><td>${entry[0]}</td><td>+${entry[1]}</td><td>${entry[2]}</td></tr>`).join('');
         historyDiv.innerHTML = table + rows + "</table>";
     }
-
+    function enableButtons(){
+        document.getElementById("number-input").disabled = false;
+        document.getElementById("add-btn").disabled = false;
+    }
     function disableButtons() {
         document.getElementById("number-input").disabled = true;
         document.getElementById("add-btn").disabled = true;
-        document.getElementById("three").disabled = true;
     }
 
     function resetGame() {
