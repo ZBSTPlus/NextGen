@@ -1,0 +1,441 @@
+---
+layout: default
+title: I Went to Restaurent
+description: |
+    1). In this I went to Restaurent Game Player will be provided with a list of items and its prices.
+    2). After some time the table will be disappeared and the player must memorize the item prices.
+    3). Based on the prices of items player will be provided with some questions and answers.
+    4). The player has to guess the correct answer by solving the question.
+---
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    
+                <div style="display:block;" id="item_list">
+                    <div class="row">
+                      <div class="col">
+                        <h2 >Items List</h3>
+                      </div>
+                      <div class="col " style=" text-align: right;">
+                        <p id="timerLabel" >Timer: <span id="timer" class="blink big-timer" style="font-size: 25px; font-weight: bold;      color: #f00; ">30</span> seconds</p>
+                      </div>
+                    </div>
+                </div>
+                <div class="col" >
+                  <h3 id="display_questions" class="text-center" style="display:none;">Question </h3>
+                </div>
+
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered" id="items-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="items-table-body"></tbody>
+                    </table>
+                    <div id="result" class="mt-2 text-center"></div>
+                    <h3 id="completed-questions" class="mt-2 text-center"></h3>
+                    <div id="questions-left" class="mt-2 lead text-right"></div>
+                
+                    <h4 id="question-options" class="lead mt-2" ></h4>
+                   
+                </div>
+                <div class="card-footer">
+                    <div class="row m-1">
+                    <button class="btn btn-primary col m-1" onclick="startGame()" id="start">Start Game</button>
+                    <button class="btn btn-danger col m-1" onclick="resetGame()" id="reset" disabled style="display:none;">Reset Game</button>
+                    <button class="btn btn-primary col m-1" id="submitAnswerButton" onclick="submitAnswer()" style="display :none;" disabled>Submit Answer</button>
+                    <button class="btn btn-primary col m-1" id="nextQuestion" onclick="nextQuestion()" style=" display: none;" disabled>Next Question</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var itemsList = [
+    { name: 'Pizza', price: 0 },
+    { name: 'Burger', price: 0 },
+    { name: 'Pasta', price: 0 },
+    { name: 'Salad', price: 0 },
+    { name: 'Drink', price: 0 }
+];
+var timer = 30;
+var interval;
+
+var currentQuestionIndex = 0;
+var questions = [];
+var specialQuestionInterval = 5;
+
+const timerLabel = document.getElementById("timerLabel");
+const timerDisplay = document.getElementById("timer");
+
+
+var modalQuestionsTemplate = [
+    "What is the price of {4} {0} and {5} {1}?",
+    "What is the price of {4} * {1}?",
+    "What is the price of {4} {0} and {5} {1}?",
+    "Which item has the value {3} ?",
+    "Sum of all Item Prices?"
+];
+var totalQuestionsAdded = 0;
+var correctAnswersCount = 0;
+var modalQuestions = [];
+var correctOptions = [];
+function getRandomItem() {
+    var randomIndex = Math.floor(Math.random() * itemsList.length);
+    return itemsList[randomIndex];
+}
+
+function getRandomPrice() {
+    var randomItem = getRandomItem();
+    return randomItem.price;
+}
+var answerFor3;
+
+function updateModalQuestions() {
+    modalQuestions = modalQuestionsTemplate.map(function (questionTemplate) {
+        return questionTemplate.replace(/\{(\d+)\}/g, function (match, capture) {
+            if (capture === '3') {
+                answerFor3 = getRandomPrice();
+                return answerFor3;
+            } 
+            else if(capture === '4' || capture ==='5'){
+                return randomItem = Math.floor(Math.random()*5)+2;
+            }
+
+            else {
+                var randomItem = getRandomItem();
+                return randomItem.name.toLowerCase();
+            }
+        });
+    });
+
+}
+
+function displayItemsList() {
+
+  interval = setInterval(updateTimer, 1000);
+    var itemsTableBody = document.getElementById("items-table-body");
+    itemsTableBody.innerHTML = '';
+
+    // Keep track of used prices
+    var usedPrices = [];
+
+    for (var i = 0; i < itemsList.length; i++) {
+        var randomPrice;
+
+        // Generate a unique random price
+        do {
+            randomPrice = Math.floor(Math.random() * 20) + 1;
+        } while (usedPrices.includes(randomPrice));
+
+        // Add the generated price to the used prices list
+        usedPrices.push(randomPrice);
+
+        itemsList[i].price = randomPrice;
+
+        var row = document.createElement("tr");
+        var nameCell = document.createElement("td");
+        var priceCell = document.createElement("td");
+
+        nameCell.innerText = itemsList[i].name;
+        priceCell.innerText = '₹' + itemsList[i].price;
+
+        row.appendChild(nameCell);
+        row.appendChild(priceCell);
+
+        itemsTableBody.appendChild(row);
+    }
+}
+
+function hideItemsList() {
+  document.getElementById("item_list").style = "display :none";
+  document.getElementById('display_questions').style = "display : block";
+    var itemsTable = document.getElementById("items-table");
+    itemsTable.style.display = 'none';
+    updateModalQuestions();
+    displayQuestions();
+}
+
+function startGame() {
+  document.getElementById('start').style = "display : none;";
+  document.getElementById('nextQuestion').style = "display : block;";
+  document.getElementById("submitAnswerButton").style = "display:block";
+  document.getElementById("reset").style = "display:block";
+  
+  var itemsTable = document.getElementById("items-table");
+    itemsTable.style.display = 'table';
+    currentQuestionIndex = 0;
+    document.getElementById("display_questions").innerText = `Question ${currentQuestionIndex+1} `;
+    questions = [];
+    //interval = setInterval(updateTimer, 1000);
+    displayItemsList();
+    setTimeout(hideItemsList, 31000);
+    document.getElementById("result").innerText = '';
+    document.getElementById("completed-questions").innerText = '';
+    document.getElementById("questions-left").innerText = '';
+    document.getElementById("question-options").innerHTML = '';
+    
+
+}
+
+function resetGame(){
+    document.getElementById("nextQuestion").disabled = true;
+    document.getElementById('question-options').style = 'display : block ' ;
+    document.getElementById('questions-left').style = 'display : block ' ;
+    document.getElementById('result').style = 'display :block';
+    document.getElementById('display_questions').style = "display : none"
+    document.getElementById('item_list').style = "display : block"
+    totalQuestionsAdded = 0;
+    correctAnswersCount = 0;
+    document.getElementById("reset").disabled = true;
+    startGame();
+    timerLabel.classList.remove("blink");
+    timer = 30;
+
+    
+}
+function updateTimer() {
+timerDisplay.innerText = Math.floor(timer); 
+if (timer <= 5) {
+timerLabel.classList.add("blink");
+} else {
+timerLabel.classList.remove("blink");
+}
+
+if (timer <= 0) {
+clearInterval(interval);
+
+}
+timer -= 1;
+}
+
+function displayQuestions() {
+   var questionsLeftDiv = document.getElementById("questions-left");
+    var questionOptionsContainer = document.getElementById("question-options");
+    questionOptionsContainer.innerHTML = '';
+
+    if (currentQuestionIndex < modalQuestions.length) {
+        var randomQuestion = generateModalQuestion(currentQuestionIndex++);
+        questionsLeftDiv.innerText = "Questions Left: " + (modalQuestions.length - currentQuestionIndex+1);
+        displayQuestionWithOptions(randomQuestion);
+        questions.push(randomQuestion);
+    }
+
+    enableSubmitButton();
+}
+
+function generateModalQuestion(index) {
+    var questionText = modalQuestions[index];
+    var options = [];
+
+    var randomValues = [];
+    for (var i = 0; i < 2; i++) {
+        randomValues.push(getRandomPrice());
+    }
+
+    if (index === specialQuestionInterval-1) {
+        // Sum of all Items question
+        var correctAnswer = itemsList.reduce(function (total, item) {
+            return total + item.price;
+        }, 0);
+       
+        options.push(correctAnswer);
+        options.push(correctAnswer + 62);
+        options.push(correctAnswer - 19);
+        options.push(correctAnswer + 28);
+        options = shuffleArray(options);
+        correctOptions.push(correctAnswer);
+    } 
+    else if (index === specialQuestionInterval - 2) {
+        // What has the value (item price)? question
+        var itemPricesMap = {};
+        itemsList.forEach(function (item) {
+            itemPricesMap[item.price] = item.name;
+        });
+
+        // Display item names as options based on the prices in the question
+        var uniquePrices = shuffleArray(Object.keys(itemPricesMap));
+        options = uniquePrices.map(function (price) {
+          
+          if(itemPricesMap[price]===itemPricesMap[answerFor3]){
+            correctOptions.push(itemPricesMap[price]);
+            return (itemPricesMap[price]);}
+        return itemPricesMap[price];
+      });
+    }   
+
+
+     else {
+        // For other questions, add one correct answer and three random numbers
+        var correctAnswer = correctAnswerQuestion(questionText);
+        options.push(correctAnswer);
+        
+        correctOptions.push(correctAnswer);
+        options.push(correctAnswer + 56);
+        options.push(correctAnswer - 9);
+        options.push(correctAnswer + 34);
+
+        // Shuffle the options to randomize their order
+        options = shuffleArray(options);
+    }
+
+    return { text: questionText, options: options };
+}
+function correctAnswerQuestion(questionText) {
+// Extract numbers and item names from the questionText using regular expressions
+var numbers = questionText.match(/\d+/g);
+var itemNames = questionText.match(/[a-zA-Z]+/g);
+
+// Convert item names to lowercase for case-insensitive matching
+var lowercaseItemNames = itemNames.filter(function (name) {
+return !name.match(/[0-9]|what|is|price|the|of|for|and/gi); // Filter out names containing numbers and specified keywords
+}).map(function (filteredName) {
+return filteredName.toLowerCase(); // Convert to lowercase
+});
+var lowercaseItemPrices = lowercaseItemNames.map(function (name) {
+return itemsList.find(item => item.name.toLowerCase() === name).price;
+});
+
+
+var result;
+if(numbers[1]){
+result = (parseInt(numbers[0])*lowercaseItemPrices[0]) + (parseInt(numbers[1])*lowercaseItemPrices[1]);
+}
+else{
+result = parseInt(numbers[0]) * lowercaseItemPrices[0];
+}
+
+
+return result;
+}
+
+function displayQuestionWithOptions(question) {
+    var questionOptionsContainer = document.getElementById("question-options");
+    var questionElement = document.createElement("p");
+    questionElement.innerText = question.text;
+    questionOptionsContainer.appendChild(questionElement);
+
+    for (var i = 0; i < question.options.length; i++) {
+        var optionButton = document.createElement("button");
+        optionButton.className = "btn btn-outline-primary m-1 col-2";
+        
+        optionButton.innerText = question.options[i];
+        optionButton.onclick = function () {
+            checkAnswer(this.innerText);
+        };
+        questionOptionsContainer.appendChild(optionButton);
+    }
+}
+
+function checkAnswer(selectedAnswer) {
+    var resultDiv = document.getElementById("result");
+    var submitAnswerButton = document.getElementById("submitAnswerButton");
+
+    // Remove the 'active' class from all option buttons
+    var optionButtons = document.querySelectorAll(".btn.btn-outline-primary.m-1");
+    optionButtons.forEach(function (button) {
+        button.classList.remove("active");
+    });
+
+    // Add the 'active' class to the selected button
+    event.target.classList.add("active");
+
+    // Enable the Submit Answer button
+    submitAnswerButton.disabled = false;
+}
+
+function submitAnswer() {
+ 
+    var resultDiv = document.getElementById("result");
+    
+    var shuffledOptions = questions[currentQuestionIndex - 1].options;
+    var correctOption =  correctOptions.pop();
+    
+    var selectedAnswer = getSelectedAnswer();
+   
+    var isCorrect = selectedAnswer == correctOption;
+    if(selectedAnswer == null){
+      resultDiv.innerHTML = "<div class = 'alert alert-warning'>Please Select an option from given </div> ";
+      correctOptions.push(correctOption);
+    }
+    else{
+    if (isCorrect) {
+        resultDiv.innerHTML = "<div class='alert alert-success'>Correct! Well done.</div>";
+        correctAnswersCount++;
+
+    } else {
+        resultDiv.innerHTML = `<div class='alert alert-danger'>Wrong answer. Correct Answer is ${correctOption}</div>`;
+    }
+     disableOptions();
+     document.getElementById('submitAnswerButton').disabled = true;
+     document.getElementById('nextQuestion').disabled = false;
+     if(currentQuestionIndex == 5){
+      
+      nextQuestion();
+      document.getElementById("nextQuestion").style = "display : none";
+      document.getElementById("submitAnswerButton").style = "display : none";
+     }
+   }
+}
+function nextQuestion(){
+    document.getElementById("display_questions").innerText = `Question ${currentQuestionIndex+1} `;
+    var completedQuestionsDiv = document.getElementById("completed-questions");
+    var questionsLeftDiv = document.getElementById("questions-left");
+  if (currentQuestionIndex < modalQuestions.length) {
+        
+        displayQuestions();
+    } else {
+       // completedQuestionsDiv.innerText = "Game Over! You answered all questions.";
+        if(correctAnswersCount >3){ completedQuestionsDiv.innerText = `Congratulations! you got ${correctAnswersCount}/5 answers correct`;}
+        else{completedQuestionsDiv.innerText = `You have got ${correctAnswersCount}/5 answers correct`}
+          document.getElementById('display_questions').innerText = "SCORE BOARD";
+          document.getElementById('question-options').style = 'display : none ' ;
+          document.getElementById('questions-left').style = 'display : none ' ;
+          document.getElementById('result').style = 'display :none';
+        document.getElementById('reset').disabled = false;
+        document.getElementById("submitAnswerButton").disabled = true;
+    }
+   
+    totalQuestionsAdded++;
+    document.getElementById("nextQuestion").disabled = true;
+}
+
+ function disableOptions() {
+  
+    var optionButtons = document.querySelectorAll(".btn.btn-outline-primary.m-1");
+    optionButtons.forEach(function (button) {
+        button.disabled = true;
+    });
+}
+// Utility function to get the selected answer
+function getSelectedAnswer() {
+    var selectedButton = document.querySelector(".btn.btn-outline-primary.m-1.active");
+    return selectedButton ? selectedButton.innerText : null;
+}
+
+function enableSubmitButton() {
+    var submitAnswerButton = document.getElementById("submitAnswerButton");
+    submitAnswerButton.disabled = false;
+}
+
+// Utility function to shuffle an array
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
+
+
+</script>
