@@ -13,23 +13,22 @@ description: |
             <div class="card">
                 <div class="card-header">
                     
-                <div class="">
+                <div style="display:block;" id="item_list">
                     <div class="row">
                       <div class="col">
                         <h2 >Items List</h3>
                       </div>
                       <div class="col " style=" text-align: right;">
-                        <p id="timerLabel">Timer: <span id="timer" class="blink big-timer" style="font-size: 25px; font-weight: bold;      color: #f00;">30</span> seconds</p>
+                        <p id="timerLabel" >Timer: <span id="timer" class="blink big-timer" style="font-size: 25px; font-weight: bold;      color: #f00; ">30</span> seconds</p>
                       </div>
                     </div>
                 </div>
-            
+                <div class="col" >
+                  <h3 id="display_questions" class="text-center" style="display:none;">Question </h3>
+                </div>
+
                 </div>
                 <div class="card-body">
-
-                
-
-                    
                     <table class="table table-bordered" id="items-table">
                         <thead>
                             <tr>
@@ -39,22 +38,19 @@ description: |
                         </thead>
                         <tbody id="items-table-body"></tbody>
                     </table>
-                    
-                    <div id="questions-stats" class="mt-2 text-center"></div>
-
                     <div id="result" class="mt-2 text-center"></div>
-                    <div id="completed-questions" class="mt-2 text-center"></div>
-                    <div id="questions-left" class="mt-2 text-center"></div>
+                    <h3 id="completed-questions" class="mt-2 text-center"></h3>
+                    <div id="questions-left" class="mt-2 lead text-right"></div>
                 
-                    <div id="question-options" class="mt-2" ></div>
+                    <h4 id="question-options" class="lead mt-2" ></h4>
                    
                 </div>
                 <div class="card-footer">
                     <div class="row m-1">
                     <button class="btn btn-primary col m-1" onclick="startGame()" id="start">Start Game</button>
-                    <button class="btn btn-danger col m-1" onclick="resetGame()" id="reset" disabled>Reset Game</button>
-                    <button class="btn btn-primary col m-1" id="submitAnswerButton" onclick="submitAnswer()" disabled>Submit Answer</button>
-                    <button class="btn btn-primary col m-1" id="nextQuestion" onclick="nextQuestion()" disabled>Next Question</button>
+                    <button class="btn btn-danger col m-1" onclick="resetGame()" id="reset" disabled style="display:none;">Reset Game</button>
+                    <button class="btn btn-primary col m-1" id="submitAnswerButton" onclick="submitAnswer()" style="display :none;" disabled>Submit Answer</button>
+                    <button class="btn btn-primary col m-1" id="nextQuestion" onclick="nextQuestion()" style=" display: none;" disabled>Next Question</button>
                     </div>
                 </div>
             </div>
@@ -124,6 +120,7 @@ function updateModalQuestions() {
 }
 
 function displayItemsList() {
+
   interval = setInterval(updateTimer, 1000);
     var itemsTableBody = document.getElementById("items-table-body");
     itemsTableBody.innerHTML = '';
@@ -159,6 +156,8 @@ function displayItemsList() {
 }
 
 function hideItemsList() {
+  document.getElementById("item_list").style = "display :none";
+  document.getElementById('display_questions').style = "display : block";
     var itemsTable = document.getElementById("items-table");
     itemsTable.style.display = 'none';
     updateModalQuestions();
@@ -167,9 +166,14 @@ function hideItemsList() {
 
 function startGame() {
   document.getElementById('start').style = "display : none;";
+  document.getElementById('nextQuestion').style = "display : block;";
+  document.getElementById("submitAnswerButton").style = "display:block";
+  document.getElementById("reset").style = "display:block";
+  
   var itemsTable = document.getElementById("items-table");
     itemsTable.style.display = 'table';
     currentQuestionIndex = 0;
+    document.getElementById("display_questions").innerText = `Question ${currentQuestionIndex+1} `;
     questions = [];
     //interval = setInterval(updateTimer, 1000);
     displayItemsList();
@@ -184,6 +188,11 @@ function startGame() {
 
 function resetGame(){
     document.getElementById("nextQuestion").disabled = true;
+    document.getElementById('question-options').style = 'display : block ' ;
+    document.getElementById('questions-left').style = 'display : block ' ;
+    document.getElementById('result').style = 'display :block';
+    document.getElementById('display_questions').style = "display : none"
+    document.getElementById('item_list').style = "display : block"
     totalQuestionsAdded = 0;
     correctAnswersCount = 0;
     document.getElementById("reset").disabled = true;
@@ -209,12 +218,13 @@ timer -= 1;
 }
 
 function displayQuestions() {
+   var questionsLeftDiv = document.getElementById("questions-left");
     var questionOptionsContainer = document.getElementById("question-options");
     questionOptionsContainer.innerHTML = '';
 
     if (currentQuestionIndex < modalQuestions.length) {
         var randomQuestion = generateModalQuestion(currentQuestionIndex++);
-
+        questionsLeftDiv.innerText = "Questions Left: " + (modalQuestions.length - currentQuestionIndex+1);
         displayQuestionWithOptions(randomQuestion);
         questions.push(randomQuestion);
     }
@@ -236,10 +246,10 @@ function generateModalQuestion(index) {
         var correctAnswer = itemsList.reduce(function (total, item) {
             return total + item.price;
         }, 0);
-        
+       
         options.push(correctAnswer);
         options.push(correctAnswer + 62);
-        options.push(correctAnswer + 49);
+        options.push(correctAnswer - 19);
         options.push(correctAnswer + 28);
         options = shuffleArray(options);
         correctOptions.push(correctAnswer);
@@ -267,10 +277,10 @@ function generateModalQuestion(index) {
         // For other questions, add one correct answer and three random numbers
         var correctAnswer = correctAnswerQuestion(questionText);
         options.push(correctAnswer);
-    
+        
         correctOptions.push(correctAnswer);
         options.push(correctAnswer + 56);
-        options.push(correctAnswer + 72);
+        options.push(correctAnswer - 9);
         options.push(correctAnswer + 34);
 
         // Shuffle the options to randomize their order
@@ -350,9 +360,13 @@ function submitAnswer() {
     var correctOption =  correctOptions.pop();
     
     var selectedAnswer = getSelectedAnswer();
-            
+   
     var isCorrect = selectedAnswer == correctOption;
-
+    if(selectedAnswer == null){
+      resultDiv.innerHTML = "<div class = 'alert alert-warning'>Please Select an option from given </div> ";
+      correctOptions.push(correctOption);
+    }
+    else{
     if (isCorrect) {
         resultDiv.innerHTML = "<div class='alert alert-success'>Correct! Well done.</div>";
         correctAnswersCount++;
@@ -363,18 +377,29 @@ function submitAnswer() {
      disableOptions();
      document.getElementById('submitAnswerButton').disabled = true;
      document.getElementById('nextQuestion').disabled = false;
+     if(currentQuestionIndex == 5){
+      
+      nextQuestion();
+      document.getElementById("nextQuestion").style = "display : none";
+      document.getElementById("submitAnswerButton").style = "display : none";
+     }
+   }
 }
 function nextQuestion(){
-  
+    document.getElementById("display_questions").innerText = `Question ${currentQuestionIndex+1} `;
     var completedQuestionsDiv = document.getElementById("completed-questions");
     var questionsLeftDiv = document.getElementById("questions-left");
   if (currentQuestionIndex < modalQuestions.length) {
-        questionsLeftDiv.innerText = "Questions Left: " + (modalQuestions.length - currentQuestionIndex);
+        
         displayQuestions();
     } else {
        // completedQuestionsDiv.innerText = "Game Over! You answered all questions.";
-        if(correctAnswersCount >3){ completedQuestionsDiv.innerText = `Congratulations! you got ${correctAnswersCount}/5 questions`;}
-        else{completedQuestionsDiv.innerText = `You have got ${correctAnswersCount}/5 questions`}
+        if(correctAnswersCount >3){ completedQuestionsDiv.innerText = `Congratulations! you got ${correctAnswersCount}/5 answers correct`;}
+        else{completedQuestionsDiv.innerText = `You have got ${correctAnswersCount}/5 answers correct`}
+          document.getElementById('display_questions').innerText = "SCORE BOARD";
+          document.getElementById('question-options').style = 'display : none ' ;
+          document.getElementById('questions-left').style = 'display : none ' ;
+          document.getElementById('result').style = 'display :none';
         document.getElementById('reset').disabled = false;
         document.getElementById("submitAnswerButton").disabled = true;
     }

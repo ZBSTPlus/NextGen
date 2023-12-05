@@ -122,18 +122,21 @@ rules: |
         else{
             var num = currentSum;
             setTimeout(function () {
-            for(var i = 1;i<=10;i++){
-                console.log("i ="+ i);
-                if((num+i)%11 == 0){
-                    play(i+1);
-                    break;
+                for(var i = 1;i<10;i++){
+                    if((num+i)%11 == 0){
+                        play(i+1);
+                        break;
+                    }
+                    else if(num%11 == 0){
+                        play(i);
+                        break;
+                    }
+                    else if(num%11 == 1){
+                        play(i+(Math.floor(Math.random()*10)));
+                        break;
+                    }
                 }
-                else if(num%11 == 0){
-                    play(i);
-                    break;
-                }
-            }
-             }, 500);
+            }, 500);
         }
     }
 
@@ -141,6 +144,7 @@ rules: |
         const resultDiv = document.getElementById("player-result");
         resultDiv.classList.remove("d-none");
         resultDiv.innerHTML = `<span > Player ${currentPlayer} wins! </span>`;
+        updateTotal();
         updateGameHistory();
         disableButtons();
     }
