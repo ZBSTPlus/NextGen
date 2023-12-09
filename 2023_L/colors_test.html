@@ -1,0 +1,34 @@
+---
+layout: default
+title: What Color Am I?
+---
+
+<button class="btn btn-primary text-center" onclick="display()" ondblclick="display(1)" id="hard">START</button>
+<div id="color-container" class="row display-2 text-center"></div>
+
+<script>
+    const colors = ["Red", "Orange", "Yellow", "Green", "Blue", "Pink", "Black", "Violet", "Brown", "Gray",];
+
+    const texts = ["Lorem", "ipsum", "dolor", "amet", "consectetur", "adipiscing", "elit", "Morbi"];
+
+    const colorContainer = document.getElementById("color-container");
+
+    function displayColor(yN) {
+        const randomColor1 = colors[Math.floor(Math.random() * colors.length)];
+        const randomColor2 = yN ? texts[Math.floor(Math.random() * colors.length)] : colors[Math.floor(Math.random() * colors.length)];
+
+        colorContainer.style.color = randomColor1;
+        colorContainer.textContent = randomColor2;
+    }
+
+    function display(params) {
+        setInterval(function () {
+            displayColor(params);
+        }, 2300);
+
+        colorContainer.textContent = "GO!";
+        console.log(params, "Interval Started")
+        document.getElementById("hard").style.visibility = "hidden";
+    }
+
+</script>
