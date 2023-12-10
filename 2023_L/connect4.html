@@ -1,0 +1,314 @@
+---
+layout: default
+title: Connect 4
+description: |
+    It is a two player game where colors are filled into a cell by each player. when the 4 cells of a grid match either in row or column or in diagonal are declared as winner.
+---
+<div class="container">
+    <h1>Connect 4 Game</h1>
+    <h5>Connect four of your cells in a row horizontally, vertically, or diagonally to win the game.</h5>
+        <div class="btn-group">
+            <label for="color-select">Select Your Color:</label>
+            <select id="color-select" class="form-control">
+                <option value="yellow">Yellow</option>
+                <option value="blue">Blue</option>
+                <option value="pink">Pink</option>
+            </select>
+        </div>
+        <button id="start-button" class="btn btn-primary my-2">Start Game</button>
+        <div class="board" style="display: none;"></div>
+        <button id="restart-button" class="btn btn-primary my-2" style="display: none;">Restart Game</button>
+        <div id="result" class="my-2"></div>
+    </div>
+</div>
+<script>
+    const ROWS = 5;
+    const COLS = 5;
+    let userColor = 'yellow';
+    const computerColor = 'red';
+    let currentPlayer = userColor;
+    let board = createBoard();
+    let gameOver = false;
+    let resultDiv = document.getElementById('result');
+
+    document.getElementById('color-select').addEventListener('change', (event) => {
+        userColor = event.target.value;
+    });
+
+    function createBoard() {
+        const board = [];
+        for (let i = 0; i < ROWS; i++) {
+            const row = [];
+            for (let j = 0; j < COLS; j++) {
+                row.push(null);
+            }
+            board.push(row);
+        }
+        return board;
+    }
+
+    function createCell(row, col) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.row = row;
+        cell.dataset.col = col;
+        return cell;
+    }
+
+    function handleMove(col) {
+        if (!gameOver && currentPlayer === userColor) {
+            for (let row = ROWS - 1; row >= 0; row--) {
+                if (!board[row][col]) {
+                    board[row][col] = userColor;
+                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                    cell.classList.add(userColor);
+                    if (checkWin(row, col, userColor)) {
+                        resultDiv.textContent = 'You win!';
+                        gameOver = true;
+                    } else if (!isBoardFull()) {
+                        currentPlayer = computerColor;
+                        setTimeout(computerMove, 1000);
+                    } else {
+                        resultDiv.textContent = 'It\'s a draw!';
+                        gameOver = true;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+  function computerMove() {
+if (!gameOver && currentPlayer === computerColor) {
+    const availableCols = [];
+    for (let col = 0; col < COLS; col++) {
+        if (!board[0][col]) {
+            availableCols.push(col);
+        }
+    }
+
+    // Check for potential winning moves by the computer (horizontal, vertical, diagonal)
+    for (let col of availableCols) {
+        for (let row = ROWS - 1; row >= 0; row--) {
+            if (!board[row][col]) {
+                // Simulate the computer's move to check for a potential win
+                board[row][col] = computerColor;
+                if (checkWin(row, col, computerColor)) {
+                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                    cell.classList.add(computerColor);
+                    resultDiv.textContent = 'Computer wins!';
+                    gameOver = true;
+                    return;
+                }
+                board[row][col] = null; // Reset the simulated move
+                break;
+            }
+        }
+    }
+
+    // Check for potential winning moves by the user (horizontal, vertical, diagonal) and block them
+    for (let col of availableCols) {
+        for (let row = ROWS - 1; row >= 0; row--) {
+            if (!board[row][col]) {
+                // Simulate the user's move to check for a potential win
+                board[row][col] = userColor;
+                if (checkWin(row, col, userColor)) {
+                    board[row][col] = null; // Reset the simulated move
+                    board[row][col] = computerColor; // Block the user's winning move
+                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                    cell.classList.add(computerColor);
+                    if (checkWin(row, col, computerColor)) {
+                        resultDiv.textContent = 'Computer wins!';
+                        gameOver = true;
+                    } else if (!isBoardFull()) {
+                        currentPlayer = userColor;
+                    } else {
+                        resultDiv.textContent = 'It\'s a draw!';
+                        gameOver = true;
+                    }
+                    return;
+                }
+                board[row][col] = null; // Reset the simulated move
+                break;
+            }
+        }
+    }
+
+    // Check for potential diagonal winning moves by the user and block them
+    for (let col = 0; col < COLS - 3; col++) {
+        for (let row = 0; row < ROWS - 3; row++) {
+            if (
+                board[row][col] === userColor &&
+                board[row + 1][col + 1] === userColor &&
+                board[row + 2][col + 2] === userColor &&
+                !board[row + 3][col + 3]
+            ) {
+                board[row + 3][col + 3] = computerColor;
+                const cell = document.querySelector(`.cell[data-row="${row + 3}"][data-col="${col + 3}"]`);
+                cell.classList.add(computerColor);
+                if (checkWin(row + 3, col + 3, computerColor)) {
+                    resultDiv.textContent = 'Computer wins!';
+                    gameOver = true;
+                } else if (!isBoardFull()) {
+                    currentPlayer = userColor;
+                } else {
+                    resultDiv.textContent = 'It\'s a draw!';
+                    gameOver = true;
+                }
+                return;
+            }
+        }
+    }
+
+    // If no winning moves for the computer, make a random move
+    const randomCol = availableCols[Math.floor(Math.random() * availableCols.length)];
+
+    for (let row = ROWS - 1; row >= 0; row--) {
+        if (!board[row][randomCol]) {
+            board[row][randomCol] = computerColor;
+            const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${randomCol}"]`);
+            cell.classList.add(computerColor);
+            if (checkWin(row, randomCol, computerColor)) {
+                resultDiv.textContent = 'Computer wins!';
+                gameOver = true;
+            } else if (!isBoardFull()) {
+                currentPlayer = userColor;
+            } else {
+                resultDiv.textContent = 'It\'s a draw!';
+                gameOver = true;
+            }
+            break;
+        }
+    }
+}
+}
+    function checkWin(row, col, color) {
+        // Implement the logic to check for a win
+        // You can check for horizontal, vertical, and diagonal wins
+        // Return true if there is a win, otherwise return false
+        // Check horizontal
+        let count = 0;
+        for (let c = 0; c < COLS; c++) {
+            if (board[row][c] === color) {
+                count++;
+                if (count === 4) return true;
+            } else {
+                count = 0;
+            }
+        }
+
+        // Check vertical
+        count = 0;
+        for (let r = 0; r < ROWS; r++) {
+            if (board[r][col] === color) {
+                count++;
+                if (count === 4) return true;
+            } else {
+                count = 0;
+            }
+        }
+
+        // Check diagonal (bottom-left to top-right)
+        count = 0;
+        for (let r = ROWS - 1, c = 0; r >= 0 && c < COLS; r--, c++) {
+            if (board[r][c] === color) {
+                count++;
+                if (count === 4) return true;
+            } else {
+                count = 0;
+            }
+        }
+
+        // Check diagonal (bottom-right to top-left)
+        count = 0;
+        for (let r = ROWS - 1, c = COLS - 1; r >= 0 && c >= 0; r--, c--) {
+            if (board[r][c] === color) {
+                count++;
+                if (count === 4) return true;
+            } else {
+                count = 0;
+            }
+        }
+
+        return false;
+    }
+
+    function isBoardFull() {
+        return board.every(row => row.every(cell => cell));
+    }
+
+    function restartGame() {
+        board = createBoard();
+        currentPlayer = userColor;
+        gameOver = false;
+        resultDiv.textContent = '';
+        document.querySelectorAll('.cell').forEach(cell => cell.className = 'cell');
+    }
+
+    document.getElementById('start-button').addEventListener('click', () => {
+        currentPlayer = userColor;
+        document.getElementById('color-select').disabled = true;
+        document.querySelector('.board').style.display = 'grid';
+        document.getElementById('restart-button').style.display = 'inline-block';
+        restartGame();
+    });
+
+    document.getElementById('restart-button').addEventListener('click', () => {
+        document.getElementById('color-select').disabled = false;
+        document.querySelector('.board').style.display = 'grid';
+        document.getElementById('restart-button').style.display = 'inline-block';
+        restartGame();
+    });
+
+    for (let i = 0; i < ROWS; i++) {
+        for (let j = 0; j < COLS; j++) {
+            const cell = createCell(i, j);
+            cell.addEventListener('click', () => handleMove(j));
+            document.querySelector('.board').appendChild(cell);
+        }
+    }
+</script>
+<style>
+    .container {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        justify-content: center;
+    }
+
+    .game-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .board {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-gap: 10px;
+    }
+
+    .cell {
+        width: 50px;
+        height: 50px;
+        background-color: #fff;
+        border: 1px solid #000;
+    }
+
+    .cell.red {
+        background-color: red;
+    }
+
+    .cell.yellow {
+        background-color: yellow;
+    }
+    .cell.blue {
+        background-color: blue;
+    }
+    .cell.pink {
+        background-color: deeppink;
+    }
+
+</style>

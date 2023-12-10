@@ -1,0 +1,136 @@
+---
+layout: default
+title: Trivia Game
+description: |
+    Trivia is a knowledge-based game where players answer questions across various topics to test their expertise.
+---
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                </div>
+                <div class="card-body">
+                    <div class="question" id="question"></div>
+                    <div class="options" id="options">
+                        <!-- Answer options displayed in a vertical layout -->
+                        <button class="option btn btn-outline-primary btn-block btn-lg" id="option1" onclick="checkAnswer(0)"></button>
+                        <button class="option btn btn-outline-primary btn-block btn-lg" id="option2" onclick="checkAnswer(1)"></button>
+                        <button class="option btn btn-outline-primary btn-block btn-lg" id="option3" onclick="checkAnswer(2)"></button>
+                        <button class="option btn btn-outline-primary btn-block btn-lg" id="option4" onclick="checkAnswer(3)"></button>
+                    </div>
+                    <div id="result" class="mt-2 text-center"></div>
+                    <div id="completed-questions" class="mt-2 text-center"></div>
+                    <div id="questions-left" class="mt-2 text-center"></div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary btn-block" id="nextButton" onclick="nextQuestion()" disabled>Next Question</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const allQuestions = [
+        {
+            question: "What is the capital of France?",
+            options: ["Berlin", "Madrid", "Paris", "Rome"],
+            correct: 2
+        },
+        {
+            question: "Which planet is known as the Red Planet?",
+            options: ["Earth", "Mars", "Jupiter", "Venus"],
+            correct: 1
+        },
+        {
+            question: "What is the largest mammal in the world?",
+            options: ["Elephant", "Giraffe", "Blue Whale", "Lion"],
+            correct: 2
+        },
+        {
+            question: "How many continents are there in the world?",
+            options: ["4", "5", "6", "7"],
+            correct: 3
+        },
+        {
+            question: "What is the chemical symbol for gold?",
+            options: ["Go", "Gd", "Au", "Ag"],
+            correct: 2
+        }    
+    ];
+
+    const numberOfQuestionsToDisplay = 8; // Change this number to display a different number of questions.
+    let questions = [];
+    let currentQuestion = 0;
+    let score = 0;
+
+    function randomizeQuestions() {
+        // Randomly select questions from the pool.
+        const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5);
+        questions = shuffledQuestions.slice(0, numberOfQuestionsToDisplay);
+    }
+
+    function showQuestion() {
+        if (currentQuestion < questions.length) {
+            const questionElement = document.getElementById('question');
+            const optionsElement = document.getElementById('options');
+            const resultElement = document.getElementById('result');
+            const completedQuestions = document.getElementById('completed-questions');
+            const questionsLeft = document.getElementById('questions-left');
+
+            questionElement.textContent = questions[currentQuestion].question;
+            completedQuestions.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            questionsLeft.textContent = `Questions left: ${questions.length - currentQuestion - 1}`;
+
+            const options = questions[currentQuestion].options;
+
+            for (let i = 0; i < options.length; i++) {
+                const optionButton = document.getElementById(`option${i + 1}`);
+                optionButton.textContent = options[i];
+                optionButton.classList.remove('btn-success', 'btn-danger');
+                optionButton.classList.add('btn-outline-primary');
+            }
+
+            resultElement.textContent = '';
+            document.getElementById('nextButton').disabled = true;
+        } else {
+            document.getElementById('question').textContent = "Quiz Completed!";
+            document.getElementById('options').style.display = 'none';
+            document.getElementById('completed-questions').textContent = '';
+            document.getElementById('questions-left').textContent = '';
+            document.getElementById('result').innerHTML = `
+                <p class="text-center">Your score: ${score}/${questions.length}</p>
+            `;
+            document.getElementById('nextButton').style.display = 'none';
+        }
+    }
+
+    function checkAnswer(selectedOption) {
+        const correctOption = questions[currentQuestion].correct;
+
+        if (selectedOption === correctOption) {
+            score++;
+            document.getElementById(`option${selectedOption + 1}`).classList.remove('btn-outline-primary', 'btn-danger');
+            document.getElementById(`option${selectedOption + 1}`).classList.add('btn-success');
+        } else {
+            document.getElementById(`option${selectedOption + 1}`).classList.remove('btn-outline-primary');
+            document.getElementById(`option${selectedOption + 1}`).classList.add('btn-danger');
+            document.getElementById(`option${correctOption + 1}`).classList.add('btn-success');
+        }
+
+        document.getElementById('result').textContent = selectedOption === correctOption ? "Correct!" : "Incorrect!";
+        document.getElementById('nextButton').disabled = false;
+    }
+
+    function nextQuestion() {
+        if (currentQuestion < questions.length) {
+            currentQuestion++;
+            showQuestion();
+        }
+    }
+
+    // Initialize the quiz.
+    randomizeQuestions();
+    showQuestion();
+</script>
