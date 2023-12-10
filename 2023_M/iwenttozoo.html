@@ -9,11 +9,19 @@ rules: |
     Memorize each word and add the words in an order in the input using Animal Buttons.
 ---
 <div class="container">
-    <button type="button" class="btn btn-primary" id="easy" >Easy</button>
-    <button type="button" class="btn btn-primary" id="medium">Medium</button>
-    <button type="button" class="btn btn-primary" id="hard">Hard</button>
+    <h1>I Went to a Zoo</h1>
+    <div class="alert alert-success p-3 row gx-1 container px-4" role="alert">
+<h3>Click Buttons to start the game</h3>
+<div class="row">
+<button type="button" class="btn btn-primary col-4 " id="easy">Easy</button>
+<button type="button" class="btn btn-primary col-4 " id="medium">Medium</button>
+<button type="button" class="btn btn-primary col-4 " id="hard">Hard</button>
+</div>
+</div>
 
     <div id="animal-display" style="font-size: 30px;"></div>
+
+    
     <div id="user-input">
         <label for="animal-input">Your Guess:</label>
         <input type="text" class="form-control" id="animal-input" disabled>
@@ -32,6 +40,7 @@ rules: |
     let userInput = [];
     let chances = 3;
     let wordsCount = 0;
+    let click = 0;
     function startGame(wordsCount) {
         disableAnimalButtons();
         sequence = [];
@@ -47,7 +56,7 @@ rules: |
     function displaySequence(wordsCount) {
         let index = 0;
         const displayedAnimals = []; // Keep track of displayed animals
-        let time = 2000;
+        let time = 1000;
         const interval = setInterval(function () {
             if(index === 1){time = 1000;}
         if (index < wordsCount) {
@@ -60,6 +69,7 @@ rules: |
             document.getElementById('animal-display').textContent = randomAnimal;
             index++;
         } else {
+            document.getElementById("animal-display").textContent = "";
             clearInterval(interval);
             displayAnimalButtons();
             enableAnimalButtons();
@@ -167,7 +177,18 @@ for (let i = 0; i < animals.length; i += 5) {
 
     function resetGame() {
         chances = 3;
-        startGame(wordsCount);
+        sequence = [];
+        userInput = [];
+        document.getElementById('animal-input').value = '';
+        document.getElementById('animal-input').disabled = true;
+        document.getElementById('animal-buttons').innerHTML = '';
+        document.getElementById('animal-display').textContent = '';
+        document.getElementById('remove').disabled = true;
+        document.getElementById('submit').disabled = true;
+        document.getElementById("medium").disabled=false;
+        document.getElementById("easy").disabled=false;
+        document.getElementById("hard").disabled=false;
+        
     }
 
     function arraysEqual(arr1, arr2) {
@@ -179,16 +200,22 @@ for (let i = 0; i < animals.length; i += 5) {
     }
     document.getElementById('easy').addEventListener('click', function() {
         wordsCount = 5;
+        document.getElementById("medium").disabled=true;
+        document.getElementById("hard").disabled=true;
         startGame(5); // Easy: 5 words
     });
 
     document.getElementById('medium').addEventListener('click', function() {
         wordsCount = 7;
+        document.getElementById("easy").disabled=true;
+        document.getElementById("hard").disabled=true;
         startGame(7); // Medium: 7 words
     });
 
     document.getElementById('hard').addEventListener('click', function() {
         wordsCount = 12;
+        document.getElementById("easy").disabled=true;
+        document.getElementById("hard").disabled=true;
         startGame(12); // Hard: 12 words
     });
 </script>
