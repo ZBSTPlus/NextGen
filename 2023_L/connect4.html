@@ -5,8 +5,8 @@ description: |
     It is a two player game where colors are filled into a cell by each player. when the 4 cells of a grid match either in row or column or in diagonal are declared as winner.
 ---
 <div class="container">
-
-    
+    <h1>Connect 4 Game</h1>
+    <h5>Connect four of your cells in a row horizontally, vertically, or diagonally to win the game.</h5>
         <div class="btn-group">
             <label for="color-select">Select Your Color:</label>
             <select id="color-select" class="form-control">
@@ -78,25 +78,46 @@ description: |
         }
     }
 
-    function computerMove() {
-        if (!gameOver && currentPlayer === computerColor) {
-            // Implement the computer's move logic here
-            // For example, you can make the computer choose a random available column
-            const availableCols = [];
-            for (let col = 0; col < COLS; col++) {
-                if (!board[0][col]) {
-                    availableCols.push(col);
-                }
-            }
+  function computerMove() {
+if (!gameOver && currentPlayer === computerColor) {
+    const availableCols = [];
+    for (let col = 0; col < COLS; col++) {
+        if (!board[0][col]) {
+            availableCols.push(col);
+        }
+    }
 
-            const randomCol = availableCols[Math.floor(Math.random() * availableCols.length)];
-
-            for (let row = ROWS - 1; row >= 0; row--) {
-                if (!board[row][randomCol]) {
-                    board[row][randomCol] = computerColor;
-                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${randomCol}"]`);
+    // Check for potential winning moves by the computer (horizontal, vertical, diagonal)
+    for (let col of availableCols) {
+        for (let row = ROWS - 1; row >= 0; row--) {
+            if (!board[row][col]) {
+                // Simulate the computer's move to check for a potential win
+                board[row][col] = computerColor;
+                if (checkWin(row, col, computerColor)) {
+                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
                     cell.classList.add(computerColor);
-                    if (checkWin(row, randomCol, computerColor)) {
+                    resultDiv.textContent = 'Computer wins!';
+                    gameOver = true;
+                    return;
+                }
+                board[row][col] = null; // Reset the simulated move
+                break;
+            }
+        }
+    }
+
+    // Check for potential winning moves by the user (horizontal, vertical, diagonal) and block them
+    for (let col of availableCols) {
+        for (let row = ROWS - 1; row >= 0; row--) {
+            if (!board[row][col]) {
+                // Simulate the user's move to check for a potential win
+                board[row][col] = userColor;
+                if (checkWin(row, col, userColor)) {
+                    board[row][col] = null; // Reset the simulated move
+                    board[row][col] = computerColor; // Block the user's winning move
+                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                    cell.classList.add(computerColor);
+                    if (checkWin(row, col, computerColor)) {
                         resultDiv.textContent = 'Computer wins!';
                         gameOver = true;
                     } else if (!isBoardFull()) {
@@ -105,12 +126,62 @@ description: |
                         resultDiv.textContent = 'It\'s a draw!';
                         gameOver = true;
                     }
-                    break;
+                    return;
                 }
+                board[row][col] = null; // Reset the simulated move
+                break;
             }
         }
     }
 
+    // Check for potential diagonal winning moves by the user and block them
+    for (let col = 0; col < COLS - 3; col++) {
+        for (let row = 0; row < ROWS - 3; row++) {
+            if (
+                board[row][col] === userColor &&
+                board[row + 1][col + 1] === userColor &&
+                board[row + 2][col + 2] === userColor &&
+                !board[row + 3][col + 3]
+            ) {
+                board[row + 3][col + 3] = computerColor;
+                const cell = document.querySelector(`.cell[data-row="${row + 3}"][data-col="${col + 3}"]`);
+                cell.classList.add(computerColor);
+                if (checkWin(row + 3, col + 3, computerColor)) {
+                    resultDiv.textContent = 'Computer wins!';
+                    gameOver = true;
+                } else if (!isBoardFull()) {
+                    currentPlayer = userColor;
+                } else {
+                    resultDiv.textContent = 'It\'s a draw!';
+                    gameOver = true;
+                }
+                return;
+            }
+        }
+    }
+
+    // If no winning moves for the computer, make a random move
+    const randomCol = availableCols[Math.floor(Math.random() * availableCols.length)];
+
+    for (let row = ROWS - 1; row >= 0; row--) {
+        if (!board[row][randomCol]) {
+            board[row][randomCol] = computerColor;
+            const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${randomCol}"]`);
+            cell.classList.add(computerColor);
+            if (checkWin(row, randomCol, computerColor)) {
+                resultDiv.textContent = 'Computer wins!';
+                gameOver = true;
+            } else if (!isBoardFull()) {
+                currentPlayer = userColor;
+            } else {
+                resultDiv.textContent = 'It\'s a draw!';
+                gameOver = true;
+            }
+            break;
+        }
+    }
+}
+}
     function checkWin(row, col, color) {
         // Implement the logic to check for a win
         // You can check for horizontal, vertical, and diagonal wins
@@ -197,36 +268,47 @@ description: |
         }
     }
 </script>
-<style> 
-.game-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+<style>
+    .container {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        justify-content: center;
+    }
 
-.board {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-gap: 10px;
-}
+    .game-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-.cell {
-    width: 50px;
-    height: 50px;
-    background-color: #fff;
-    border: 1px solid #000;
-}
+    .board {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-gap: 10px;
+    }
 
-.cell.red {
-    background-color: red;
-}
+    .cell {
+        width: 50px;
+        height: 50px;
+        background-color: #fff;
+        border: 1px solid #000;
+    }
 
-.cell.yellow {
-    background-color: yellow;
-}
-.cell.blue {
-    background-color: blue;
-}
-.cell.pink {
-    background-color: deeppink;
-}</style>
+    .cell.red {
+        background-color: red;
+    }
+
+    .cell.yellow {
+        background-color: yellow;
+    }
+    .cell.blue {
+        background-color: blue;
+    }
+    .cell.pink {
+        background-color: deeppink;
+    }
+
+</style>
