@@ -1,0 +1,172 @@
+---
+layout: default
+title: Color Matching Game
+description: |
+  1.Players need to match displayed color names with corresponding colored boxes.
+  2.Color names are sequentially presented with associated matching colors, and players must click on the correct colored boxes in the displayed grid.
+  3.The game becomes progressively challenging as the speed of color name presentation increases, testing players' memory and reaction time.
+  4.Players win by correctly matching all color names with their corresponding colored boxes. A congratulatory message is displayed upon successful completion.
+rules: |
+  1.Color names are displayed one at a time, each associated with a specific matching color.
+  2.Players must quickly click on the colored boxes that correspond to the displayed color names.
+  3.The game progresses through all color names, increasing difficulty by accelerating the speed of color name presentation.
+  4.Players win by successfully matching all color names with their respective colored boxes.
+  5.After completion, or at any time, players can reset the game to its initial state to play again.
+---
+  <style>
+    .color-box {
+      width: 60px;
+      height: 60px;
+      margin: 5px;
+      cursor: pointer;
+      display: inline-block; /* Display color boxes horizontally */
+    }
+
+    @media (max-width: 768px) {
+      .color-box {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    .table td, .table th {
+      text-align: center;
+      vertical-align: middle;
+    }
+  </style>
+
+
+<div class="container mt-5">
+  <h1>Color Matching Game</h1>
+  <div class="row">
+    <div class="col-md-12">
+      <h3 id="headingText">Color Names</h3>
+      <div id="colorNames"></div>
+      <div id="tableContainer" style="display: none;">
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">Color Names</th>
+                <th scope="col">Match with Colors</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+  const colorMappings = [
+    { name: "Red", matchColor: "Yellow" },
+    { name: "Green", matchColor: "Blue" },
+    { name: "White", matchColor: "Black" },
+    { name: "Blue", matchColor: "Pink" }
+  ];
+
+  let currentIndex = 0;
+
+  function displayColorNames() {
+    const headingText = document.getElementById("headingText");
+    const colorNamesContainer = document.getElementById("colorNames");
+
+    function showNextColor() {
+      if (currentIndex < colorMappings.length) {
+        const colorMapping = colorMappings[currentIndex];
+        const colorNameElement = document.createElement("div");
+
+        // Apply the background color to the displayed color name
+        colorNameElement.textContent = colorMapping.name;
+        colorNameElement.style.color = colorMapping.matchColor;
+        colorNameElement.style.fontSize = "20px";
+        colorNamesContainer.appendChild(colorNameElement);
+        currentIndex++;
+
+        setTimeout(() => {
+          // Remove the displayed color name after a delay (e.g., 500 milliseconds)
+          colorNamesContainer.removeChild(colorNameElement);
+        }, 500);
+
+        setTimeout(showNextColor, 1000); // Delay each color name by 1 second
+      } else {
+        setTimeout(() => {
+          // Hide the heading text after all color names are displayed
+          headingText.style.display = "none";
+          // Show the table after all color names are displayed
+          document.getElementById("tableContainer").style.display = "block";
+          populateTable();
+        }, 1000);
+      }
+    }
+
+    showNextColor();
+  }
+
+  function populateTable() {
+    const tableBody = document.getElementById("tableBody");
+
+    colorMappings.forEach(colorMapping => {
+      const row = tableBody.insertRow();
+      const cell1 = row.insertCell(0);
+      const cell2 = row.insertCell(1);
+
+      cell1.textContent = colorMapping.name;
+
+      const colorBoxRow = document.createElement("div");
+
+      const shuffledColors = [...colorMappings.map(mapping => mapping.matchColor)].sort(() => Math.random() - 0.5);
+
+      shuffledColors.forEach(color => {
+        const colorBoxElement = document.createElement("div");
+        colorBoxElement.classList.add("color-box");
+        colorBoxElement.style.backgroundColor = color;
+        colorBoxElement.setAttribute("data-matching-color", colorMapping.matchColor);
+
+        colorBoxElement.addEventListener("click", () => handleColorBoxClick(colorMapping.matchColor));
+
+        colorBoxRow.appendChild(colorBoxElement);
+      });
+
+      cell2.appendChild(colorBoxRow);
+    });
+  }
+
+  let selectedColors = [];
+
+  function handleColorBoxClick(matchingColor) {
+    selectedColors.push(matchingColor);
+
+    if (selectedColors.length === colorMappings.length) {
+      checkMatching();
+    }
+  }
+
+  function checkMatching() {
+    const isMatching = selectedColors.every((color, index) => color === colorMappings[index].matchColor);
+
+    if (isMatching) {
+      alert("Congratulations! Colors are matched.");
+    } else {
+      alert("Oops! Colors are not matched. Try again.");
+    }
+
+    resetGame();
+  }
+
+  function resetGame() {
+    currentIndex = 0;
+    selectedColors = [];
+    document.getElementById("colorNames").innerHTML = '';
+    document.getElementById("tableContainer").style.display = "none";
+    document.getElementById("tableBody").innerHTML = '';
+    displayColorNames();
+  }
+
+  // Call the function to start the game
+  displayColorNames();
+</script>
