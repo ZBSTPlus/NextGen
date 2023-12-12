@@ -1,0 +1,175 @@
+---
+layout: default
+title: Remember the Color position
+description: |
+  1.Players need to recall the colors and positions of boxes in a grid after a brief display period.
+  2.The game starts with a grid of colored boxes shown for a short time. Players then answer questions about the color of specific box positions.
+  3.Memory and attention are tested as players strive to remember both the colors and positions of the boxes to answer questions correctly.
+  4.Players receive a score based on the percentage of correct answers, providing feedback on their memory accuracy.
+rules: |
+  1.Click the "Start Game" button to initiate the game. The grid of colored boxes is displayed for 5 seconds.
+  2.After the grid disappears, players answer questions about the color of specific box positions.
+  3.Input color answers for each question and submit them by clicking the "Submit Answers" button.
+  4.The game calculates the percentage of correct answers, reflecting the player's memory accuracy.
+  5.After receiving the score, players can choose to reset the game and try again by clicking the "Reset Game" button.
+---
+  <style>
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 10px;
+      margin-bottom: 20px;
+    }
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .grid-item {
+      width: 100px;
+      height: 100px;
+      text-align: center;
+      line-height: 100px;
+    }
+
+    #question-container {
+      margin-top: 20px;
+    }
+  </style>
+
+
+<div class="container mt-5">
+  <h1>Remember the Color position</h1>
+  <button id="startBtn" class="btn btn-primary" onclick="startGame()">Start Game</button>
+  <button id="resetBtn" class="btn btn-warning" onclick="resetGame()" style="display: none;">Reset Game</button>
+
+  <div id="grid" class="grid-container"></div>
+
+  <div id="question-container" class="inputs-grid"></div>
+
+  <button id="submitBtn" class="btn btn-success" onclick="submitAnswers()" style="display: none;">Submit Answers</button>
+
+  <div id="score"></div>
+</div>
+
+<script>
+  const colors = ["red", "blue", "green", "orange", "yellow"];
+  let gridColors = [];
+  let userAnswers = [];
+  let score = 0;
+
+  function startGame() {
+    resetGame();
+
+    // Hide buttons during the game
+    document.getElementById('startBtn').style.display = 'none';
+    document.getElementById('resetBtn').style.display = 'none';
+    document.getElementById('submitBtn').style.display = 'none';
+
+    // Generate random colors for the grid
+    gridColors = Array.from({ length: 9 }, () => colors[Math.floor(Math.random() * colors.length)]);
+
+    // Display the grid for 5 seconds
+    displayGrid();
+
+    setTimeout(() => {
+      hideGrid();
+      showQuestions();
+    }, 5000);
+  }
+
+  function resetGame() {
+    gridColors = [];
+    userAnswers = [];
+    score = 0;
+
+    // Show the start button and hide others
+    document.getElementById('startBtn').style.display = 'inline-block';
+    document.getElementById('resetBtn').style.display = 'none';
+    document.getElementById('submitBtn').style.display = 'none';
+
+    document.getElementById('grid').innerHTML = '';
+    document.getElementById('question-container').innerHTML = '';
+    document.getElementById('score').innerHTML = '';
+  }
+
+  function displayGrid() {
+    const gridContainer = document.getElementById('grid');
+    gridColors.forEach(color => {
+      const gridItem = document.createElement('div');
+      gridItem.className = 'grid-item';
+      gridItem.style.backgroundColor = color;
+      gridContainer.appendChild(gridItem);
+    });
+  }
+
+  function hideGrid() {
+    const gridItems = document.querySelectorAll('.grid-item');
+    gridItems.forEach(gridItem => gridItem.style.backgroundColor = 'transparent');
+  }
+
+  function showQuestions() {
+    const questionContainer = document.getElementById('question-container');
+    userAnswers = [];
+    const usedPositions = [];
+
+    for (let i = 0; i < 4; i++) {
+      let randomIndex;
+      let questionColor;
+
+      // Ensure the question is unique
+      do {
+        randomIndex = Math.floor(Math.random() * gridColors.length);
+      } while (usedPositions.includes(randomIndex));
+
+      usedPositions.push(randomIndex);
+      questionColor = gridColors[randomIndex];
+
+      const questionText = `What was the color of the box at position ${getPositionText(randomIndex)}?`;
+      const inputId = `answer${i}`;
+      
+      const questionElement = document.createElement('div');
+      questionElement.innerHTML = `
+        <input type="text" id="${inputId}" class="form-control" placeholder="${questionText}">
+      `;
+
+      questionContainer.appendChild(questionElement);
+      userAnswers.push({ position: randomIndex, color: questionColor });
+    }
+
+    // Show the submit button
+    document.getElementById('submitBtn').style.display = 'inline-block';
+  }
+
+  function getPositionText(index) {
+    const positions = ['Top Left', 'Top Middle', 'Top Right', 'Middle Left', 'Middle Middle', 'Middle Right', 'Bottom Left', 'Bottom Middle', 'Bottom Right'];
+    return positions[index];
+  }
+
+  function submitAnswers() {
+    let correctAnswers = 0;
+
+    for (let i = 0; i < 4; i++) {
+      const inputId = `answer${i}`;
+      const userAnswer = document.getElementById(inputId).value.toLowerCase();
+      const correctColor = userAnswers[i].color.toLowerCase();
+
+      if (userAnswer === correctColor) {
+        correctAnswers++;
+      }
+    }
+
+    score = (correctAnswers / 4) * 100; // Calculate the percentage of correct answers
+    displayScore();
+
+    // Show the reset button
+    document.getElementById('resetBtn').style.display = 'inline-block';
+  }
+
+  function displayScore() {
+    const scoreElement = document.getElementById('score');
+    scoreElement.innerHTML = `<h4>Your Score: ${score.toFixed(2)}%</h4>`;
+  }
+</script>

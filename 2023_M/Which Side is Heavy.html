@@ -1,0 +1,310 @@
+---
+layout: default
+title: Which Side is Heavy
+description: |
+  1.Players must determine which side, represented by two boxes with hidden weights, is heavier by observing the displayed colors and their associated values.
+  2.The game presents two boxes with colored blocks, each block having a hidden weight. Players must decide which side is heavier and click the corresponding "Left" or "Right" button.
+  3.The challenge lies in quickly assessing the color-coded weights in each box and making the correct decision within a time limit.
+  4.The game provides instant feedback on the correctness of the player's choice, displaying the correct answer and indicating if the user passed or failed.
+rules: |
+  1.Colored blocks with hidden weights are shown in two boxes for 5 seconds.
+  2.Players observe the colors and associated values in each box to determine which side is heavier.
+  3.After the display, players click either the "Left" or "Right" button to indicate which side they believe is heavier.
+  4.The correct answer is revealed, and players are informed whether their choice was correct or not.
+  5.Players receive feedback on their performance, with the game indicating if they successfully identified the heavier side.
+---  
+  <style>
+    .box {/*
+      width: 450px;
+      min-width: 400px;
+      height: 200px;*/
+      border: 1px solid #ccc;
+      margin: 30px auto;
+      display: inline-block;
+      padding: 30px 0px;
+    }
+
+    /*@media (max-width: 576px) {
+      .box {
+        width: 100%;
+        height: 200px;
+        border: 1px solid #ccc;
+        margin: 20px;
+        display: inline-block;
+      }
+    }
+*/
+    .colors {
+      padding: 20px;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    .color-name {
+      color: white;
+      margin: 10px;
+      padding: 10px 12px;
+      border-radius: 3px;
+      margin-bottom: 5px;
+      display: inline-block;
+      text-transform: capitalize;
+      text-shadow: 1px 0.5px 3px black;
+      border: 1px solid rgba(0, 0, 0, .1);
+      transition: opacity 0.5s ease-in-out;
+    }
+    .red-background {
+    background-color: red;
+}
+
+.blue-background {
+    background-color: blue;
+}
+
+.green-background {
+    background-color: green;
+}
+
+.orange-background {
+    background-color: orange;
+}
+
+.gray-background {
+    background-color: gray;
+}
+
+.skyblue-background {
+    background-color: skyblue;
+}
+
+.aqua-background {
+    background-color: aqua;
+}
+
+.beige-background {
+    background-color: beige;
+}
+
+.yellow-background {
+    background-color: yellow;
+}
+
+.purple-background {
+    background-color: purple;
+}
+
+.aquamarine-background {
+    background-color: aquamarine;
+}
+
+.blueviolet-background {
+    background-color: blueviolet;
+}
+
+.cadetblue-background {
+    background-color: cadetblue;
+}
+
+.brown-background {
+    background-color: brown;
+}
+
+.chocolate-background {
+    background-color: chocolate;
+}
+
+.darkturquoise-background {
+    background-color: darkturquoise;
+}
+
+    
+    .buttons {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px auto;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .button {
+      text-align: center;
+      margin: 20px auto;
+      cursor: pointer;
+      justify-content: space-around;
+    }
+  </style>
+
+<body class="bg-light">
+
+  <div class="container mt-4">
+    <h1 class="text-center"> Which Side Is Heavy </h1>
+    <div class="mt-4 text-center">
+      <h2 class="mb-4 text-center font-weight-bolder">
+        <span> Remain: </span>
+        <span id="timer">5</span>
+        <span id="seconds">Seconds</span>
+      </h2>
+
+      <div class="row d-flex justify-content-center">
+      <div class="col-xl-auto col-lg-8 col-md-10 m-3 box">
+        <h4 class="text-center"> Box 1 </h4>
+        <div class="colors d-flex justify-content-center" id="colors1"></div>
+      </div>
+
+      <div class="col-xl-auto col-lg-8 col-md-10 m-3 box">
+        <h4 class="text-center"> Box 2 </h4>
+        <div class="colors d-flex justify-content-center" id="colors2"></div>
+      </div>
+      </div>
+
+      <p id="result"></p>
+      <div class="buttons" id="buttons">
+        <div class="btn btn-primary btn-lg text-center float-left  mb-3" onclick="handleButtonClick('left')"> Left Button </div>
+        <div class="btn btn-primary btn-lg text-center float-right  mb-3" onclick="handleButtonClick('right')"> Right Button </div>
+      </div>
+    </div>
+
+    <div class="colours-values">
+      <!-- Display color names and values outside the boxes dynamically -->
+    </div>
+  </div>
+
+  <script>
+    const colorValues = generateColorValues();
+    const allColors = generateColors();
+    const colors1 = allColors.slice(0, allColors.length / 2);
+    const colors2 = allColors.slice(allColors.length / 2);
+    const values1 = colors1.map(color => colorValues[color]);
+    const values2 = colors2.map(color => colorValues[color]);
+
+    // Display colors with values initially
+    displayColors("colors1", colors1, colorValues);
+    displayColors("colors2", colors2, colorValues);
+    displayColorValues("colours-values", colorValues);
+
+    let timer = 5; // Set the initial value of the timer
+    const timerElement = document.getElementById("timer");
+    const seconds = document.getElementById("seconds");
+
+    // Start the timer countdown
+    const timerInterval = setInterval(() => {
+      timerElement.textContent = timer;
+      seconds.textContent = "Seconds";
+      if (timer === 1) {
+        seconds.textContent = "Second";
+      } else if (timer === 0) {
+        clearInterval(timerInterval);
+        hideValues("colors1");
+        hideValues("colors2");
+        hideColorValues();
+        seconds.textContent = "";
+
+        // Show the buttons after 5 seconds
+        setTimeout(() => {
+          const buttons = document.getElementById("buttons");
+          buttons.style.display = "flex";
+        }, 5000);
+      }
+      timer--;
+    }, 1000);
+
+    // Automatically hide color names and values after 5 seconds
+    setTimeout(() => {
+      hideColorValues();
+    }, 5000);
+
+    function generateColorValues() {
+      const colorValues = {};
+      const colorNames = ["red", "blue", "green", "orange", "gray", "skyblue", "aqua", "beige", "yellow", "purple", "aquamarine", "blueviolet", "cadetblue", "brown", "chocolate", "darkturquoise"];
+      for (const color of colorNames) {
+        colorValues[color] = getRandomNumber(1, 5);
+      }
+      return colorValues;
+    }
+
+    function generateColors() {
+      return ["red", "blue", "green", "orange", "gray", "skyblue", "aqua", "beige", "yellow", "purple", "aquamarine", "blueviolet", "cadetblue", "brown", "chocolate", "darkturquoise"];
+    }
+
+    function displayColors(containerId, colors, colorValues) {
+      const container = document.getElementById(containerId);
+
+      colors.forEach((color) => {
+        const colorBox = document.createElement("div");
+        colorBox.style.backgroundColor = color;
+        colorBox.style.width = "50px";
+        colorBox.style.height = "50px";
+        colorBox.style.margin = "5px";
+        colorBox.style.display = "flex";
+        colorBox.style.alignItems = "center";
+        colorBox.style.justifyContent = "center"; // Center horizontally and vertically using Flexbox
+
+        const valueSpan = document.createElement("span");
+        valueSpan.textContent = colorValues[color];
+        valueSpan.style.display = "none"; // Initially hide the values
+        colorBox.appendChild(valueSpan);
+
+        container.appendChild(colorBox);
+
+        // Store the values in a data attribute for later comparison
+        colorBox.dataset.value = colorValues[color];
+      });
+    }
+
+    function hideValues(containerId) {
+      const container = document.getElementById(containerId);
+      const colorBoxes = container.getElementsByTagName("div");
+
+      for (let i = 0; i < colorBoxes.length; i++) {
+        const valueSpan = colorBoxes[i].querySelector("span");
+        if (valueSpan) {
+          valueSpan.style.display = "none";
+        }
+      }
+    }
+
+    function displayColorValues(containerId, colorValues) {
+      const container = document.querySelector(`.${containerId}`);
+      const colorNames = Object.keys(colorValues);
+
+      colorNames.forEach((color) => {
+  const colorName = document.createElement("div");
+  colorName.textContent = `${color} = ${colorValues[color]}`;
+  colorName.className = `color-name ${color}-background`; // Add color-specific class
+  container.appendChild(colorName);
+});
+    }
+
+    function hideColorValues() {
+      const container = document.querySelector('.colours-values');
+      const colorNames = container.getElementsByClassName('color-name');
+
+      for (let i = 0; i < colorNames.length; i++) {
+        colorNames[i].style.opacity = 0;
+      }
+    }
+
+    function handleButtonClick(selectedButton) {
+      const resultElement = document.getElementById("result");
+      const box1Weight = values1.reduce((sum, value) => sum + value, 0);
+      const box2Weight = values2.reduce((sum, value) => sum + value, 0);
+
+      // Display the correct answer
+      const correctAnswer = box1Weight > box2Weight ? "left" : "right";
+      resultElement.textContent = `Correct Answer: ${correctAnswer === "left" ? "Left Button" : "Right Button"}`;
+
+      // Determine if the user's choice is correct
+      if ((selectedButton === "left" && box1Weight > box2Weight) || (selectedButton === "right" && box2Weight > box1Weight)) {
+        resultElement.textContent = `Congratulations! You passed.`;
+      } else {
+        resultElement.textContent = `Wrong! ${resultElement.textContent}`;
+      }
+    }
+
+    function getRandomNumber(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+  </script>
+</body>

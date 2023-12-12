@@ -1,0 +1,116 @@
+---
+layout: default
+title: Keep Track of the Count
+description: |
+    1.Players must remember the count of numbers displayed with a specific colored background and accurately recall the count when prompted.
+    2.The game starts with numbers appearing in various colors. After all numbers are shown, players are asked to recall the count of numbers with a specific background color.
+    3.As the game progresses, the background color changes, increasing the difficulty of tracking and recalling the count for different colored numbers.
+    4.Players receive instant feedback on their count accuracy, with the game providing a new challenge by changing the background color for each round.
+rules: |
+    1.Click the "Start Game" button to initiate the game. The button disappears once the first number is displayed.
+    2.Numbers appear in different colors (yellow, green, red, or blue) one at a time with a brief interval between each number.
+    3.After all numbers are displayed, players are prompted to input the count of numbers with a specific background color.
+    4.Players receive immediate feedback on the accuracy of their count, and the game reveals a new background color for the next round.
+    5.Players can repeat the game by clicking "Start Game" after receiving feedback, providing a dynamic and engaging experience.
+---
+    <style>
+        .number {
+            width: 100px;
+            height: 100px;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            margin: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            text-shadow: 2px 2px 2px black;
+        }
+    
+        .yellow { background-color: yellow; }
+        .green { background-color: green; }
+        .blue { background-color: blue; }
+        .red { background-color: red; }
+    </style>
+    
+
+
+    <div class="container col-md-12 text-center mt-5">
+        <h1 class="fw-bold"> Keep Track Of The Count </h1>
+        <button id="start-game" class="btn btn-primary mt-4 mb-5">Start Game</button>
+    </div>
+    <div id="game-container" class="w-100 d-flex flex-wrap justify-content-center align-items-center mt-5">
+        <!-- Numbers will be displayed here -->
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const startButton = document.getElementById('start-game');
+        const colors = ['yellow', 'green', 'red', 'blue'];
+        const totalNumbers = 20;
+        let numbersToShow = [];
+        let currentNumber = 0;
+        let questionColor; // Stores the color for the question
+    
+        function getRandomColor() {
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    
+        function showNumber() {
+            if (currentNumber >= totalNumbers) {
+                // All numbers displayed, ask the user
+                const userAnswer = prompt(`How many numbers had a ${questionColor} background?`);
+                // Check user's answer and provide feedback
+                checkUserAnswer(userAnswer);
+                return;
+            }
+    
+            const number = document.createElement('div');
+            const numberColor = getRandomColor();
+            number.classList.add('number', numberColor);
+            number.textContent = currentNumber + 1;
+            gameContainer.appendChild(number);
+    
+            currentNumber++;
+            setTimeout(() => {
+                removeNumber(number, numberColor);
+                if (currentNumber === 1) {
+                    startButton.style.display = 'none'; // Hide the button when the first number is shown
+                }
+            }, 300);
+            setTimeout(showNumber, 300);
+        }
+    
+        function removeNumber(number, numberColor) {
+            gameContainer.removeChild(number);
+            if (numberColor === questionColor) {
+                numbersToShow.push(numberColor);
+            }
+        }
+    
+        function checkUserAnswer(answer) {
+            const yellowCount = numbersToShow.filter(color => color === questionColor).length;
+            if (parseInt(answer) === yellowCount) {
+                alert('Correct! You counted the correct numbers.');
+            } else {
+                alert('Sorry, that is incorrect. Please try again.');
+            }
+            numbersToShow = [];
+            questionColor = getRandomColor(); // Get a new random color for the next question
+            startButton.style.display = ''; // Reveal the "Start Game" button after answering
+        }
+    
+        startButton.addEventListener('click', () => {
+            currentNumber = 0;
+            numbersToShow = [];
+            questionColor = getRandomColor();
+            startButton.style.display = 'none'; // Hide the "Start Game" button when clicked
+            showNumber();
+        });
+    </script>
