@@ -1,0 +1,839 @@
+---
+layout: default
+title: Ultimate Tic Tac toe
+
+description: |
+    Ultimate tic-tac-toe is a board game composed of nine tic-tac-toe boards arranged in a 3 × 3 grid. 
+    Players take turns playing on the smaller tic-tac-toe boards until one of them wins on the larger board. 
+    Compared to traditional tic-tac-toe, strategy in this game is conceptually more difficult and has proven more challenging.
+---
+<div class="container text-center" id="Game">
+    <h1>Ultimate Tic Tac Toe</h1><br>
+    <button type="button" class="btn btn-outline-primary" onclick="pVSp()">Player VS Player</button>
+    <button type="button" class="btn btn-outline-success" onclick="pVSc()">Player VS Computer</button>
+    <br><br>
+    <button class="btn btn-primary" id="ResetGame" onclick="resetGame()">Reset Game</button>
+    <br>
+    <br>
+
+    <div class="row justify-content-center">
+        <div class="col-md-4 player-1" id="Player-1">
+            Player 1 (X)
+        </div>
+        <div class="col-md-4 board-container" id="GameBoard">
+            <!-- The game board will be dynamically generated here -->
+        </div>
+        <div class="col-md-4 player-2" id="Player-2">
+            Player 2 (O)
+        </div>
+    </div>
+</div>
+
+<script>
+    let boardHTML = '';
+    let playMode = "pVSp";
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            const boxId = `box_${i}_${j}`;
+            boardHTML += `<div class="box" id="${boxId}"></div>`;
+        }
+    }
+    document.getElementById('GameBoard').innerHTML = boardHTML;
+
+    let currentPlayer = 1;
+    let gameBoard = initializeGameBoard();
+    let previousRow;
+    let previousCol;
+    let smallBoards = [
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', '']
+    ];
+    function initializeGameBoard() {
+        return [
+            ['', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', ''],
+        ];
+    }
+
+    function resetGame() {
+        boardHTML = '';
+        playMode = "pVSp";
+        currentPlayer = 1;
+        previousRow = undefined;
+        previousCol = undefined;
+        document.getElementById('Player-1').style.backgroundColor = '';
+        document.getElementById('Player-2').style.backgroundColor = '';
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
+                const boxId = `box_${i}_${j}`;
+                document.getElementById(boxId).style.color = '';
+                document.getElementById(boxId).style.backgroundColor = '';
+                gameBoard[i][j] = '';
+                document.getElementById(boxId).innerHTML = gameBoard[i][j];
+            }
+        }
+        removeHighlight();
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                smallBoards[i][j] = '';
+            }
+        }
+    }
+    function pVSp() {
+        resetGame();
+        playMode = "pVSp";
+    }
+    function pVSc() {
+        resetGame();
+        playMode = "pVSc";
+    }
+
+    function switchPlayer() {
+        currentPlayer = (currentPlayer === 1) ? 2 : 1;
+    }
+    function makeMove(row, col) {
+        if (playMode == "pVSp") {
+            if (isValidMove(row, col, previousRow, previousCol)) {
+                gameBoard[row][col] = currentPlayer === 1 ? 'X' : 'O';
+                updateSmallBoard();
+                const boxId = `box_${row}_${col}`;
+                if (currentPlayer === 1) {
+                    document.getElementById(boxId).style.color = 'blue';
+                    document.getElementById(boxId).style.backgroundColor = 'lightblue';
+                } else if (currentPlayer === 2) {
+                    document.getElementById(boxId).style.color = 'red';
+                    document.getElementById(boxId).style.backgroundColor = 'lightcoral';
+                }
+
+                if (isBigBoardWon() != undefined) {
+                    if (isBigBoardWon() === "Draw") {
+                        alert(`The game is Draw`);
+                        resetGame();
+                    } else {
+                        alert(`Player ${isBigBoardWon()} wins!`);
+                        resetGame();
+                    }
+                } else {
+                    switchPlayer();
+                    updateBoardUI();
+                }
+                removeHighlight();
+                previousRow = row;
+                previousCol = col;
+                highlightValidMoves();
+            }
+        }
+
+        else if (playMode == "pVSc") {
+            if (currentPlayer === 1) {
+                if (isValidMove(row, col, previousRow, previousCol)) {
+                    gameBoard[row][col] = 'X';
+                    updateSmallBoard();
+                    const boxId = `box_${row}_${col}`;
+                    document.getElementById(boxId).style.color = 'blue';
+                    document.getElementById(boxId).style.backgroundColor = 'lightblue';
+                    if (isBigBoardWon() != undefined) {
+                        if (isBigBoardWon() === "Draw") {
+                            alert(`The game is Draw`);
+                            resetGame();
+                        } else {
+                            alert(`Player ${isBigBoardWon()} wins!`);
+                            resetGame();
+                        }
+                    } else {
+                        previousRow = row;
+                        previousCol = col;
+                        switchPlayer();
+                        updateBoardUI();
+                        computerMove();
+                    }
+                }
+            }
+        }
+
+    }
+
+    function computerMove() {
+        let validMoves = getValidMoves();
+
+        if (validMoves.length > 0) {
+            let randomIndex = Math.floor(Math.random() * validMoves.length);
+            let randomMove = validMoves[randomIndex];
+            let computerRow = randomMove.row;
+            let computerCol = randomMove.col;
+            gameBoard[computerRow][computerCol] = 'O';
+            updateSmallBoard();
+            const boxId = `box_${computerRow}_${computerCol}`;
+            document.getElementById(boxId).style.color = 'red';
+            document.getElementById(boxId).style.backgroundColor = 'lightcoral';
+            if (isBigBoardWon() != undefined) {
+                if (isBigBoardWon() === "Draw") {
+                    alert(`The game is Draw`);
+                    resetGame();
+                } else {
+                    alert(`Player ${isBigBoardWon()} wins!`);
+                    resetGame();
+                }
+            } else {
+                removeHighlight();
+                previousRow = computerRow;
+                previousCol = computerCol;
+                switchPlayer();
+                updateBoardUI();
+                highlightValidMoves();
+            }
+        }
+    }
+
+    function isValidMove(row, col, previousRow, previousCol) {
+        if (gameBoard[row][col] === '') {
+            if (previousRow != null && previousCol != null) {
+                if (([0, 3, 6].includes(previousRow) && [0, 3, 6].includes(previousCol))) {
+                    if (smallBoards[0][0] == '' && ([0, 1, 2].includes(row) && [0, 1, 2].includes(col))) {
+                        return true
+                    } else if (smallBoards[0][0] != '' && !([0, 1, 2].includes(row) && [0, 1, 2].includes(col))) {
+                        return true;
+                    }
+                }
+                else if (([0, 3, 6].includes(previousRow) && [1, 4, 7].includes(previousCol))) {
+                    if (smallBoards[0][1] == '' && ([0, 1, 2].includes(row) && [3, 4, 5].includes(col))) {
+                        return true;
+                    } else if (smallBoards[0][1] != '' && !([0, 1, 2].includes(row) && [3, 4, 5].includes(col))) {
+                        return true;
+                    }
+                }
+                else if (([0, 3, 6].includes(previousRow) && [2, 5, 8].includes(previousCol))) {
+                    if (smallBoards[0][2] == '' && ([0, 1, 2].includes(row) && [6, 7, 8].includes(col))) {
+                        return true;
+                    } else if (smallBoards[0][2] != '' && !([0, 1, 2].includes(row) && [6, 7, 8].includes(col))) {
+                        return true;
+                    }
+                }
+                else if (([1, 4, 7].includes(previousRow) && [0, 3, 6].includes(previousCol))) {
+                    if (smallBoards[1][0] == '' && ([3, 4, 5].includes(row) && [0, 1, 2].includes(col))) {
+                        return true;
+                    } else if (smallBoards[1][0] != '' && !([3, 4, 5].includes(row) && [0, 1, 2].includes(col))) {
+                        return true;
+                    }
+                }
+                else if (([1, 4, 7].includes(previousRow) && [1, 4, 7].includes(previousCol))) {
+                    if (smallBoards[1][1] == '' && ([3, 4, 5].includes(row) && [3, 4, 5].includes(col))) {
+                        return true;
+                    } else if (smallBoards[1][1] != '' && !([3, 4, 5].includes(row) && [3, 4, 5].includes(col))) {
+                        return true;
+                    }
+                }
+                else if (([1, 4, 7].includes(previousRow) && [2, 5, 8].includes(previousCol))) {
+                    if (smallBoards[1][2] == '' && ([3, 4, 5].includes(row) && [6, 7, 8].includes(col))) {
+                        return true;
+                    } else if (smallBoards[1][2] != '' && !([3, 4, 5].includes(row) && [6, 7, 8].includes(col))) {
+                        return true;
+                    }
+                }
+                else if (([2, 5, 8].includes(previousRow) && [0, 3, 6].includes(previousCol))) {
+                    if (smallBoards[2][0] == '' && ([6, 7, 8].includes(row) && [0, 1, 2].includes(col))) {
+                        return true;
+                    } else if (smallBoards[2][0] != '' && !([6, 7, 8].includes(row) && [0, 1, 2].includes(col))) {
+                        return true;
+                    }
+                }
+                else if (([2, 5, 8].includes(previousRow) && [1, 4, 7].includes(previousCol))) {
+                    if (smallBoards[2][1] == '' && ([6, 7, 8].includes(row) && [3, 4, 5].includes(col))) {
+                        return true;
+                    } else if (smallBoards[2][1] != '' && !([6, 7, 8].includes(row) && [3, 4, 5].includes(col))) {
+                        return true;
+                    }
+                }
+                else if (([2, 5, 8].includes(previousRow) && [2, 5, 8].includes(previousCol))) {
+                    if (smallBoards[2][2] == '' && ([6, 7, 8].includes(row) && [6, 7, 8].includes(col))) {
+                        return true;
+                    } else if (smallBoards[2][2] != '' && !([6, 7, 8].includes(row) && [6, 7, 8].includes(col))) {
+                        return true;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        }
+    }
+
+    function updateSmallBoard() {
+        if (
+            gameBoard[0][0] == 'X' && gameBoard[0][1] == 'X' && gameBoard[0][2] == 'X' ||
+            gameBoard[1][0] == 'X' && gameBoard[1][1] == 'X' && gameBoard[1][2] == 'X' ||
+            gameBoard[2][0] == 'X' && gameBoard[2][1] == 'X' && gameBoard[2][2] == 'X' ||
+            gameBoard[0][0] == 'X' && gameBoard[1][0] == 'X' && gameBoard[2][0] == 'X' ||
+            gameBoard[0][1] == 'X' && gameBoard[1][1] == 'X' && gameBoard[2][1] == 'X' ||
+            gameBoard[0][2] == 'X' && gameBoard[1][2] == 'X' && gameBoard[2][2] == 'X' ||
+            gameBoard[0][0] == 'X' && gameBoard[1][1] == 'X' && gameBoard[2][2] == 'X' ||
+            gameBoard[0][2] == 'X' && gameBoard[1][1] == 'X' && gameBoard[2][0] == 'X'
+        ) {
+            smallBoards[0][0] = 'X';
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    gameBoard[i][j] = 'X';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightblue';
+                    document.getElementById(boxId).style.color = 'blue';
+                }
+            }
+        }
+        if (
+            gameBoard[0][3] == 'X' && gameBoard[0][4] == 'X' && gameBoard[0][5] == 'X' ||
+            gameBoard[1][3] == 'X' && gameBoard[1][4] == 'X' && gameBoard[1][5] == 'X' ||
+            gameBoard[2][3] == 'X' && gameBoard[2][4] == 'X' && gameBoard[2][5] == 'X' ||
+            gameBoard[0][3] == 'X' && gameBoard[1][3] == 'X' && gameBoard[2][3] == 'X' ||
+            gameBoard[0][4] == 'X' && gameBoard[1][4] == 'X' && gameBoard[2][4] == 'X' ||
+            gameBoard[0][5] == 'X' && gameBoard[1][5] == 'X' && gameBoard[2][5] == 'X' ||
+            gameBoard[0][3] == 'X' && gameBoard[1][4] == 'X' && gameBoard[2][5] == 'X' ||
+            gameBoard[0][5] == 'X' && gameBoard[1][4] == 'X' && gameBoard[2][3] == 'X'
+        ) {
+            smallBoards[0][1] = 'X';
+            for (let i = 0; i < 3; i++) {
+                for (let j = 3; j < 6; j++) {
+                    gameBoard[i][j] = 'X';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightblue';
+                    document.getElementById(boxId).style.color = 'blue';
+                }
+            }
+        }
+        if (
+            gameBoard[0][6] == 'X' && gameBoard[0][7] == 'X' && gameBoard[0][8] == 'X' ||
+            gameBoard[1][6] == 'X' && gameBoard[1][7] == 'X' && gameBoard[1][8] == 'X' ||
+            gameBoard[2][6] == 'X' && gameBoard[2][7] == 'X' && gameBoard[2][8] == 'X' ||
+            gameBoard[0][6] == 'X' && gameBoard[1][6] == 'X' && gameBoard[2][6] == 'X' ||
+            gameBoard[0][7] == 'X' && gameBoard[1][7] == 'X' && gameBoard[2][7] == 'X' ||
+            gameBoard[0][8] == 'X' && gameBoard[1][8] == 'X' && gameBoard[2][8] == 'X' ||
+            gameBoard[0][6] == 'X' && gameBoard[1][7] == 'X' && gameBoard[2][8] == 'X' ||
+            gameBoard[0][8] == 'X' && gameBoard[1][7] == 'X' && gameBoard[2][6] == 'X'
+        ) {
+            smallBoards[0][2] = 'X';
+            for (let i = 0; i < 3; i++) {
+                for (let j = 6; j < 9; j++) {
+                    gameBoard[i][j] = 'X';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightblue';
+                    document.getElementById(boxId).style.color = 'blue';
+                }
+            }
+        }
+        if (
+            gameBoard[3][0] == 'X' && gameBoard[3][1] == 'X' && gameBoard[3][2] == 'X' ||
+            gameBoard[4][0] == 'X' && gameBoard[4][1] == 'X' && gameBoard[4][2] == 'X' ||
+            gameBoard[5][0] == 'X' && gameBoard[5][1] == 'X' && gameBoard[5][2] == 'X' ||
+            gameBoard[3][0] == 'X' && gameBoard[4][0] == 'X' && gameBoard[5][0] == 'X' ||
+            gameBoard[3][1] == 'X' && gameBoard[4][1] == 'X' && gameBoard[5][1] == 'X' ||
+            gameBoard[3][2] == 'X' && gameBoard[4][2] == 'X' && gameBoard[5][2] == 'X' ||
+            gameBoard[3][0] == 'X' && gameBoard[4][1] == 'X' && gameBoard[5][2] == 'X' ||
+            gameBoard[3][2] == 'X' && gameBoard[4][1] == 'X' && gameBoard[5][0] == 'X'
+        ) {
+            smallBoards[1][0] = 'X';
+            for (let i = 3; i < 6; i++) {
+                for (let j = 0; j < 3; j++) {
+                    gameBoard[i][j] = 'X';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightblue';
+                    document.getElementById(boxId).style.color = 'blue';
+                }
+            }
+        }
+        if (
+            gameBoard[3][3] == 'X' && gameBoard[3][4] == 'X' && gameBoard[3][5] == 'X' ||
+            gameBoard[4][3] == 'X' && gameBoard[4][4] == 'X' && gameBoard[4][5] == 'X' ||
+            gameBoard[5][3] == 'X' && gameBoard[5][4] == 'X' && gameBoard[5][5] == 'X' ||
+            gameBoard[3][3] == 'X' && gameBoard[4][3] == 'X' && gameBoard[5][3] == 'X' ||
+            gameBoard[3][4] == 'X' && gameBoard[4][4] == 'X' && gameBoard[5][4] == 'X' ||
+            gameBoard[3][5] == 'X' && gameBoard[4][5] == 'X' && gameBoard[5][5] == 'X' ||
+            gameBoard[3][3] == 'X' && gameBoard[4][4] == 'X' && gameBoard[5][5] == 'X' ||
+            gameBoard[3][5] == 'X' && gameBoard[4][4] == 'X' && gameBoard[5][3] == 'X'
+        ) {
+            smallBoards[1][1] = 'X';
+            for (let i = 3; i < 6; i++) {
+                for (let j = 3; j < 6; j++) {
+                    gameBoard[i][j] = 'X';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightblue';
+                    document.getElementById(boxId).style.color = 'blue';
+                }
+            }
+        }
+        if (
+            gameBoard[3][6] == 'X' && gameBoard[3][7] == 'X' && gameBoard[3][8] == 'X' ||
+            gameBoard[4][6] == 'X' && gameBoard[4][7] == 'X' && gameBoard[4][8] == 'X' ||
+            gameBoard[5][6] == 'X' && gameBoard[5][7] == 'X' && gameBoard[5][8] == 'X' ||
+            gameBoard[3][6] == 'X' && gameBoard[4][6] == 'X' && gameBoard[5][6] == 'X' ||
+            gameBoard[3][7] == 'X' && gameBoard[4][7] == 'X' && gameBoard[5][7] == 'X' ||
+            gameBoard[3][8] == 'X' && gameBoard[4][8] == 'X' && gameBoard[5][8] == 'X' ||
+            gameBoard[3][6] == 'X' && gameBoard[4][7] == 'X' && gameBoard[5][8] == 'X' ||
+            gameBoard[3][8] == 'X' && gameBoard[4][7] == 'X' && gameBoard[5][6] == 'X'
+        ) {
+            smallBoards[1][2] = 'X';
+            for (let i = 3; i < 6; i++) {
+                for (let j = 6; j < 9; j++) {
+                    gameBoard[i][j] = 'X';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightblue';
+                    document.getElementById(boxId).style.color = 'blue';
+                }
+            }
+        }
+        if (
+            gameBoard[6][0] == 'X' && gameBoard[6][1] == 'X' && gameBoard[6][2] == 'X' ||
+            gameBoard[7][0] == 'X' && gameBoard[7][1] == 'X' && gameBoard[7][2] == 'X' ||
+            gameBoard[8][0] == 'X' && gameBoard[8][1] == 'X' && gameBoard[8][2] == 'X' ||
+            gameBoard[6][0] == 'X' && gameBoard[7][0] == 'X' && gameBoard[8][0] == 'X' ||
+            gameBoard[6][1] == 'X' && gameBoard[7][1] == 'X' && gameBoard[8][1] == 'X' ||
+            gameBoard[6][2] == 'X' && gameBoard[7][2] == 'X' && gameBoard[8][2] == 'X' ||
+            gameBoard[6][0] == 'X' && gameBoard[7][1] == 'X' && gameBoard[8][2] == 'X' ||
+            gameBoard[6][2] == 'X' && gameBoard[7][1] == 'X' && gameBoard[8][0] == 'X'
+        ) {
+            smallBoards[2][0] = 'X';
+            for (let i = 6; i < 9; i++) {
+                for (let j = 0; j < 3; j++) {
+                    gameBoard[i][j] = 'X';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightblue';
+                    document.getElementById(boxId).style.color = 'blue';
+                }
+            }
+        }
+        if (
+            gameBoard[6][3] == 'X' && gameBoard[6][4] == 'X' && gameBoard[6][5] == 'X' ||
+            gameBoard[7][3] == 'X' && gameBoard[7][4] == 'X' && gameBoard[7][5] == 'X' ||
+            gameBoard[8][3] == 'X' && gameBoard[8][4] == 'X' && gameBoard[8][5] == 'X' ||
+            gameBoard[6][3] == 'X' && gameBoard[7][3] == 'X' && gameBoard[8][3] == 'X' ||
+            gameBoard[6][4] == 'X' && gameBoard[7][4] == 'X' && gameBoard[8][4] == 'X' ||
+            gameBoard[6][5] == 'X' && gameBoard[7][5] == 'X' && gameBoard[8][5] == 'X' ||
+            gameBoard[6][3] == 'X' && gameBoard[7][4] == 'X' && gameBoard[8][5] == 'X' ||
+            gameBoard[6][5] == 'X' && gameBoard[7][4] == 'X' && gameBoard[8][3] == 'X'
+        ) {
+            smallBoards[2][1] = 'X';
+            for (let i = 6; i < 9; i++) {
+                for (let j = 3; j < 6; j++) {
+                    gameBoard[i][j] = 'X';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightblue';
+                    document.getElementById(boxId).style.color = 'blue';
+                }
+            }
+        }
+        if (
+            gameBoard[6][6] == 'X' && gameBoard[6][7] == 'X' && gameBoard[6][8] == 'X' ||
+            gameBoard[7][6] == 'X' && gameBoard[7][7] == 'X' && gameBoard[7][8] == 'X' ||
+            gameBoard[8][6] == 'X' && gameBoard[8][7] == 'X' && gameBoard[8][8] == 'X' ||
+            gameBoard[6][6] == 'X' && gameBoard[7][6] == 'X' && gameBoard[8][6] == 'X' ||
+            gameBoard[6][7] == 'X' && gameBoard[7][7] == 'X' && gameBoard[8][7] == 'X' ||
+            gameBoard[6][8] == 'X' && gameBoard[7][8] == 'X' && gameBoard[8][8] == 'X' ||
+            gameBoard[6][6] == 'X' && gameBoard[7][7] == 'X' && gameBoard[8][8] == 'X' ||
+            gameBoard[6][8] == 'X' && gameBoard[7][7] == 'X' && gameBoard[8][6] == 'X'
+        ) {
+            smallBoards[2][2] = 'X';
+            for (let i = 6; i < 9; i++) {
+                for (let j = 6; j < 9; j++) {
+                    gameBoard[i][j] = 'X';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightblue';
+                    document.getElementById(boxId).style.color = 'blue';
+                }
+            }
+        }
+
+        if (
+            gameBoard[0][0] == 'O' && gameBoard[0][1] == 'O' && gameBoard[0][2] == 'O' ||
+            gameBoard[1][0] == 'O' && gameBoard[1][1] == 'O' && gameBoard[1][2] == 'O' ||
+            gameBoard[2][0] == 'O' && gameBoard[2][1] == 'O' && gameBoard[2][2] == 'O' ||
+            gameBoard[0][0] == 'O' && gameBoard[1][0] == 'O' && gameBoard[2][0] == 'O' ||
+            gameBoard[0][1] == 'O' && gameBoard[1][1] == 'O' && gameBoard[2][1] == 'O' ||
+            gameBoard[0][2] == 'O' && gameBoard[1][2] == 'O' && gameBoard[2][2] == 'O' ||
+            gameBoard[0][0] == 'O' && gameBoard[1][1] == 'O' && gameBoard[2][2] == 'O' ||
+            gameBoard[0][2] == 'O' && gameBoard[1][1] == 'O' && gameBoard[2][0] == 'O'
+        ) {
+            smallBoards[0][0] = 'O';
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    gameBoard[i][j] = 'O';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightcoral';
+                    document.getElementById(boxId).style.color = 'red';
+                }
+            }
+        }
+        if (
+            gameBoard[0][3] == 'O' && gameBoard[0][4] == 'O' && gameBoard[0][5] == 'O' ||
+            gameBoard[1][3] == 'O' && gameBoard[1][4] == 'O' && gameBoard[1][5] == 'O' ||
+            gameBoard[2][3] == 'O' && gameBoard[2][4] == 'O' && gameBoard[2][5] == 'O' ||
+            gameBoard[0][3] == 'O' && gameBoard[1][3] == 'O' && gameBoard[2][3] == 'O' ||
+            gameBoard[0][4] == 'O' && gameBoard[1][4] == 'O' && gameBoard[2][4] == 'O' ||
+            gameBoard[0][5] == 'O' && gameBoard[1][5] == 'O' && gameBoard[2][5] == 'O' ||
+            gameBoard[0][3] == 'O' && gameBoard[1][4] == 'O' && gameBoard[2][5] == 'O' ||
+            gameBoard[0][5] == 'O' && gameBoard[1][4] == 'O' && gameBoard[2][3] == 'O'
+        ) {
+            smallBoards[0][1] = 'O';
+            for (let i = 0; i < 3; i++) {
+                for (let j = 3; j < 6; j++) {
+                    gameBoard[i][j] = 'O';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightcoral';
+                    document.getElementById(boxId).style.color = 'red';
+                }
+            }
+        }
+        if (
+            gameBoard[0][6] == 'O' && gameBoard[0][7] == 'O' && gameBoard[0][8] == 'O' ||
+            gameBoard[1][6] == 'O' && gameBoard[1][7] == 'O' && gameBoard[1][8] == 'O' ||
+            gameBoard[2][6] == 'O' && gameBoard[2][7] == 'O' && gameBoard[2][8] == 'O' ||
+            gameBoard[0][6] == 'O' && gameBoard[1][6] == 'O' && gameBoard[2][6] == 'O' ||
+            gameBoard[0][7] == 'O' && gameBoard[1][7] == 'O' && gameBoard[2][7] == 'O' ||
+            gameBoard[0][8] == 'O' && gameBoard[1][8] == 'O' && gameBoard[2][8] == 'O' ||
+            gameBoard[0][6] == 'O' && gameBoard[1][7] == 'O' && gameBoard[2][8] == 'O' ||
+            gameBoard[0][8] == 'O' && gameBoard[1][7] == 'O' && gameBoard[2][6] == 'O'
+        ) {
+            smallBoards[0][2] = 'O';
+            for (let i = 0; i < 3; i++) {
+                for (let j = 6; j < 9; j++) {
+                    gameBoard[i][j] = 'O';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightcoral';
+                    document.getElementById(boxId).style.color = 'red';
+                }
+            }
+        }
+        if (
+            gameBoard[3][0] == 'O' && gameBoard[3][1] == 'O' && gameBoard[3][2] == 'O' ||
+            gameBoard[4][0] == 'O' && gameBoard[4][1] == 'O' && gameBoard[4][2] == 'O' ||
+            gameBoard[5][0] == 'O' && gameBoard[5][1] == 'O' && gameBoard[5][2] == 'O' ||
+            gameBoard[3][0] == 'O' && gameBoard[4][0] == 'O' && gameBoard[5][0] == 'O' ||
+            gameBoard[3][1] == 'O' && gameBoard[4][1] == 'O' && gameBoard[5][1] == 'O' ||
+            gameBoard[3][2] == 'O' && gameBoard[4][2] == 'O' && gameBoard[5][2] == 'O' ||
+            gameBoard[3][0] == 'O' && gameBoard[4][1] == 'O' && gameBoard[5][2] == 'O' ||
+            gameBoard[3][2] == 'O' && gameBoard[4][1] == 'O' && gameBoard[5][0] == 'O'
+        ) {
+            smallBoards[1][0] = 'O';
+            for (let i = 3; i < 6; i++) {
+                for (let j = 0; j < 3; j++) {
+                    gameBoard[i][j] = 'O';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightcoral';
+                    document.getElementById(boxId).style.color = 'red';
+                }
+            }
+        }
+        if (
+            gameBoard[3][3] == 'O' && gameBoard[3][4] == 'O' && gameBoard[3][5] == 'O' ||
+            gameBoard[4][3] == 'O' && gameBoard[4][4] == 'O' && gameBoard[4][5] == 'O' ||
+            gameBoard[5][3] == 'O' && gameBoard[5][4] == 'O' && gameBoard[5][5] == 'O' ||
+            gameBoard[3][3] == 'O' && gameBoard[4][3] == 'O' && gameBoard[5][3] == 'O' ||
+            gameBoard[3][4] == 'O' && gameBoard[4][4] == 'O' && gameBoard[5][4] == 'O' ||
+            gameBoard[3][5] == 'O' && gameBoard[4][5] == 'O' && gameBoard[5][5] == 'O' ||
+            gameBoard[3][3] == 'O' && gameBoard[4][4] == 'O' && gameBoard[5][5] == 'O' ||
+            gameBoard[3][5] == 'O' && gameBoard[4][4] == 'O' && gameBoard[5][3] == 'O'
+        ) {
+            smallBoards[1][1] = 'O';
+            for (let i = 3; i < 6; i++) {
+                for (let j = 3; j < 6; j++) {
+                    gameBoard[i][j] = 'O';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightcoral';
+                    document.getElementById(boxId).style.color = 'red';
+                }
+            }
+        }
+        if (
+            gameBoard[3][6] == 'O' && gameBoard[3][7] == 'O' && gameBoard[3][8] == 'O' ||
+            gameBoard[4][6] == 'O' && gameBoard[4][7] == 'O' && gameBoard[4][8] == 'O' ||
+            gameBoard[5][6] == 'O' && gameBoard[5][7] == 'O' && gameBoard[5][8] == 'O' ||
+            gameBoard[3][6] == 'O' && gameBoard[4][6] == 'O' && gameBoard[5][6] == 'O' ||
+            gameBoard[3][7] == 'O' && gameBoard[4][7] == 'O' && gameBoard[5][7] == 'O' ||
+            gameBoard[3][8] == 'O' && gameBoard[4][8] == 'O' && gameBoard[5][8] == 'O' ||
+            gameBoard[3][6] == 'O' && gameBoard[4][7] == 'O' && gameBoard[5][8] == 'O' ||
+            gameBoard[3][8] == 'O' && gameBoard[4][7] == 'O' && gameBoard[5][6] == 'O'
+        ) {
+            smallBoards[1][2] = 'O';
+            for (let i = 3; i < 6; i++) {
+                for (let j = 6; j < 9; j++) {
+                    gameBoard[i][j] = 'O';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightcoral';
+                    document.getElementById(boxId).style.color = 'red';
+                }
+            }
+        }
+        if (
+            gameBoard[6][0] == 'O' && gameBoard[6][1] == 'O' && gameBoard[6][2] == 'O' ||
+            gameBoard[7][0] == 'O' && gameBoard[7][1] == 'O' && gameBoard[7][2] == 'O' ||
+            gameBoard[8][0] == 'O' && gameBoard[8][1] == 'O' && gameBoard[8][2] == 'O' ||
+            gameBoard[6][0] == 'O' && gameBoard[7][0] == 'O' && gameBoard[8][0] == 'O' ||
+            gameBoard[6][1] == 'O' && gameBoard[7][1] == 'O' && gameBoard[8][1] == 'O' ||
+            gameBoard[6][2] == 'O' && gameBoard[7][2] == 'O' && gameBoard[8][2] == 'O' ||
+            gameBoard[6][0] == 'O' && gameBoard[7][1] == 'O' && gameBoard[8][2] == 'O' ||
+            gameBoard[6][2] == 'O' && gameBoard[7][1] == 'O' && gameBoard[8][0] == 'O'
+        ) {
+            smallBoards[2][0] = 'O';
+            for (let i = 6; i < 9; i++) {
+                for (let j = 0; j < 3; j++) {
+                    gameBoard[i][j] = 'O';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightcoral';
+                    document.getElementById(boxId).style.color = 'red';
+                }
+            }
+        }
+        if (
+            gameBoard[6][3] == 'O' && gameBoard[6][4] == 'O' && gameBoard[6][5] == 'O' ||
+            gameBoard[7][3] == 'O' && gameBoard[7][4] == 'O' && gameBoard[7][5] == 'O' ||
+            gameBoard[8][3] == 'O' && gameBoard[8][4] == 'O' && gameBoard[8][5] == 'O' ||
+            gameBoard[6][3] == 'O' && gameBoard[7][3] == 'O' && gameBoard[8][3] == 'O' ||
+            gameBoard[6][4] == 'O' && gameBoard[7][4] == 'O' && gameBoard[8][4] == 'O' ||
+            gameBoard[6][5] == 'O' && gameBoard[7][5] == 'O' && gameBoard[8][5] == 'O' ||
+            gameBoard[6][3] == 'O' && gameBoard[7][4] == 'O' && gameBoard[8][5] == 'O' ||
+            gameBoard[6][5] == 'O' && gameBoard[7][4] == 'O' && gameBoard[8][3] == 'O'
+        ) {
+            smallBoards[2][1] = 'O';
+            for (let i = 6; i < 9; i++) {
+                for (let j = 3; j < 6; j++) {
+                    gameBoard[i][j] = 'O';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightcoral';
+                    document.getElementById(boxId).style.color = 'red';
+                }
+            }
+        }
+        if (
+            gameBoard[6][6] == 'O' && gameBoard[6][7] == 'O' && gameBoard[6][8] == 'O' ||
+            gameBoard[7][6] == 'O' && gameBoard[7][7] == 'O' && gameBoard[7][8] == 'O' ||
+            gameBoard[8][6] == 'O' && gameBoard[8][7] == 'O' && gameBoard[8][8] == 'O' ||
+            gameBoard[6][6] == 'O' && gameBoard[7][6] == 'O' && gameBoard[8][6] == 'O' ||
+            gameBoard[6][7] == 'O' && gameBoard[7][7] == 'O' && gameBoard[8][7] == 'O' ||
+            gameBoard[6][8] == 'O' && gameBoard[7][8] == 'O' && gameBoard[8][8] == 'O' ||
+            gameBoard[6][6] == 'O' && gameBoard[7][7] == 'O' && gameBoard[8][8] == 'O' ||
+            gameBoard[6][8] == 'O' && gameBoard[7][7] == 'O' && gameBoard[8][6] == 'O'
+        ) {
+            smallBoards[2][2] = 'O';
+            for (let i = 6; i < 9; i++) {
+                for (let j = 6; j < 9; j++) {
+                    gameBoard[i][j] = 'O';
+                    const boxId = `box_${i}_${j}`;
+                    const boxElement = document.getElementById(boxId);
+                    boxElement.style.backgroundColor = 'lightcoral';
+                    document.getElementById(boxId).style.color = 'red';
+                }
+            }
+        }
+        return smallBoards;
+    }
+
+    function isBigBoardWon() {
+        if (
+            smallBoards[0][0] == 'X' && smallBoards[0][1] == 'X' && smallBoards[0][2] == 'X' ||
+            smallBoards[1][0] == 'X' && smallBoards[1][1] == 'X' && smallBoards[1][2] == 'X' ||
+            smallBoards[2][0] == 'X' && smallBoards[2][1] == 'X' && smallBoards[2][2] == 'X' ||
+            smallBoards[0][0] == 'X' && smallBoards[1][0] == 'X' && smallBoards[2][0] == 'X' ||
+            smallBoards[0][1] == 'X' && smallBoards[1][1] == 'X' && smallBoards[2][1] == 'X' ||
+            smallBoards[0][2] == 'X' && smallBoards[1][2] == 'X' && smallBoards[2][2] == 'X' ||
+            smallBoards[0][0] == 'X' && smallBoards[1][1] == 'X' && smallBoards[2][2] == 'X' ||
+            smallBoards[0][2] == 'X' && smallBoards[1][1] == 'X' && smallBoards[2][0] == 'X'
+        ) {
+            return 'X';
+        } else if (
+            smallBoards[0][0] == 'O' && smallBoards[0][1] == 'O' && smallBoards[0][2] == 'O' ||
+            smallBoards[1][0] == 'O' && smallBoards[1][1] == 'O' && smallBoards[1][2] == 'O' ||
+            smallBoards[2][0] == 'O' && smallBoards[2][1] == 'O' && smallBoards[2][2] == 'O' ||
+            smallBoards[0][0] == 'O' && smallBoards[1][0] == 'O' && smallBoards[2][0] == 'O' ||
+            smallBoards[0][1] == 'O' && smallBoards[1][1] == 'O' && smallBoards[2][1] == 'O' ||
+            smallBoards[0][2] == 'O' && smallBoards[1][2] == 'O' && smallBoards[2][2] == 'O' ||
+            smallBoards[0][0] == 'O' && smallBoards[1][1] == 'O' && smallBoards[2][2] == 'O' ||
+            smallBoards[0][2] == 'O' && smallBoards[1][1] == 'O' && smallBoards[2][0] == 'O'
+        ) {
+            return 'O';
+        } else {
+            let isDraw = true;
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (smallBoards[i][j] === '') {
+                        isDraw = false;
+                        break;
+                    }
+                }
+                if (!isDraw) {
+                    break;
+                }
+            }
+
+            if (isDraw) {
+                return "Draw";
+            }
+        }
+    }
+    function removeHighlight() {
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
+                const boxId = `box_${i}_${j}`;
+                const boxElement = document.getElementById(boxId);
+                if (boxElement.style.backgroundColor !== 'lightblue' && boxElement.style.backgroundColor !== 'lightcoral') {
+                    boxElement.style.backgroundColor = '';
+                }
+
+            }
+        }
+    }
+    function getValidMoves() {
+        const validMoves = [];
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (isValidMove(row, col, previousRow, previousCol)) {
+                    validMoves.push({ row, col });
+                }
+            }
+        }
+        return validMoves;
+    }
+    function highlightValidMoves() {
+        const validMoves = getValidMoves();
+        validMoves.forEach(({ row, col }) => {
+            const boxId = `box_${row}_${col}`;
+            const boxElement = document.getElementById(boxId);
+            boxElement.style.backgroundColor = 'rgb(177, 165, 149)';
+        });
+    }
+
+    function updateBoardUI() {
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
+                const boxId = `box_${i}_${j}`;
+                const boxElement = document.getElementById(boxId);
+                boxElement.innerHTML = gameBoard[i][j];
+            }
+        }
+        const player1Element = document.getElementById('Player-1');
+        const player2Element = document.getElementById('Player-2');
+        if (playMode === "pVSp") {
+            if (currentPlayer === 1) {
+                player1Element.style.backgroundColor = 'lightblue';
+                player2Element.style.backgroundColor = '';
+            } else {
+                player1Element.style.backgroundColor = '';
+                player2Element.style.backgroundColor = 'lightcoral';
+            }
+        }
+
+    }
+
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            const boxId = `box_${i}_${j}`;
+            const boxElement = document.getElementById(boxId);
+
+            boxElement.addEventListener('click', () => {
+                makeMove(i, j);
+            });
+        }
+    }
+
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<link href='https://fonts.googleapis.com/css?family=Finger Paint' rel='stylesheet'>
+<title>Ultimate Tic Tac Toe</title>
+<style>
+    body {
+        font-family: 'Finger Paint';
+    }
+
+    .box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        background-color: #ddd;
+        border-right: 1px solid #000;
+        border-bottom: 1px solid #000;
+        margin: 0;
+        transition: background-color 0.2s ease;
+        font-size: 140%;
+    }
+
+    .box:hover {
+        background-color: #bbb;
+    }
+
+    .box:nth-child(n+73) {
+        border-bottom: 0;
+    }
+
+    .box:nth-child(3n) {
+        border-right: 3px solid #000;
+    }
+
+    .box:nth-child(9n) {
+        border-right: 0;
+    }
+
+    .box:nth-child(n+19):nth-child(-n+27),
+    .box:nth-child(n+46):nth-child(-n+54) {
+        border-bottom: 3px solid #000;
+    }
+
+    #GameBoard {
+        border-spacing: 0;
+        margin-bottom: 3px;
+        display: grid;
+        grid-template-columns: repeat(9, 1fr);
+        grid-gap: 0px;
+    }
+
+    #Player-1 {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: blue;
+        font-size: 50px;
+        margin-bottom: 3px;
+        border-radius: 10px;
+        border: 2px solid #000;
+    }
+
+    #Player-2 {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: red;
+        font-size: 50px;
+        margin-bottom: 3px;
+        border-radius: 10px;
+        border: 2px solid #000;
+    }
+</style>
