@@ -7,21 +7,45 @@ description: |
 ---
 <div class="game-container">
     <div class="game-mode row">
-        <button class="btn btn-primary col-3" onclick="startGame('player')" id="player">Player 1 vs Player 2</button>
-        <button class="btn btn-primary col-3" onclick="startGame('computer')" id="computer">Player vs Computer</button>
+        <div class = "col d-flex justify-content-end p-3">
+            <button class= "btn btn-primary col-5" onclick="startGame('player')" id="player">Player 1 vs Player 2</button>
+        </div>
+        <div class = "col d-flex justify-content-start p-3">
+            <button class="btn btn-primary col-5" onclick="startGame('computer')" id="computer">Player vs Computer</button>
+        </div>
+        
     </div>
-    <h5 id="playerVsCom"></h5>
+    <div class="row text-center">
+        <h5 id="playerVsCom"></h5>
+    </div>
     <div class="row">
-        <button class="btn btn-primary col-3" onclick = "modeGame('easy')" id="easy" style="display:none;">Easy</button>
-        <button class="btn btn-primary col-3" onclick="modeGame('hard')" id="hard" style="display:none;">Hard</button>
+        <div class = "col d-flex justify-content-end p-3">
+            <button class="btn btn-primary col-5" onclick = "modeGame('easy')" id="easy" style="display:none;">Easy</button>
+        </div>
+        <div class = "col d-flex justify-content-start p-3">
+            <button class="btn btn-primary col-5" onclick="modeGame('hard')" id="hard" style="display:none;">Hard</button>
+        </div>
     </div>
+    <div class="row text-center">
     <h5 id = "game"></h5>
-
-    <div class="player-turn" id="player-turn"></div>
-    <button id="one" class="hidden btn btn-danger" disabled onclick="play(1)">1</button>
-    <button id="two" class="hidden btn btn-warning" disabled onclick="play(2)">2</button>
-    <button id="three" class="hidden btn btn-info" disabled onclick="play(3)">3</button>
-    <div class="total" id="total">Total: 0</div>
+    </div>
+    <div class="row align-items-center text-center" id="player-turn"><h5 id = "player-turn-1"></h5></div><br>
+    <div class = "row">
+        <div class="col-5"></div>
+        <div class="col">
+            <button id="one" class="hidden btn btn-danger" disabled onclick="play(1)">1</button>
+        </div>
+        <div class="col">
+            <button id="two" class="hidden btn btn-warning" disabled onclick="play(2)">2</button>
+        </div>
+        <div class="col">
+            <button id="three" class="hidden btn btn-info" disabled onclick="play(3)">3</button>
+        </div>
+        <div class="col-5"></div>
+    </div>
+    <div class = "row hidden player-turn alert alert-success mt-3 d-none" id="player-result">
+    </div><br>
+    <div class="total text-center" id="total">Total: 0</div>
     <h2>Game History</h2>
     <div class="game-history" id="game-history">
         
@@ -65,7 +89,7 @@ description: |
         history.length = 0;
         document.getElementById("player").disabled = true;
         document.getElementById("computer").disabled = true;
-        document.getElementById("player-turn").textContent = `Player ${currentPlayer}'s turn`;
+        document.getElementById("player-turn-1").textContent = `Player ${currentPlayer}'s turn`;
         document.getElementById("one").classList.remove("true");
         document.getElementById("two").classList.remove("true");
         document.getElementById("three").classList.remove("true");
@@ -127,15 +151,24 @@ description: |
     }
 
     function displayResult() {
-        const resultDiv = document.getElementById("player-turn");
-        resultDiv.textContent = `Player ${3 - currentPlayer} wins!`;
+        const resultDiv = document.getElementById("player-result");
+        resultDiv.classList.remove("d-none");
+        if(gameMode === 'player'){
+        resultDiv.innerHTML = `<span><center> Player ${3 - currentPlayer} wins! <center></span>`;
+        }else if(gameMode === 'computer'){
+            if(currentPlayer === 2){
+                resultDiv.innerHTML = `<span><center> You Won! </center></span>`;
+            }else if(currentPlayer === 1){
+                resultDiv.innerHTML = `<span><center> Computer Won! </center></span>`;
+            }
+        }
 
         updateGameHistory();
         disableButtons();
     }
 
     function updateGameInfo() {
-        const playerTurnDiv = document.getElementById("player-turn");
+        const playerTurnDiv = document.getElementById("player-turn-1");
         playerTurnDiv.textContent = `Player ${currentPlayer}'s turn`;
 
         updateGameHistory();

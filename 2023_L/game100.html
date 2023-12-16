@@ -8,24 +8,36 @@ rules: |
 ---
 <div class="game-container">
     <div class="game-mode row">
-        <button onclick="startGame('player')" id="player" class="btn btn-primary col-3">Player 1 vs Player 2</button>
-        <button onclick="startGame('computer')" id="computer" class="btn btn-primary col-3">Player vs Computer</button>
+        <div class = "col d-flex justify-content-end p-3">
+            <button onclick="startGame('player')" id="player" class="btn btn-primary col-5">Player 1 vs Player 2</button>
+        </div>
+        <div class="col p-3">
+            <button onclick="startGame('computer')" id="computer" class="btn btn-primary col-5">Player vs Computer</button>
+        </div>
     </div>
-    <h5 id="gameModePlayer"></h5>
+    <div class="row text-center">
+        <h5 id="gameModePlayer"></h5>
+    </div>
 
     <div class="row">
-        <button class="btn btn-primary col-3" onclick = "modeGame('easy')" id="easy" style="display:none;">Easy</button>
-        <button class="btn btn-primary col-3" onclick="modeGame('hard')" id="hard" style="display:none;">Hard</button>
+        <div class="col d-flex justify-content-end p-3">
+            <button class="btn btn-primary col-5" onclick = "modeGame('easy')" id="easy" style="display:none;">Easy</button>
+        </div>
+        <div class="col p-3">
+            <button class="btn btn-primary col-5" onclick="modeGame('hard')" id="hard" style="display:none;">Hard</button>
+        </div>
     </div>
-    <h5 id = "game"></h5>
+    <div class="row text-center">
+        <h5 id = "game"></h5>
+    </div><br>
 
-    <div class="hidden player-turn" id="player-turn"></div>
-    <div class="hidden player-turn alert alert-success mt-3 d-none" id="player-result"></div>
+    <div class="row hidden player-turn text-center" id="player-turn-1"><h5 id="player-turn"></h5></div>
+    <div class="row hidden player-turn alert alert-success mt-3 d-none text-center" id="player-result"></div>
     <div class="input-container col-xs-3" id="numberGame" >
-    <input type="number" id="number-input" class="form-control" min="1" max="10" placeholder="Enter a number" disabled="true">
-    <button id="add-btn" disabled="true" class="btn btn-success" >Add</button>
-</div>
-    
+        <input type="number" id="number-input" class="form-control" min="1" max="10" placeholder="Enter a number" disabled="true">
+        <button id="add-btn" disabled="true" class="btn btn-success" >Add</button>
+    </div>
+
     <div class="total" id="total">Total: 0</div>
     <h2>Game History</h2>
     <div class="game-history" id="game-history">
@@ -48,6 +60,12 @@ rules: |
     const history = [];
     let gameMode;
     var modeForComputer;
+    document.getElementById("number-input").addEventListener("keypress", (event) => {
+        if(event.key === "Enter"){
+        event.preventDefault();
+        document.getElementById("add-btn").click();
+        }
+    });
     document.getElementById("add-btn").addEventListener("click", function() {
         const numberInput = document.getElementById("number-input");
         const number = parseInt(numberInput.value);
@@ -143,7 +161,15 @@ rules: |
     function displayResult() {
         const resultDiv = document.getElementById("player-result");
         resultDiv.classList.remove("d-none");
+        if(gameMode == 'player'){
         resultDiv.innerHTML = `<span > Player ${currentPlayer} wins! </span>`;
+        }else if(gameMode == 'computer'){
+            if(currentPlayer==1){
+                resultDiv.innerHTML = `<span > You Won! </span>`;
+            }else if(currentPlayer == 2){
+                resultDiv.innerHTML = `<span > Computer Won! </span>`;
+            }
+        }
         updateTotal();
         updateGameHistory();
         disableButtons();

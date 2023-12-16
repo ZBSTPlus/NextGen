@@ -7,9 +7,11 @@ rules: |
     To win the game, Unscramble the word using the given hint.
 ---
 <div class="container">
-    <p><strong>Hint:</strong> <span id="hint"></span></p>
-    <div id="scrambled-word"></div>
-    <input type="text" id="guess" class="form-control mb-3" placeholder="Enter your guess">
+    <div class="row fs-5"><strong>Hint:</strong> <span id="hint"></span></div><br>
+    <div class="row fs-4" id="scrambled-word"></div><br>
+    <div class="row">
+        <input type="text" id="guess" class="form-control mb-3" placeholder="Enter your guess">
+    </div>
     <button class="btn btn-primary" onclick="checkGuess()">Submit Guess</button>
     <button class="btn btn-secondary " onclick="resetGame()">Next Word</button>
     <p id="message" class="mt-3"></p>
@@ -30,10 +32,18 @@ rules: |
         { word: 'functional', hint: 'Capable of or designed for a particular purpose'}
     ];
 
-    let currentWordIndex = 0;
+    let currentWordIndex = getRandomIndex(words.length);
     let scrambledWord = scrambleWord(words[currentWordIndex].word);
     let chancesLeft = 4;
 
+    document.addEventListener("keydown", function (event) {
+        if (event.keyCode === 13) {
+            checkGuess();
+        }
+    });
+    function getRandomIndex(max) {
+        return Math.floor(Math.random() * max);
+    }
     function scrambleWord(word) {
         return word.split('').sort(function() {
             return 0.5 - Math.random();

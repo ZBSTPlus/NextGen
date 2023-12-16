@@ -29,7 +29,12 @@ rules: |
 <script>
     let secretCode = generateSecretCode();
     let attempts = 0;
-
+    document.getElementById("guessInput").addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("submitGuess").click();
+        }
+    });
     document.getElementById("submitGuess").addEventListener("click", () => {
         const guess = document.getElementById("guessInput").value;
         if (guess.length !== 4 || !isValidGuess(guess)) {
