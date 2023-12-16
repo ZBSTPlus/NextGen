@@ -38,6 +38,11 @@ rules: |
     let guessedLetters = [];
     let incorrectGuesses = 0;
 
+    document.addEventListener("keydown", function (event) {
+        if (event.keyCode === 13) {
+            checkGuess();
+        }
+    });
     function getRandomWord() {
         const filteredWords = words.filter(word => word.word.length >= 6 && word.word.length <= 7);
         return filteredWords[Math.floor(Math.random() * filteredWords.length)].word;

@@ -71,8 +71,15 @@ description: Guess the secret number!
     let maxAttempts = 10; // Change the maximum number of guesses here
     updateGuessesLeft();
 
+    document.getElementById("guessInput").addEventListener("keypress", (event) => {
+        if(event.key === "Enter"){
+            event.preventDefault();
+            document.getElementById("submitGuess").click();
+        }
+    });
     document.getElementById("submitGuess").addEventListener("click", () => {
-        const guess = document.getElementById("guessInput").value;
+        const guessInput = document.getElementById("guessInput");
+        const guess = guessInput.value;
         const result = checkGuess(guess);
 
         document.getElementById("message").innerHTML = result;
@@ -88,6 +95,7 @@ description: Guess the secret number!
             document.getElementById("message").innerHTML = `Out of attempts. The correct number was ${secretNumber}.`;
             document.getElementById("submitGuess").disabled = true;
         }
+        guessInput.value = "";
     });
 
     function addToHistory(guess, outcome) {
