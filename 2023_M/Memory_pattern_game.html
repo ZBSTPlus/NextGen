@@ -1,0 +1,186 @@
+---
+layout: default
+title: Memory Pattern Game
+description: |
+  1.Engage your memory and pattern recognition skills with this exciting game that presents sequences of numbers for you to decipher.
+  2.Experience a variety of dynamic number patterns, each with its own set of rules and options, keeping the challenge fresh and unpredictable.
+  3.Receive instant feedback on your guesses, allowing you to learn and adapt as you progress through the game.
+  4.Time is of the essence! Each correct answer is timed, contributing to your overall score and adding an elemen4t of urgency to the gameplay.
+  5.Strive for excellence by achieving the best possible time across all questions, testing not only your memory but also your speed.
+rules: |
+  1.Analyze the given hint and previous numbers in the sequence to predict the next number and select the correct option.
+  2.Earn points for each correct answer and lose points for incorrect guesses. The faster you solve each question, the higher your overall score.
+  3.The clock is ticking! A timer starts with each question, capturing the time taken for your response. Keep an eye on your speed to improve your3. performance.
+  4.Progress through a dynamic set of questions, each presenting a unique pattern, ensuring a challenging and engaging experience.
+  5.Strive to achieve the all-time best time by efficiently solving each question. The player with the best overall time becomes the ultimate memory pattern master.
+---
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .container {
+      margin-top: 50px;
+    }
+    #game-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #options button {
+      margin: 5px;
+      width: 70px;
+      font-size: 18px;
+    }
+    #result {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+    #score, #timer, #best-time {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+    #next-btn, #stop-btn {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    h1 {
+      color: #007bff;
+    }
+  </style>
+
+
+<div class="container">
+  <h1 class="text-center">Memory Pattern Game</h1>
+
+  <div id="game-container" class="text-center">
+    <p id="hint" class="font-weight-bold"></p>
+    <p id="question" class="font-weight-bold"></p>
+    <div id="options" class="btn-group"></div>
+    <p id="result" class="text-success font-weight-bold"></p>
+    <p id="score" class="font-weight-bold">Score: 0</p>
+    <p id="timer" class="font-weight-bold">Time: 0 seconds</p>
+    <p id="best-time" class="font-weight-bold">All-Time Best Time: -</p>
+    <button id="next-btn" class="btn btn-primary">Next Question</button>
+    <button id="stop-btn" class="btn btn-danger">Stop</button>
+  </div>
+</div>
+
+<script src="game-data.js"></script>
+<script>
+  let currentQuestionIndex = 0;
+  let score = 0;
+  let startTime;
+  let totalTime = 0;
+  let bestTime = Infinity;
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  function displayQuestion() {
+    startTime = new Date().getTime();
+    shuffleArray(gameData);
+    const currentQuestion = gameData[currentQuestionIndex];
+    document.getElementById('hint').innerText = `Give the hint: ${currentQuestion.hint.join(', ')}`;
+    document.getElementById('question').innerText = `${currentQuestion.sequence.slice(0, -1).join(', ')} ?`;
+
+    const optionsContainer = document.getElementById('options');
+    optionsContainer.innerHTML = '';
+    currentQuestion.options.forEach(option => {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-secondary';
+      btn.innerText = option;
+      btn.addEventListener('click', () => checkAnswer(option));
+      optionsContainer.appendChild(btn);
+    });
+
+    document.getElementById('score').innerText = `Score: ${score}`;
+    document.getElementById('timer').innerText = 'Time: 0 seconds';
+    document.getElementById('best-time').innerText = `All-Time Best Time: ${bestTime} seconds`;
+    startTimer();
+  }
+
+  function checkAnswer(selectedOption) {
+    const currentQuestion = gameData[currentQuestionIndex];
+    const resultElement = document.getElementById('result');
+    const endTime = new Date().getTime();
+    const timeTaken = (endTime - startTime) / 1000; // in seconds
+
+    totalTime += timeTaken;
+
+    if (parseInt(selectedOption) === currentQuestion.answer) {
+      resultElement.innerText = `Your guess is correct! Time taken: ${timeTaken.toFixed(2)} seconds`;
+      score++;
+    } else {
+      resultElement.innerText = `Incorrect. Try again. Time taken: ${timeTaken.toFixed(2)} seconds`;
+      score--;
+    }
+
+    stopTimer();
+  }
+
+  function startTimer() {
+    const timerElement = document.getElementById('timer');
+    let elapsedSeconds = 0;
+
+    function updateTimer() {
+      elapsedSeconds++;
+      timerElement.innerText = `Time: ${elapsedSeconds} seconds`;
+    }
+
+    startTime = new Date().getTime();
+    updateTimer(); // Display initial time
+
+    // Update the timer every second
+    const timerInterval = setInterval(updateTimer, 1000);
+
+    // Save the interval ID so we can stop the timer later
+    timerElement.dataset.timerInterval = timerInterval;
+  }
+
+  function stopTimer() {
+    const timerElement = document.getElementById('timer');
+    clearInterval(timerElement.dataset.timerInterval);
+
+    const elapsedTime = parseInt(timerElement.innerText.split(' ')[1]); // Extract seconds
+    if (elapsedTime < bestTime) {
+      bestTime = elapsedTime;
+    }
+
+    document.getElementById('best-time').innerText = `All-Time Best Time: ${bestTime} seconds`;
+  }
+
+  function nextQuestion() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < gameData.length) {
+      displayQuestion();
+      document.getElementById('result').innerText = '';
+    } else {
+      document.getElementById('game-container').innerHTML = `
+        <h2 class="text-center">Congratulations! You completed the game.</h2>
+        <p class="font-weight-bold">Final Score: ${score}</p>
+        <p class="font-weight-bold">Total Time: ${totalTime.toFixed(2)} seconds</p>
+        <p class="font-weight-bold">Best Time: ${bestTime} seconds</p>
+      `;
+    }
+  }
+
+  document.getElementById('next-btn').addEventListener('click', nextQuestion);
+
+  document.getElementById('stop-btn').addEventListener('click', () => {
+    stopTimer();
+    document.getElementById('game-container').innerHTML = `
+      <h2 class="text-center">Game Stopped.</h2>
+      <p class="font-weight-bold">Final Score: ${score}</p>
+      <p class="font-weight-bold">Total Time: ${totalTime.toFixed(2)} seconds</p>
+      <p class="font-weight-bold">Best Time: ${bestTime} seconds</p>
+    `;
+  });
+
+  displayQuestion();
+</script>
+
