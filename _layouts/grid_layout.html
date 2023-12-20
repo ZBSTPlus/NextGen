@@ -1,0 +1,126 @@
+---
+layout: default
+---
+
+{% assign gs = page.gs %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col text-center">
+            <button class="btn btn-primary" id="startGame" onclick="startGame()">Start Game</button>
+        </div>
+    </div>
+    <div class="row" id="winDeclaration"></div>
+    <div class="row p-5">
+        <div class="col table-responsive">
+            <table class="mx-auto table-bordered" id="grid"></table>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <div class="col col-6" id="gameValues"></div>
+    </div>
+    <div class="row">
+        <div class="col text-center" id="resetButton" onclick="resetGame()"></div>
+    </div>
+</div>
+{{ content }}
+<script>
+    var n = 6;
+    const grid = document.getElementById("grid");
+    const timerDisplay = document.getElementById("timer");
+    const correctAnswersDisplay = document.getElementById("correctAnswers");
+    const wrongAnswersDisplay = document.getElementById("WrongAnswers");
+    const totalNumsDisplay = document.getElementById("totalTypedNumbers");
+    const winDeclaration = document.getElementById("winDeclaration")
+
+    let timer = 30;
+    let correctAnswers = 0;
+    let wrongAnswers = 0;
+    let numbers = [];
+    let ourNumbers = [];
+    let interval;
+    let gameOver = false;
+
+
+
+    function resetGame(){
+        clearInterval(interval);
+        timer = 30;
+        correctAnswers = 0;
+        wrongAnswers = 0;
+        timerDisplay.innerText = timer.toFixed(2);
+        correctAnswersDisplay.innerText = 0;
+        wrongAnswersDisplay.innerText = 0;
+        totalNumsDisplay.innerText = 0;
+        winDeclaration.innerHTML = '';
+        timerLabel.classList.remove("blink");
+        gameOver = false; // Reset the game-over flag
+        generateGrid();
+        interval = setInterval(updateTimer, 10);
+    }
+    function startGame(){
+        resetButton.innerHTML = `<button class="btn btn-primary" id="resetGame">Rest Game</button>`;
+        gameValues.innerHTML = `
+                                <table class="table table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <td class="col-4 text-nowrap">Timer</td>
+                                                <td class="col-1 text-nowrap">:</td>
+                                                <td id="timer" class="col-7 text-nowrap"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col-4 text-nowrap">Correct Answers</td>
+                                                <td class="col-1 text-nowrap">:</td>
+                                                <td id="correctAnswers" class="col-7 text-nowrap"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col-4 text-nowrap">Wrong Answers</td>
+                                                <td class="col-1 text-nowrap">:</td>
+                                                <td id="wrongAnswers" class="col-7 text-nowrap"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col-4 text-nowrap">Total Numbers Present</td>
+                                                <td class="col-1 text-nowrap">:</td>
+                                                <td id="totalTypedNumbers" class="col-7 text-nowrap"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                `;
+        generateGrid(6);
+    }
+
+</script>
+
+</script>
+<style>
+  #grid table {
+  border-collapse: collapse;
+  margin: 20px auto;
+    }
+    #grid table, #grid th, #grid td {
+    border: 1px solid black;
+    }
+    #grid th, #grid td {
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    font-size: 24px;
+    }
+
+  .green {
+    background-color: green;
+  }
+  .red {
+    background-color: red;
+  }
+  .blink {
+    animation: blinker 1s linear infinite;
+  }
+  @keyframes blinker {
+    50% { opacity: 0; }
+  }
+  .big-timer {
+    font-size: 36px;
+    font-weight: bold;
+    color: #f00;
+  }
+</style>
