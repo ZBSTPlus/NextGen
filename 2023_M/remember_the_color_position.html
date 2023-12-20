@@ -13,18 +13,34 @@ rules: |
   4.The game calculates the percentage of correct answers, reflecting the player's memory accuracy.
   5.After receiving the score, players can choose to reset the game and try again by clicking the "Reset Game" button.
 ---
+
   <style>
+    body {
+      background-color: #f8f9fa;
+      
+    }
+
+    .container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    h1 {
+      color: #007bff;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
     .grid-container {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-gap: 10px;
-      margin-bottom: 20px;
-    }
-    .inputs-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-gap: 10px;
-      margin-bottom: 20px;
+      text-align: center;
+      max-width: 300px; /* Set the maximum width for the grid */
+      margin: 0 auto; /* Center the grid within the container */
     }
 
     .grid-item {
@@ -32,29 +48,67 @@ rules: |
       height: 100px;
       text-align: center;
       line-height: 100px;
+      background-color: transparent;
+      border: 2px solid #dee2e6;
+      border-radius: 5px;
+      font-size: 18px;
+      font-weight: bold;
+      transition: background-color 0.5s ease-in-out;
     }
 
-    #question-container {
-      margin-top: 20px;
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #007bff;
+      border-radius: 5px;
+      transition: border-color 0.3s ease-in-out;
+    }
+
+    input:focus {
+      border-color: #0056b3;
+    }
+
+    #submitBtn,
+    #resetBtn {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    #score {
+      text-align: center;
     }
   </style>
 
 
-<div class="container mt-5">
-  <h1>Remember the Color position</h1>
-  <button id="startBtn" class="btn btn-primary" onclick="startGame()">Start Game</button>
-  <button id="resetBtn" class="btn btn-warning" onclick="resetGame()" style="display: none;">Reset Game</button>
+<div class="container">
+  <!-- <h1>Remember the Color Position</h1> -->
+  <button id="startBtn" class="btn btn-primary btn-block" onclick="startGame()"><centre>Start Game</centre></button>
+  <button id="resetBtn" class="btn btn-warning btn-block" onclick="resetGame()" style="display: none;">Reset Game</button>
 
   <div id="grid" class="grid-container"></div>
 
   <div id="question-container" class="inputs-grid"></div>
 
-  <button id="submitBtn" class="btn btn-success" onclick="submitAnswers()" style="display: none;">Submit Answers</button>
+  <button id="submitBtn" class="btn btn-success btn-block" onclick="submitAnswers()" style="display: none;">Submit Answers</button>
 
   <div id="score"></div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 <script>
+  // Your existing JavaScript code...
   const colors = ["red", "blue", "green", "orange", "yellow"];
   let gridColors = [];
   let userAnswers = [];
@@ -173,3 +227,4 @@ rules: |
     scoreElement.innerHTML = `<h4>Your Score: ${score.toFixed(2)}%</h4>`;
   }
 </script>
+
