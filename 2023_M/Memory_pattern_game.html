@@ -14,72 +14,6 @@ rules: |
   4.Progress through a dynamic set of questions, each presenting a unique pattern, ensuring a challenging and engaging experience.
   5.Strive to achieve the all-time best time by efficiently solving each question. The player with the best overall time becomes the ultimate memory pattern master.
 ---
-  <style>
-    body {
-      
-      color: #f8f9fa;
-      font-family: 'Arial', sans-serif;
-    }
-
-    .container {
-      margin-top: 50px;
-    }
-
-    #game-container {
-      background-color: #2c3e50;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
-    }
-
-    h1 {
-      color: #3498db;
-    }
-
-    #hint, #question {
-      font-size: 18px;
-    }
-
-    #options {
-      margin-top: 20px;
-    }
-
-    .btn-secondary {
-      font-size: 18px;
-      margin: 5px;
-    }
-
-    #result {
-      font-size: 20px;
-      margin-top: 20px;
-    }
-
-    #score {
-      font-size: 24px;
-      margin-top: 10px;
-    }
-
-    #time {
-      font-size: 20px;
-      margin-top: 10px;
-    }
-
-    #next-btn, #stop-btn {
-      margin-top: 20px;
-    }
-
-    #stop-btn {
-      margin-left: 10px;
-    }
-
-    .btn-primary, .btn-danger {
-      font-size: 18px;
-      padding: 10px 20px;
-    }
-
-  </style>
-
-
 <div class="container">
   <h1 class="text-center">Memory Pattern Game</h1>
   <div id="game-container" class="text-center">
@@ -88,7 +22,6 @@ rules: |
     <div id="options" class="btn-group"></div>
     <p id="result"></p>
     <p id="score">Score: 0</p>
-    <p id="time"></p>
     <button id="next-btn" class="btn btn-primary">Next Question</button>
     <button id="stop-btn" class="btn btn-danger">Stop</button>
   </div>
@@ -99,20 +32,13 @@ rules: |
   let score = 0;
   let options = [];
   let gameData;
-  let startTime;
-  let bestTime = localStorage.getItem('bestTime') || Infinity;
 
   // Function to generate a random number between 0 and 99
   const getRandomNumber = () => Math.floor(Math.random() * 100);
 
   // Addition function
   const addition = () => {
-    const a = getRandomNumber();
-    const b = getRandomNumber();
-    const c = getRandomNumber();
-    const d = getRandomNumber();
-    const e = getRandomNumber();
-    const f = getRandomNumber();
+    let [a,b,c,d,e,f]=[getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber()];
     return {
       q: [[a, b, a + b],
          [c, d, c + d],
@@ -123,35 +49,25 @@ rules: |
 
   // Subtraction function
   const subtraction = () => {
-    const a = getRandomNumber();
-    const b = getRandomNumber();
-    const c = getRandomNumber();
-    const d = getRandomNumber();
-    const e = getRandomNumber();
-    const f = getRandomNumber();
-    if(f>e){
-      return {
-      q: [[a, b, a - b],
-         [c, d, c - d],
-         [f, e, '?']],
-      a: f - e}
-    }
+  let [a,b,c,d,e,f]=[getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber()];
+  if(f>e){
     return {
-      q: [[a, b, a - b],
-         [c, d, c - d],
-         [e, f, '?']],
-      a: e - f
-    };
+    q: [[a, b, a - b],
+       [c, d, c - d],
+       [f, e, '?']],
+    a: f - e}
+  }
+  return {
+    q: [[a, b, a - b],
+       [c, d, c - d],
+       [e, f, '?']],
+    a: e - f
   };
+};
 
   // Multiplication function
   const multiplication = () => {
-    const a = getRandomNumber();
-    const b = getRandomNumber();
-    const c = getRandomNumber();
-    const d = getRandomNumber();
-    const e = getRandomNumber();
-    const f = getRandomNumber();
+    let [a,b,c,d,e,f]=[getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber()];
     return {
       q: [[a, b, a * b],
         [c, d, c * d],
@@ -168,7 +84,7 @@ rules: |
     gameData = selectedOperation();
 
     document.getElementById('hint').innerText = `Hint for the below problem: \n${gameData.q[0]} \n${gameData.q[1]}`;
-    document.getElementById('question').innerText = ` Your Question \n${gameData.q[2]}`;
+    document.getElementById('question').innerText = `${gameData.q[2]}`;
 
     const optionsContainer = document.getElementById('options');
     optionsContainer.innerHTML = '';
@@ -189,19 +105,12 @@ rules: |
 
     document.getElementById('result').innerText = '';
     document.getElementById('score').innerText = `Score: ${score}`;
-    startTime = new Date().getTime();
   }
 
   // Function to check the selected answer
   function checkAnswer(selectedOption) {
-
     const resultElement = document.getElementById('result');
-    const optionsButtons = document.querySelectorAll('.btn-secondary');
 
-    // Disable all option buttons
-    optionsButtons.forEach(button => {
-      button.disabled = true;
-    });
     if (parseInt(selectedOption) === gameData.a) {
       resultElement.innerText = 'Your guess is correct!';
       score++;
@@ -211,7 +120,6 @@ rules: |
     }
 
     document.getElementById('score').innerText = `Score: ${score}`;
-    document.getElementById('time').innerText = `Time: ${getTimeTaken(startTime)} seconds`;
   }
 
   // Function to move to the next question
@@ -220,16 +128,7 @@ rules: |
     if (currentQuestionIndex < 10) { // Set the number of questions you want
       displayQuestion();
     } else {
-      const currentTime = getTimeTaken(startTime);
-      if (currentTime < bestTime) {
-        bestTime = currentTime;
-        localStorage.setItem('bestTime', bestTime);
-      }
-
-      document.getElementById('game-container').innerHTML = `<h2 class="text-center">Congratulations! You completed the game.</h2>
-        <p class="text-center">Final Score: ${score}</p>
-        <p class="text-center">Time Taken: ${currentTime} seconds</p>
-        <p class="text-center">Best All-Time: ${bestTime} seconds</p>`;
+      document.getElementById('game-container').innerHTML = `<h2 class="text-center">Congratulations! You completed the game. Final Score: ${score}</h2>`;
     }
   }
 
@@ -238,25 +137,8 @@ rules: |
 
   // Event listener for the stop button
   document.getElementById('stop-btn').addEventListener('click', () => {
-    const currentTime = getTimeTaken(startTime);
-    if (currentTime < bestTime) {
-      bestTime = currentTime;
-      localStorage.setItem('bestTime', bestTime);
-    }
-
-    document.getElementById('game-container').innerHTML = `<h2 class="text-center">Game Stopped.</h2>
-      <p class="text-center">Final Score: ${score}</p>
-      <p class="text-center">Time Taken: ${currentTime} seconds</p>
-      <p class="text-center">Best All-Time: ${bestTime} seconds</p>`;
+    document.getElementById('game-container').innerHTML = `<h2 class="text-center">Game Stopped. Final Score: ${score}</h2>`;
   });
-
-  // Function to get the time taken in seconds
-  function getTimeTaken(startTime) {
-    const endTime = new Date().getTime();
-    const timeDiff = endTime - startTime;
-    const seconds = Math.floor(timeDiff / 1000);
-    return seconds;
-  }
 
   // Function to shuffle an array
   function shuffleArray(array) {
@@ -271,4 +153,8 @@ rules: |
 
   // Initial setup
   displayQuestion();
+
 </script>
+
+
+
