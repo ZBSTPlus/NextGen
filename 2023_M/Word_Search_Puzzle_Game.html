@@ -14,33 +14,6 @@ rules: |
 ---
 
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-
-        .container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-top: 50px;
-        }
-
-        #word-list {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-
-        #score {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-
-        #meaning-container {
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-
         #puzzle-container {
             font-size: 24px;
             font-weight: bold;
@@ -78,39 +51,6 @@ rules: |
             background-color: #28a745 !important;
             color: #fff;
         }
-
-        #checkButton {
-            margin-top: 10px;
-            margin-right: 10px;
-        }
-
-        #shuffleButton {
-            margin-top: 10px;
-            margin-left: 10px;
-        }
-
-        #timer {
-            font-size: 18px;
-            margin-top: 10px;
-            color: #dc3545;
-            display: inline-block;
-        }
-
-        #congratulations {
-            font-size: 18px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
     </style>
 
     <div class="container mt-5">
@@ -125,9 +65,6 @@ rules: |
         <div id="congratulations" class="text-center"></div>
     </div>
     
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         const wordsWithMeaning = [
             { word: 'JAVASCRIPT', meaning: 'A high-level, interpreted programming language' },

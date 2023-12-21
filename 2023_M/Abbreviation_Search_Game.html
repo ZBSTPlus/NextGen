@@ -15,31 +15,6 @@ rules: |
 ---
 
     <style>
-        .container {
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-top: 50px;
-            text-align: center;
-        }
-
-        h1 {
-            color: #007bff;
-        }
-
-        #full-form-list {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        #score {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
         #puzzle-container {
             font-size: 24px;
             font-weight: bold;
@@ -47,13 +22,6 @@ rules: |
             padding: 10px;
             display: inline-block;
             margin-bottom: 20px;
-        }
-
-        #congratulations-message {
-            font-size: 20px;
-            font-weight: bold;
-            color: #28a745;
-            margin-top: 20px;
         }
 
         .letter-cell {
@@ -77,29 +45,6 @@ rules: |
             background-color: #28a745;
             color: #fff;
         }
-
-        #checkButtonContainer {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        #checkButton {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        #shuffleButton {
-            font-size: 16px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-
-        #timer {
-            font-size: 18px;
-            font-weight: bold;
-            color: #dc3545;
-            margin-top: 20px;
-        }
     </style>
     <title>Abbreviation Search Game</title>
 
@@ -116,9 +61,6 @@ rules: |
         <div id="timer" class="text-center"></div>
     </div>
     
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         let abbreviations = {
             'Cascading Style Sheets': 'CSS',
