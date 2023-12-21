@@ -2,20 +2,27 @@
 layout: default
 title: Memory Pattern Game
 description: |
-  1.Engage your memory and pattern recognition skills with this exciting game that presents sequences of numbers for you to decipher.
-  2.Experience a variety of dynamic number patterns, each with its own set of rules and options, keeping the challenge fresh and unpredictable.
+  1.Engage your memory and pattern recognition skills with this exciting game that presents sequences of numbers for you
+  to decipher.
+  2.Experience a variety of dynamic number patterns, each with its own set of rules and options, keeping the challenge
+  fresh and unpredictable.
   3.Receive instant feedback on your guesses, allowing you to learn and adapt as you progress through the game.
-  4.Time is of the essence! Each correct answer is timed, contributing to your overall score and adding an elemen4t of urgency to the gameplay.
-  5.Strive for excellence by achieving the best possible time across all questions, testing not only your memory but also your speed.
+  4.Time is of the essence! Each correct answer is timed, contributing to your overall score and adding an elemen4t of
+  urgency to the gameplay.
+  5.Strive for excellence by achieving the best possible time across all questions, testing not only your memory but also
+  your speed.
 rules: |
   1.Analyze the given hint and previous numbers in the sequence to predict the next number and select the correct option.
-  2.Earn points for each correct answer and lose points for incorrect guesses. The faster you solve each question, the higher your overall score.
-  3.The clock is ticking! A timer starts with each question, capturing the time taken for your response. Keep an eye on your speed to improve your3. performance.
-  4.Progress through a dynamic set of questions, each presenting a unique pattern, ensuring a challenging and engaging experience.
-  5.Strive to achieve the all-time best time by efficiently solving each question. The player with the best overall time becomes the ultimate memory pattern master.
+  2.Earn points for each correct answer and lose points for incorrect guesses. The faster you solve each question, the
+  higher your overall score.
+  3.The clock is ticking! A timer starts with each question, capturing the time taken for your response. Keep an eye on
+  your speed to improve your3. performance.
+  4.Progress through a dynamic set of questions, each presenting a unique pattern, ensuring a challenging and engaging
+  experience.
+  5.Strive to achieve the all-time best time by efficiently solving each question. The player with the best overall time
+  becomes the ultimate memory pattern master.
 ---
 <div class="container">
-  <h1 class="text-center">Memory Pattern Game</h1>
   <div id="game-container" class="text-center">
     <p id="hint"></p>
     <p id="question"></p>
@@ -34,44 +41,37 @@ rules: |
   let gameData;
 
   // Function to generate a random number between 0 and 99
-  const getRandomNumber = () => Math.floor(Math.random() * 100);
+  const getRandomNumber = (x = 100) => Math.floor(Math.random() * x);
 
   // Addition function
   const addition = () => {
-    let [a,b,c,d,e,f]=[getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber()];
+    let [a, b, c, d, e, f] = [getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber()];
     return {
       q: [[a, b, a + b],
-         [c, d, c + d],
-         [e, f, '?']],
+      [c, d, c + d],
+      [e, f, '?']],
       a: e + f
     };
   };
 
   // Subtraction function
   const subtraction = () => {
-  let [a,b,c,d,e,f]=[getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber()];
-  if(f>e){
+    let [a, b, c, d, e, f] = [getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber()];
     return {
-    q: [[a, b, a - b],
-       [c, d, c - d],
-       [f, e, '?']],
-    a: f - e}
-  }
-  return {
-    q: [[a, b, a - b],
-       [c, d, c - d],
-       [e, f, '?']],
-    a: e - f
+      q: [[a, b, Math.abs(a - b)],
+      [c, d, Math.abs(c - d)],
+      [e, f, '?']],
+      a: Math.abs(e - f)
+    };
   };
-};
 
   // Multiplication function
   const multiplication = () => {
-    let [a,b,c,d,e,f]=[getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber(),getRandomNumber()];
+    let [a, b, c, d, e, f] = [getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber()];
     return {
       q: [[a, b, a * b],
-        [c, d, c * d],
-        [e, f, '?']],
+      [c, d, c * d],
+      [e, f, '?']],
       a: e * f
     };
   };
@@ -90,9 +90,9 @@ rules: |
     optionsContainer.innerHTML = '';
     const answer = gameData.a;
     options.push(answer);
-    options.push(answer + 5);
-    options.push(answer - 2);
-    options.push(answer + 7);
+    options.push(answer + getRandomNumber(10));
+    options.push(answer - getRandomNumber(10));
+    options.push(answer + getRandomNumber(15));
     shuffleArray(options);
 
     options.forEach(option => {
@@ -142,12 +142,7 @@ rules: |
 
   // Function to shuffle an array
   function shuffleArray(array) {
-    for (var i = array.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-    }
+    array.sort(() => Math.random() - 0.5);
     return array;
   }
 
@@ -155,6 +150,3 @@ rules: |
   displayQuestion();
 
 </script>
-
-
-
