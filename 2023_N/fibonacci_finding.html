@@ -39,21 +39,12 @@ You should not exceed more than 8 wrong answers
         totalNumsDisplay.innerHTML = ourNumbers.length;
     }
 
-    // Function to generate a unique random Fibonacci number
-    function getRandomUniqueNumber(max) {
-        let num;
-        do {
-            num = Math.floor(Math.random() * max) + 1;
-        } while (numbers.includes(num));
-
-        return num;
-    }
-
     // Function to check if a number is Fibonacci
     function isFibonacci(num) {
         return fibonacciList.includes(num);
     }
 
+    //function to check the selected number is fibonacci or not
     function checkIfFibonacci(num, cell) {
         if (gameOver) {
             return;
@@ -74,10 +65,10 @@ You should not exceed more than 8 wrong answers
             winDeclarationDisplay.classList.remove("d-none");
             winDeclarationDisplay.classList.remove("alert-success");
             winDeclarationDisplay.classList.add("alert-danger");
-            winDeclarationDisplay.innerHTML = "Your chances are over";
+            winDeclarationDisplay.innerHTML = "Your chances are over, Try again";
             gameOver = true;
         }
-        if (correctAnswers === fibonacciNumbers.length) {
+        if (correctAnswers === ourNumbers.length) {
             clearInterval(interval);
             winDeclarationDisplay.classList.remove("d-none");
             winDeclarationDisplay.innerHTML = "Congratulations! You found all Fibonacci numbers.";
@@ -101,13 +92,8 @@ You should not exceed more than 8 wrong answers
     function getRandomIndexFromFinalArray() {
         const randomNumbers = generateRandomNumbers();
         const fibonacciNumbers = generateFibonacciUnique();
-
-        // Union of the two arrays
         const finalArray = [...new Set([...randomNumbers, ...fibonacciNumbers])];
-
-        // Get a random index from finalArray
         const randomIndex = Math.floor(Math.random() * finalArray.length);
-
         return finalArray[randomIndex];
     }
 
