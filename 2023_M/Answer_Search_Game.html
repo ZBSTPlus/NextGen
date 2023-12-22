@@ -1,0 +1,264 @@
+---
+layout: default
+title: Answer Search Game
+description: |
+    1.The Word Search Game challenges players to find words hidden within a grid of letters, each related to a specific question.
+    2.The game features a variety of questions, and players must locate and select the letters that spell out the correct answer within the grid.
+    3.With an engaging interface, the game includes a real-time score tracker and a list of questions to solve, adding an educational aspect to the experience.
+    4.Players can enjoy a visually appealing puzzle where the goal is to identify and mark the correct letters in the right sequence to reveal the answers.
+rules: |
+    1.A list of questions is provided, and players need to find the corresponding answers hidden within the letter grid.
+    2.Clicking on individual letters in sequence forms a guess for the answer. Players can then click the "Check" button to verify their guess.
+    3.Correct guesses increase the player's score, and the corresponding cells in the grid are highlighted as found.
+    4.The game continues until all questions are correctly answered. A congratulatory message is displayed upon completion, along with the final score.
+    5.Players can reset the game at any time, starting a new round with a fresh set of questions and a shuffled grid, providing replayability.
+---
+    <style>
+        #puzzle-container {
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #000;
+            padding: 10px;
+            display: inline-block;
+        }
+
+        .letter-cell {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            line-height: 40px;
+            font-size: 20px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .letter-cell.selected {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .letter-cell.found {
+            background-color: #28a745;
+            color: #fff;
+        }
+    </style>
+    <title>Answer Search Game</title>
+
+    <div class="container mt-5">
+        <!-- <h1 class="text-center mb-4">Answer Search Game</h1> -->
+        <div id="question-list" class="text-center"></div>
+        <div id="score" class="text-center">Score: 0</div>
+        <div id="checkButtonContainer">
+            <button id="checkButton" class="btn btn-primary mt-3">Check</button>
+        </div>
+        <div id="puzzle-container" class="text-center"></div>
+        <div id="congratulations-message" class="text-center"></div>
+    </div>
+    <script>
+        const questionsWithAnswers = [
+            { question: 'A group of three powerful people?', answer: 'TRIUMVIRATE' },
+            { question: 'Which attribute is used to provide a unique name to an HTML element?', answer: 'ID' }
+            // Add more questions and answers as needed
+        ];
+
+        const gridSize = 12; // Adjust grid size as needed
+        const puzzleContainer = document.getElementById('puzzle-container');
+        const questionListContainer = document.getElementById('question-list');
+        const scoreContainer = document.getElementById('score');
+        const checkButtonContainer = document.getElementById('checkButtonContainer');
+        const congratulationsMessageContainer = document.getElementById('congratulations-message');
+        let puzzleGrid = generatePuzzleGrid(questionsWithAnswers.map(item => item.answer));
+        let selectedCells = [];
+        let score = 0;
+
+        updatePuzzle();
+        displayQuestionList();
+
+        const checkButton = document.getElementById('checkButton');
+        checkButton.addEventListener('click', checkGuess);
+
+        function generatePuzzleGrid(words) {
+            // Your existing puzzle grid generation code
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let grid = [];
+
+            // Initialize an empty grid
+            for (let i = 0; i < gridSize; i++) {
+                let row = [];
+                for (let j = 0; j < gridSize; j++) {
+                    row.push('');
+                }
+                grid.push(row);
+            }
+
+            // Place each word randomly in the grid
+            for (const word of words) {
+                let placed = false;
+                while (!placed) {
+                    const direction = getRandomDirection();
+                    const row = Math.floor(Math.random() * gridSize);
+                    const col = Math.floor(Math.random() * gridSize);
+                    placed = tryPlaceWord(grid, word, row, col, direction);
+                }
+            }
+
+            // Fill empty cells with random letters
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    if (grid[i][j] === '') {
+                        grid[i][j] = alphabet[Math.floor(Math.random() * alphabet.length)];
+                    }
+                }
+            }
+
+            return grid;
+        }
+
+        function getRandomDirection() {
+            const directions = ['horizontal', 'vertical', 'diagonal'];
+            return directions[Math.floor(Math.random() * directions.length)];
+        }
+
+        function tryPlaceWord(grid, word, row, col, direction) {
+            const wordLength = word.length;
+
+            if (
+                (direction === 'horizontal' && col + wordLength <= gridSize) ||
+                (direction === 'vertical' && row + wordLength <= gridSize) ||
+                (direction === 'diagonal' && row + wordLength <= gridSize && col + wordLength <= gridSize)
+            ) {
+                for (let i = 0; i < wordLength; i++) {
+                    const currentRow = direction === 'horizontal' ? row : (direction === 'vertical' ? row + i : row + i);
+                    const currentCol = direction === 'horizontal' ? col + i : (direction === 'vertical' ? col : col + i);
+                    if (grid[currentRow][currentCol] === '' || grid[currentRow][currentCol] === word[i]) {
+                        grid[currentRow][currentCol] = word[i];
+                    } else {
+                        return false; // Word placement failed
+                    }
+                }
+                return true; // Word placed successfully
+            }
+            return false; // Word placement failed
+        }
+
+        function updatePuzzle() {
+            // Your existing puzzle update code
+            puzzleContainer.innerHTML = ''; // Clear previous content
+            for (let i = 0; i < puzzleGrid.length; i++) {
+                for (let j = 0; j < puzzleGrid[i].length; j++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('letter-cell');
+                    cell.textContent = puzzleGrid[i][j];
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.addEventListener('click', () => toggleCell(cell));
+                    puzzleContainer.appendChild(cell);
+                }
+                puzzleContainer.appendChild(document.createElement('br'));
+            }
+        }
+
+        function toggleCell(cell) {
+            // Your existing toggle cell code
+            cell.classList.toggle('selected');
+            const row = parseInt(cell.dataset.row, 10);
+            const col = parseInt(cell.dataset.col, 10);
+
+            const existingIndex = selectedCells.findIndex((selected) => selected.row === row && selected.col === col);
+
+            if (existingIndex !== -1) {
+                selectedCells.splice(existingIndex, 1);
+            } else {
+                selectedCells.push({ row, col });
+            }
+
+            updateGuessInput();
+        }
+
+        function updateGuessInput() {
+            // Your existing guess input update code
+            const sortedCells = selectedCells.sort((a, b) => a.row - b.row || a.col - b.col);
+            const selectedWord = sortedCells.map((cell) => puzzleGrid[cell.row][cell.col]).join('');
+        }
+
+        function displayQuestionList() {
+            questionListContainer.innerHTML = '';
+            for (let i = 0; i < questionsWithAnswers.length; i++) {
+                const questionElement = document.createElement('div');
+                questionElement.textContent = `${questionsWithAnswers[i].question}`;
+                questionListContainer.appendChild(questionElement);
+            }
+        }
+
+        function checkGuess() {
+            const guess = getSelectedWord();
+
+            const currentQuestion = questionsWithAnswers.find(item => item.answer === guess);
+
+            if (currentQuestion) {
+                // Remove found word from the list
+                const indexToRemove = questionsWithAnswers.indexOf(currentQuestion);
+                questionsWithAnswers.splice(indexToRemove, 1);
+
+                // Increment score
+                score += 1;
+                scoreContainer.textContent = 'Score: ' + score;
+
+                // Mark cells as found
+                markCellsAsFound();
+
+                // Check if all words are found
+                if (questionsWithAnswers.length === 0) {
+                    congratulationsMessageContainer.textContent = 'Congratulations! You found all the answers. Your score is ' + score;
+                    resetGame();
+                } else {
+                    congratulationsMessageContainer.textContent = 'Congratulations! You found the answer: ' + guess;
+                    clearSelection();
+                }
+            } else {
+                congratulationsMessageContainer.textContent = 'Incorrect guess! Try again.';
+                clearSelection();
+            }
+        }
+
+        function getSelectedWord() {
+            const sortedCells = selectedCells.sort((a, b) => a.row - b.row || a.col - b.col);
+            return sortedCells.map((cell) => puzzleGrid[cell.row][cell.col]).join('');
+        }
+
+        function markCellsAsFound() {
+            // Your existing mark cells as found code
+            selectedCells.forEach((cell) => {
+                const cellElement = document.querySelector(`.letter-cell[data-row="${cell.row}"][data-col="${cell.col}"]`);
+                if (cellElement) {
+                    cellElement.classList.add('found');
+                }
+            });
+        }
+
+        function clearSelection() {
+            // Your existing clear selection code
+            selectedCells.forEach((cell) => {
+                const cellElement = document.querySelector(`.letter-cell[data-row="${cell.row}"][data-col="${cell.col}"]`);
+                if (cellElement) {
+                    cellElement.classList.remove('selected');
+                }
+            });
+            selectedCells = [];
+        }
+
+        function resetGame() {
+            // Your existing reset game code
+             selectedCells = [];
+            answers.length = 0; // Empty the answers array
+            answers.push('TRIUMVIRATE', 'ID'); // Re-initialize answers
+            puzzleGrid = generatePuzzleGrid(answers);
+            updatePuzzle();
+            displayQuestionList();
+            congratulationsMessageContainer.textContent = ''; // Clear congratulations message
+            score = 0;
+            scoreContainer.textContent = 'Score: ' + score;
+        }
+    </script>
+

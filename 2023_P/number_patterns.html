@@ -1,0 +1,152 @@
+---
+layout: default
+title: Memory Pattern Game
+description: |
+  1.Engage your memory and pattern recognition skills with this exciting game that presents sequences of numbers for you
+  to decipher.
+  2.Experience a variety of dynamic number patterns, each with its own set of rules and options, keeping the challenge
+  fresh and unpredictable.
+  3.Receive instant feedback on your guesses, allowing you to learn and adapt as you progress through the game.
+  4.Time is of the essence! Each correct answer is timed, contributing to your overall score and adding an elemen4t of
+  urgency to the gameplay.
+  5.Strive for excellence by achieving the best possible time across all questions, testing not only your memory but also
+  your speed.
+rules: |
+  1.Analyze the given hint and previous numbers in the sequence to predict the next number and select the correct option.
+  2.Earn points for each correct answer and lose points for incorrect guesses. The faster you solve each question, the
+  higher your overall score.
+  3.The clock is ticking! A timer starts with each question, capturing the time taken for your response. Keep an eye on
+  your speed to improve your3. performance.
+  4.Progress through a dynamic set of questions, each presenting a unique pattern, ensuring a challenging and engaging
+  experience.
+  5.Strive to achieve the all-time best time by efficiently solving each question. The player with the best overall time
+  becomes the ultimate memory pattern master.
+---
+<div class="container">
+  <div id="game-container" class="text-center">
+    <p id="hint"></p>
+    <p id="question"></p>
+    <div id="options" class="btn-group"></div>
+    <p id="result"></p>
+    <p id="score">Score: 0</p>
+    <button id="next-btn" class="btn btn-primary">Next Question</button>
+    <button id="stop-btn" class="btn btn-danger">Stop</button>
+  </div>
+</div>
+
+<script>
+  let currentQuestionIndex = 0;
+  let score = 0;
+  let options = [];
+  let gameData;
+
+  // Function to generate a random number between 0 and 99
+  const getRandomNumber = (x = 100) => Math.floor(Math.random() * x);
+
+  // Addition function
+  const addition = () => {
+    let [a, b, c, d, e, f] = [getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber()];
+    return {
+      q: [[a, b, a + b],
+      [c, d, c + d],
+      [e, f, '?']],
+      a: e + f
+    };
+  };
+
+  // Subtraction function
+  const subtraction = () => {
+    let [a, b, c, d, e, f] = [getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber()];
+    return {
+      q: [[a, b, Math.abs(a - b)],
+      [c, d, Math.abs(c - d)],
+      [e, f, '?']],
+      a: Math.abs(e - f)
+    };
+  };
+
+  // Multiplication function
+  const multiplication = () => {
+    let [a, b, c, d, e, f] = [getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber(), getRandomNumber()];
+    return {
+      q: [[a, b, a * b],
+      [c, d, c * d],
+      [e, f, '?']],
+      a: e * f
+    };
+  };
+
+  // Function to display a question
+  function displayQuestion() {
+    options = []; // Reset options at the beginning of each question
+    const operations = [addition, subtraction, multiplication];
+    const selectedOperation = operations[Math.floor(Math.random() * operations.length)];
+    gameData = selectedOperation();
+
+    document.getElementById('hint').innerText = `Hint for the below problem: \n${gameData.q[0]} \n${gameData.q[1]}`;
+    document.getElementById('question').innerText = `${gameData.q[2]}`;
+
+    const optionsContainer = document.getElementById('options');
+    optionsContainer.innerHTML = '';
+    const answer = gameData.a;
+    options.push(answer);
+    options.push(answer + getRandomNumber(10));
+    options.push(answer - getRandomNumber(10));
+    options.push(answer + getRandomNumber(15));
+    shuffleArray(options);
+
+    options.forEach(option => {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-secondary';
+      btn.innerText = option;
+      btn.addEventListener('click', () => checkAnswer(option));
+      optionsContainer.appendChild(btn);
+    });
+
+    document.getElementById('result').innerText = '';
+    document.getElementById('score').innerText = `Score: ${score}`;
+  }
+
+  // Function to check the selected answer
+  function checkAnswer(selectedOption) {
+    const resultElement = document.getElementById('result');
+
+    if (parseInt(selectedOption) === gameData.a) {
+      resultElement.innerText = 'Your guess is correct!';
+      score++;
+    } else {
+      resultElement.innerText = 'Incorrect. Try again.';
+      score--;
+    }
+
+    document.getElementById('score').innerText = `Score: ${score}`;
+  }
+
+  // Function to move to the next question
+  function nextQuestion() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < 10) { // Set the number of questions you want
+      displayQuestion();
+    } else {
+      document.getElementById('game-container').innerHTML = `<h2 class="text-center">Congratulations! You completed the game. Final Score: ${score}</h2>`;
+    }
+  }
+
+  // Event listener for the next button
+  document.getElementById('next-btn').addEventListener('click', nextQuestion);
+
+  // Event listener for the stop button
+  document.getElementById('stop-btn').addEventListener('click', () => {
+    document.getElementById('game-container').innerHTML = `<h2 class="text-center">Game Stopped. Final Score: ${score}</h2>`;
+  });
+
+  // Function to shuffle an array
+  function shuffleArray(array) {
+    array.sort(() => Math.random() - 0.5);
+    return array;
+  }
+
+  // Initial setup
+  displayQuestion();
+
+</script>
