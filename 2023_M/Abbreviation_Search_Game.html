@@ -49,7 +49,6 @@ rules: |
     <title>Abbreviation Search Game</title>
 
     <div class="container mt-5">
-        <!--<h1 class="text-center mb-4">Abbreviation Search Game</h1>-->
         <div id="full-form-list" class="text-center"></div>
         <div id="score" class="text-center">Score: 0</div>
         <div id="puzzle-container" class="text-center"></div>
@@ -140,8 +139,8 @@ rules: |
                 (direction === 'diagonal' && row + wordLength <= gridSize && col + wordLength <= gridSize)
             ) {
                 for (let i = 0; i < wordLength; i++) {
-                    const currentRow = direction === 'horizontal' ? row : (direction === 'vertical' ? row + i : row + i);
-                    const currentCol = direction === 'horizontal' ? col + i : (direction === 'vertical' ? col : col + i);
+                    const currentRow = direction === 'horizontal' ? row :  row + i;
+                    const currentCol = direction === 'horizontal' ? col + i : col;
                     if (grid[currentRow][currentCol] === '' || grid[currentRow][currentCol] === word[i]) {
                         grid[currentRow][currentCol] = word[i];
                     } else {
@@ -187,7 +186,7 @@ rules: |
 
         function updateGuessInput() {
             const sortedCells = selectedCells.sort((a, b) => a.row - b.row || a.col - b.col);
-            const selectedAbbreviation = sortedCells.map((cell) => puzzleGrid[cell.row][cell.col]).join('');
+            sortedCells.map((cell) => puzzleGrid[cell.row][cell.col]).join('');
             // No need for the guess input in this version
         }
 

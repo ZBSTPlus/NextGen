@@ -54,7 +54,6 @@ rules: |
     </style>
 
     <div class="container mt-5">
-        <!-- <h1 class="text-center mb-4">Word Search Game</h1> -->
         <div id="word-list" class="text-center"></div>
         <div id="score" class="text-center">Score: 0</div>
         <div id="meaning-container" class="text-center"></div>
@@ -196,7 +195,7 @@ rules: |
 
         function updateGuessInput() {
             const sortedCells = selectedCells.sort((a, b) => a.row - b.row || a.col - b.col);
-            const selectedWord = sortedCells.map((cell) => puzzleGrid[cell.row][cell.col]).join('');
+            sortedCells.map((cell) => puzzleGrid[cell.row][cell.col]).join('');
             // No input field, so no need to update anything
         }
 
