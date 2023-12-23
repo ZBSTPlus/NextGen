@@ -46,7 +46,6 @@ rules: |
     <title>Answer Search Game</title>
 
     <div class="container mt-5">
-        <!-- <h1 class="text-center mb-4">Answer Search Game</h1> -->
         <div id="question-list" class="text-center"></div>
         <div id="score" class="text-center">Score: 0</div>
         <div id="checkButtonContainer">
@@ -179,7 +178,7 @@ rules: |
         function updateGuessInput() {
             // Your existing guess input update code
             const sortedCells = selectedCells.sort((a, b) => a.row - b.row || a.col - b.col);
-            const selectedWord = sortedCells.map((cell) => puzzleGrid[cell.row][cell.col]).join('');
+            sortedCells.map((cell) => puzzleGrid[cell.row][cell.col]).join('');
         }
 
         function displayQuestionList() {

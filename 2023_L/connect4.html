@@ -113,7 +113,6 @@ if (!gameOver && currentPlayer === computerColor) {
                 // Simulate the user's move to check for a potential win
                 board[row][col] = userColor;
                 if (checkWin(row, col, userColor)) {
-                    board[row][col] = null; // Reset the simulated move
                     board[row][col] = computerColor; // Block the user's winning move
                     const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
                     cell.classList.add(computerColor);
