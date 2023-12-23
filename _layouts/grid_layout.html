@@ -1,10 +1,6 @@
 ---
 layout: default
 ---
-
-{% assign gs = page.gs %}
-{% assign t = page.t %}
-<hr>
 <div class="container mt-5">
     <div class="row">
         <div class="col text-center">
@@ -26,7 +22,8 @@ layout: default
                     <tr>
                         <td class="col-4 text-nowrap">Timer</td>
                         <td class="col-1 text-nowrap">:</td>
-                        <td class="col-4 text-nowrap"><span id="timer" class="blink big-timer text-danger"></span> seconds remaining</td>
+                        <td class="col-4 text-nowrap"><span id="timer" class="blink big-timer text-danger"></span>
+                            seconds remaining</td>
                     </tr>
                     <tr>
                         <td class="col-4 text-nowrap">Correct Answers</td>
@@ -52,11 +49,14 @@ layout: default
             <button class="btn btn-danger" id="resetGame">Rest Game</button>
         </div>
     </div>
-</div><br>
+</div>
+<br>
+
 {{ content }}
+
 <script>
-    var n = {{ gs }};
-    var timer = {{ t }};
+    var n = gs || 6;
+    var timer = t || 60;
     const grid = document.getElementById("grid");
     const timerDisplay = document.getElementById("timer");
     const correctAnswersDisplay = document.getElementById("correctAnswers");
@@ -64,20 +64,17 @@ layout: default
     const totalNumsDisplay = document.getElementById("totalTypedNumbers");
     const winDeclarationDisplay = document.getElementById("winDeclaration")
 
-    let correctAnswers = 0;
-    let wrongAnswers = 0;
-    let totalTypedNumbers = 0;
-    let numbers = [];
-    let ourNumbers = [];
+    let correctAnswers = 0, wrongAnswers = 0, totalTypedNumbers = 0;
+    let numbers = [], ourNumbers = [];
     let interval;
     let gameOver = false;
     resetButton.style.display = "none";
     gameValues.style.display = "none";
 
 
-    function resetGame(){
+    function resetGame() {
         clearInterval(interval);
-        timer = {{ t }};
+        timer = t;
         generateGrid(n);
         correctAnswers = 0;
         correctAnswersDisplay.innerText = correctAnswers;
@@ -88,11 +85,11 @@ layout: default
         winDeclarationDisplay.classList.add("d-none");
         interval = setInterval(countdown, 1000);
     }
-    function startGame(){
+    function startGame() {
         clearInterval(interval);
         resetButton.style.display = "block";
         gameValues.style.display = "block";
-        timer = {{ t }};
+        timer = t;
         generateGrid(n);
         correctAnswers = 0;
         correctAnswersDisplay.innerText = correctAnswers;
@@ -104,39 +101,57 @@ layout: default
         interval = setInterval(countdown, 1000);
     }
 
-</script>
+    function generateRandomNumbers(n = 70, maxN = 999) {
+        return new Array(n).fill(1).map(x => Math.floor(Math.random() * maxN))
+    }
+    function shuffleArray(array) {
+        array.sort(() => Math.random() - 0.5);
+        return array;
+    }
 
 </script>
+
 <style>
     #grid table {
-    border-collapse: collapse;
-    margin: 20px auto;
-    }
-    #grid table, #grid th, #grid td {
-    border: 1px solid black;
-    }
-    #grid th, #grid td {
-    width: 60px;
-    height: 60px;
-    text-align: center;
-    font-size: 20px;
+        border-collapse: collapse;
+        margin: 20px auto;
     }
 
-  .green {
-    background-color: green;
-  }
-  .red {
-    background-color: red;
-  }
-  .blink {
-    animation: blinker 1s linear infinite;
-  }
-  @keyframes blinker {
-    50% { opacity: 0; }
-  }
-  .big-timer {
-    font-size: 36px;
-    font-weight: bold;
-    color: #f00;
-  }
+    #grid table,
+    #grid th,
+    #grid td {
+        border: 1px solid black;
+    }
+
+    #grid th,
+    #grid td {
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        font-size: 20px;
+    }
+
+    .green {
+        background-color: green;
+    }
+
+    .red {
+        background-color: red;
+    }
+
+    .blink {
+        animation: blinker 1s linear infinite;
+    }
+
+    @keyframes blinker {
+        50% {
+            opacity: 0;
+        }
+    }
+
+    .big-timer {
+        font-size: 36px;
+        font-weight: bold;
+        color: #f00;
+    }
 </style>

@@ -1,30 +1,33 @@
 ---
 layout: grid_layout
 title: Find the numbers of Fibonacci Series
-gs: 6
-t: 60
 description: |
-    In this game the Player must select the all numbers which are present in Fibonacci series exist in
-    the given grid in the given time limit.
+In this game the Player must select the all numbers which are present in Fibonacci series exist in the given grid in the
+given time limit.
 rules: |
-    Select the Fibonacci numbers which are displayed.
-    Fibonacci numbers are the numbers of Fibonacci Series.
-    Fibonacci Series are the series of numbers in which each number is the sum of the two preceding numbers and the starting numbers are 0 and 1.
-    Try to finish the game within the time limit.
-    You should not exceed more than 8 wrong answers
+Select the Fibonacci numbers which are displayed.
+Fibonacci numbers are the numbers of Fibonacci Series.
+Fibonacci Series are the series of numbers in which each number is the sum of the two preceding numbers and the starting
+numbers are 0 and 1.
+Try to finish the game within the time limit.
+You should not exceed more than 8 wrong answers
 ---
 
 <script>
+    let gs = 6;
+    let t = 60;
+    let fibonacciList;
+    const maxFibonacci = 10000; // Max Fibonacci number to be included
+
     function generateGrid(n) {
         grid.innerHTML = "";
         numbers = [];
         ourNumbers = [];
-        const maxFibonacci = 1000; // Max Fibonacci number to be included
         for (let i = 0; i < n; i++) {
             let row = grid.insertRow(i);
             for (let j = 0; j < n; j++) {
                 const num = getRandomIndexFromFinalArray();
-                if(isFibonacci(num)){
+                if (isFibonacci(num)) {
                     ourNumbers.push(num);
                 }
                 numbers.push(num);
@@ -42,20 +45,13 @@ rules: |
         do {
             num = Math.floor(Math.random() * max) + 1;
         } while (numbers.includes(num));
-        
+
         return num;
     }
 
     // Function to check if a number is Fibonacci
     function isFibonacci(num) {
-        const fibonacci = [0, 1];
-        let nextTerm = 1;
-
-        while (nextTerm < 10000) {
-            fibonacci.push(nextTerm);
-            nextTerm = fibonacci[fibonacci.length - 1] + fibonacci[fibonacci.length - 2];
-        }
-        return fibonacci.includes(num);
+        return fibonacciList.includes(num);
     }
 
     function checkIfFibonacci(num, cell) {
@@ -73,7 +69,7 @@ rules: |
             wrongAnswersDisplay.innerText = wrongAnswers;
         }
         cell.removeEventListener("click", () => checkIfFibonacci(num, cell));
-        if(wrongAnswers === 8){
+        if (wrongAnswers === 8) {
             clearInterval(interval)
             winDeclarationDisplay.classList.remove("d-none");
             winDeclarationDisplay.classList.remove("alert-success");
@@ -89,34 +85,19 @@ rules: |
         }
     }
 
-    function generateRandomNumbers() {
-        const maxNumber = 999;
-        const numberOfNumbers = 70;
-        const randomNumbers = [];
-        for (let i = 0; i < numberOfNumbers; i++) {
-            const randomNumber = Math.floor(Math.random() * maxNumber);
-            randomNumbers.push(randomNumber);
-        }
-        return randomNumbers;
-    }
-
-
     function generateFibonacciUnique() {
-        const fibonacci = [0, 1];
+        const _fibonacci = [0, 1];
         let nextTerm = 1;
-
-        while (nextTerm < 10000) {
-            fibonacci.push(nextTerm);
-            nextTerm = fibonacci[fibonacci.length - 1] + fibonacci[fibonacci.length - 2];
+        while (nextTerm < maxFibonacci) {
+            _fibonacci.push(nextTerm);
+            nextTerm = _fibonacci.at(-1) + fibonacci.at(-2);
         }
+        fibonacciList = _fibonacci;
 
-        // Shuffle the array to get random order
-        for (let i = fibonacci.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [fibonacci[i], fibonacci[j]] = [fibonacci[j], fibonacci[i]];
-        }
-        return fibonacci;
+        _fibonacci.sort(() => Math.random() - 0.5);
+        return _fibonacci;
     };
+    
     function getRandomIndexFromFinalArray() {
         const randomNumbers = generateRandomNumbers();
         const fibonacciNumbers = generateFibonacciUnique();
@@ -128,24 +109,24 @@ rules: |
         const randomIndex = Math.floor(Math.random() * finalArray.length);
 
         return finalArray[randomIndex];
-    }  
+    }
 
     function countdown() {
-    if (timer < 0) {
-        winDeclarationDisplay.classList.remove("d-none");
-        winDeclarationDisplay.classList.remove("alert-success");
-        winDeclarationDisplay.classList.add("alert-danger");
-        winDeclarationDisplay.innerHTML = "Time's up! You found " + correctAnswers + " correct answers.";
-        clearInterval(interval);
-        gameOver = true;
-        const cells = document.querySelectorAll("td");
+        if (timer < 0) {
+            winDeclarationDisplay.classList.remove("d-none");
+            winDeclarationDisplay.classList.remove("alert-success");
+            winDeclarationDisplay.classList.add("alert-danger");
+            winDeclarationDisplay.innerHTML = "Time's up! You found " + correctAnswers + " correct answers.";
+            clearInterval(interval);
+            gameOver = true;
+            const cells = document.querySelectorAll("td");
             cells.forEach((cell) => {
                 cell.removeEventListener("click", () => checkIfFibonacci(parseInt(cell.innerText), cell));
             });
-    } else {
-        timerDisplay.innerHTML = timer;
-        timer--;
+        } else {
+            timerDisplay.innerHTML = timer;
+            timer--;
+        }
     }
-    }
-    
+
 </script>
