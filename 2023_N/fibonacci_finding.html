@@ -111,22 +111,4 @@ You should not exceed more than 8 wrong answers
         return finalArray[randomIndex];
     }
 
-    function countdown() {
-        if (timer < 0) {
-            winDeclarationDisplay.classList.remove("d-none");
-            winDeclarationDisplay.classList.remove("alert-success");
-            winDeclarationDisplay.classList.add("alert-danger");
-            winDeclarationDisplay.innerHTML = "Time's up! You found " + correctAnswers + " correct answers.";
-            clearInterval(interval);
-            gameOver = true;
-            const cells = document.querySelectorAll("td");
-            cells.forEach((cell) => {
-                cell.removeEventListener("click", () => checkIfFibonacci(parseInt(cell.innerText), cell));
-            });
-        } else {
-            timerDisplay.innerHTML = timer;
-            timer--;
-        }
-    }
-
 </script>

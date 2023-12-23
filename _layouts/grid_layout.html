@@ -46,7 +46,7 @@ layout: default
     </div>
     <div class="row">
         <div class="col text-center" id="resetButton" onclick="resetGame()">
-            <button class="btn btn-danger" id="resetGame">Rest Game</button>
+            <button class="btn btn-danger" id="resetGame">Reset Game</button>
         </div>
     </div>
 </div>
@@ -64,8 +64,8 @@ layout: default
     const totalNumsDisplay = document.getElementById("totalTypedNumbers");
     const winDeclarationDisplay = document.getElementById("winDeclaration")
 
-    let correctAnswers = 0, wrongAnswers = 0, totalTypedNumbers = 0;
-    let numbers = [], ourNumbers = [];
+    let correctAnswersCount = 0, wrongAnswersCount = 0, totalTypedNumbers = 0;
+    let totalNumbers = [], specialNumbers = [];
     let interval;
     let gameOver = false;
     resetButton.style.display = "none";
@@ -76,12 +76,7 @@ layout: default
         clearInterval(interval);
         timer = t;
         generateGrid(n);
-        correctAnswers = 0;
-        correctAnswersDisplay.innerText = correctAnswers;
-        wrongAnswers = 0;
-        wrongAnswersDisplay.innerText = wrongAnswers;
-        gameOver = false;
-        winDeclarationDisplay.innerHTML = "";
+        [correctAnswersCount, wrongAnswersCount, correctAnswersDisplay.innerText, wrongAnswersDisplay.innerText, winDeclarationDisplay.innerHTML, gameOver] = [0,0,0,0,"",false]
         winDeclarationDisplay.classList.add("d-none");
         interval = setInterval(countdown, 1000);
     }
@@ -91,16 +86,26 @@ layout: default
         gameValues.style.display = "block";
         timer = t;
         generateGrid(n);
-        correctAnswers = 0;
-        correctAnswersDisplay.innerText = correctAnswers;
-        wrongAnswers = 0;
-        wrongAnswersDisplay.innerText = wrongAnswers;
-        gameOver = false;
-        winDeclarationDisplay.innerHTML = "";
+        [correctAnswersCount, wrongAnswersCount, correctAnswersDisplay.innerText, wrongAnswersDisplay.innerText, winDeclarationDisplay.innerHTML, gameOver] = [0,0,0,0,"",false]
         winDeclarationDisplay.classList.add("d-none");
         interval = setInterval(countdown, 1000);
     }
 
+    function countdown() {
+        if (timer < 0) {
+            winDeclarationDisplay.classList.remove("d-none","alert-success");
+            winDeclarationDisplay.classList.add("alert-danger");
+            winDeclarationDisplay.innerHTML = "Time's up! You found " + correctAnswers + " correct answers.";
+            clearInterval(interval);
+            gameOver = true;
+            const cells = document.querySelectorAll("td");
+            cells.forEach((cell) => {
+                cell.removeEventListener("click", () => checkIfFibonacci(parseInt(cell.innerText), cell));
+            });
+        } else {
+            timerDisplay.innerHTML = timer--;
+        }
+    }
     function generateRandomNumbers(n = 70, maxN = 999) {
         return new Array(n).fill(1).map(x => Math.floor(Math.random() * maxN))
     }
