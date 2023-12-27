@@ -55,12 +55,8 @@ layout: default
 {{ content }}
 
 <script>
-    var gs;
-    var t;
     var n = gs || 6;
     var timer = t || 30;
-    var maxNumberInGrid;
-    var maxSpecialNumber;
     const grid = document.getElementById("grid");
     const timerDisplay = document.getElementById("timer");
     const correctAnswersCountDisplay = document.getElementById("correctAnswersCount");
@@ -75,7 +71,6 @@ layout: default
     let specialNumbers = [];
     let interval;
     let gameOver = false;
-    let specialNumbersType;
     resetButton.style.display = "none";
     gameValues.style.display = "none";
 
@@ -194,7 +189,6 @@ layout: default
 
 </script>
 
-</script>
 
 <style>
     #grid table {
