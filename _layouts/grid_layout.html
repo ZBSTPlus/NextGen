@@ -12,12 +12,12 @@ layout: default
     </div>
     <div class="row p-4">
         <div class="col table-responsive">
-            <table class="mx-auto table-bordered" id="grid" aria-label="Game Board"></table>
+            <table class="mx-auto table-bordered" id="grid" aria-label="Game Board" role="presentation"></table>
         </div>
     </div>
     <div class="row d-flex justify-content-center">
         <div class="col col-4" id="gameValues">
-            <table class="table table-borderless" aria-label="Game Contents">
+            <table class="table table-borderless" aria-label="Game Contents" role="presentation">
                 <tbody>
                     <tr>
                         <td class="col-4 text-nowrap">Timer</td>
@@ -64,7 +64,7 @@ layout: default
     const totalNumsDisplay = document.getElementById("totalTypedNumbers");
     const winDeclarationDisplay = document.getElementById("winDeclaration")
     const specialNumbersArray= generateSpecialNumbers(n);
-    const randomNumbersArray = generateRandomNumbersArray(n);
+    const randomNumbersArray = generateRandomNumbersArray();
 
     let correctAnswersCount = 0, wrongAnswersCount = 0;
     let numbers;
