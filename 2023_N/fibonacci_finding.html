@@ -1,0 +1,36 @@
+---
+layout: grid_layout
+title: Find the numbers of Fibonacci Series
+description: |
+    In this game the Player must select the all numbers which are present in Fibonacci series exist in the given grid in the
+    given time limit.
+rules: |
+    Select the Fibonacci numbers which are displayed.
+    Fibonacci numbers are the numbers of Fibonacci Series.
+    Fibonacci Series are the series of numbers in which each number is the sum of the two preceding numbers and the starting
+    numbers are 0 and 1.
+    Try to finish the game within the time limit.
+    You should not exceed more than 8 wrong answers
+---
+
+<script>
+    let gs = 6;
+    let t = 30;
+    let specialNumbersType = "Fibonacci";
+    let percentageOfSpl = 0.3;
+    var maxNumberInGrid = 999;
+
+    
+    //function to generate random special numbers(fibonacci numbers)
+    function generateSpecialNumbers(gs) {
+        const fibonacci = [0, 1];
+        let nextTerm = 1;
+        while (nextTerm <= maxNumberInGrid) {
+            fibonacci.push(nextTerm);
+            nextTerm = fibonacci[fibonacci.length - 1] + fibonacci[fibonacci.length - 2];
+        }
+        shuffleArray(fibonacci);
+        return fibonacci.slice(0,Math.ceil(gs*gs*percentageOfSpl)+1);
+    };
+
+</script>

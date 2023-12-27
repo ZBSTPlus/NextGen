@@ -1,0 +1,236 @@
+---
+layout: default
+---
+<div class="container mt-5">
+    <div class="row">
+        <div class="col text-center">
+            <button class="btn btn-success" id="startGame" onclick="startGame()">Start Game</button>
+        </div>
+    </div><br>
+    <div class="row d-flex justify-content-center">
+        <div class="col alert alert-success mt-3 d-none col-6 text-center" id="winDeclaration"></div>
+    </div>
+    <div class="row p-4">
+        <div class="col table-responsive">
+            <table class="mx-auto table-bordered" id="grid" aria-label="Game Board" role="presentation"></table>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <div class="col col-4" id="gameValues">
+            <table class="table table-borderless" aria-label="Game Contents" role="presentation">
+                <tbody>
+                    <tr>
+                        <td class="col-4 text-nowrap">Timer</td>
+                        <td class="col-1 text-nowrap">:</td>
+                        <td class="col-4 text-nowrap"><span id="timer" class="blink big-timer text-danger"></span>
+                            seconds remaining</td>
+                    </tr>
+                    <tr>
+                        <td class="col-4 text-nowrap">Correct Answers</td>
+                        <td class="col-1 text-nowrap">:</td>
+                        <td id="correctAnswersCount" class="col-4 text-nowrap"></td>
+                    </tr>
+                    <tr>
+                        <td class="col-4 text-nowrap">Wrong Answers</td>
+                        <td class="col-1 text-nowrap">:</td>
+                        <td id="wrongAnswersCount" class="col-4 text-nowrap"></td>
+                    </tr>
+                    <tr>
+                        <td class="col-4 text-nowrap">Total Numbers Present</td>
+                        <td class="col-1 text-nowrap">:</td>
+                        <td id="totalTypedNumbers" class="col-4 text-nowrap"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-center" id="resetButton" onclick="resetGame()">
+            <button class="btn btn-danger" id="resetGame">Reset Game</button>
+        </div>
+    </div>
+</div>
+<br>
+
+{{ content }}
+
+<script>
+    var n = gs || 6;
+    var timer = t || 30;
+    const grid = document.getElementById("grid");
+    const timerDisplay = document.getElementById("timer");
+    const correctAnswersCountDisplay = document.getElementById("correctAnswersCount");
+    const wrongAnswersCountDisplay = document.getElementById("wrongAnswersCount");
+    const totalNumsDisplay = document.getElementById("totalTypedNumbers");
+    const winDeclarationDisplay = document.getElementById("winDeclaration")
+    const specialNumbersArray= generateSpecialNumbers(n);
+    const randomNumbersArray = generateRandomNumbersArray();
+
+    let correctAnswersCount = 0, wrongAnswersCount = 0;
+    let numbers;
+    let specialNumbers = [];
+    let interval;
+    let gameOver = false;
+    resetButton.style.display = "none";
+    gameValues.style.display = "none";
+
+    //function to generate grid
+    function generateGrid(n) {
+        grid.innerHTML = "";
+        numbers = getRandomNumbersFromFinalArray();
+        specialNumbers = [];
+        for (let i = 0; i < n; i++) {
+            let row = grid.insertRow(i);
+            for (let j = 0; j < n; j++) {
+                const num = numbers[i*n+j];
+                if (isSpecialNumber(num)) {
+                    specialNumbers.push(num);
+                }
+                const cell = row.insertCell(j);
+                cell.innerText = num;
+                cell.addEventListener("click", () => isCorrect(num, cell));
+            }
+        }
+        totalNumsDisplay.innerText = specialNumbers.length;
+    }
+
+    // Function to check if a number is special number
+    function isSpecialNumber(num) {
+        return specialNumbersArray.includes(num);
+    }
+
+    //function to check the selected number is special number or not
+    function isCorrect(num, cell) {
+        if (gameOver) {
+            return;
+        }
+
+        if (isSpecialNumber(num) && !cell.classList.contains("green")) {
+            correctAnswersCount++;
+            correctAnswersCountDisplay.innerText = correctAnswersCount;
+            cell.classList.add("green");
+        } else if (!cell.classList.contains("green")) {
+            cell.classList.add("red");
+            wrongAnswersCount++;
+            wrongAnswersCountDisplay.innerText = wrongAnswersCount;
+        }
+        cell.removeEventListener("click", () => isCorrect(num, cell));
+        if(wrongAnswersCount === 8){
+            clearInterval(interval);
+            winDeclarationDisplay.classList.remove("d-none","alert-success");
+            winDeclarationDisplay.classList.add("alert-danger");
+            winDeclarationDisplay.innerText = "Your chances are over, Try again";
+            gameOver = true;
+        }
+        if (correctAnswersCount === specialNumbers.length) {
+            clearInterval(interval);
+            winDeclarationDisplay.classList.remove("d-none");
+            winDeclarationDisplay.classList.add("alert-success");
+            winDeclarationDisplay.innerText = "Congratulations! You found all" +specialNumbersType+" numbers.";
+            gameOver = true;
+        }
+    }
+
+    function generateRandomNumbersArray() {
+        return new Array(Math.ceil(n*n*(1-percentageOfSpl))+1).fill(1).map(x => Math.floor(Math.random() * maxNumberInGrid));
+    }
+
+    function shuffleArray(array) {
+        array.sort(() => Math.random() - 0.5);
+        return array;
+    }
+
+    function countdown() {
+        if (timer < 0) {
+            winDeclarationDisplay.classList.remove("d-none","alert-success");
+            winDeclarationDisplay.classList.add("alert-danger");
+            winDeclarationDisplay.innerText = "Time's up! You found " + correctAnswersCount + " correct answers.";
+            clearInterval(interval);
+            gameOver = true;
+            const cells = document.querySelectorAll("td");
+                cells.forEach((cell) => {
+                    cell.removeEventListener("click", () => isCorrect(parseInt(cell.innerText), cell));
+                });
+        } else {
+            timerDisplay.innerHTML = timer;
+            timer--;
+        }
+    }
+
+    //function to merge arrays of random numbers and fibonacci numbers and return a random number from them
+    function getRandomNumbersFromFinalArray() {
+        const finalArray = [...new Set([...randomNumbersArray, ...specialNumbersArray])];
+        shuffleArray(finalArray);
+        return finalArray;
+    }  
+
+    //function to reset the game
+    function resetGame() {
+        generateGrid(n);
+        clearInterval(interval);
+        interval = setInterval(countdown, 1000);
+        timer = t;
+        n = gs;
+        correctAnswersCount = 0;
+        correctAnswersCountDisplay.innerText = correctAnswersCount;
+        wrongAnswersCount = 0;
+        wrongAnswersCountDisplay.innerText = wrongAnswersCount;
+        gameOver = false;
+        winDeclarationDisplay.innerHTML = "";
+        winDeclarationDisplay.classList.add("d-none");
+    }
+
+    //function to start the game
+    function startGame() {
+        resetButton.style.display = "block";
+        gameValues.style.display = "block";
+        resetGame();
+    }
+
+</script>
+
+
+<style>
+    #grid table {
+        border-collapse: collapse;
+        margin: 20px auto;
+    }
+
+    #grid table,
+    #grid th,
+    #grid td {
+        border: 1px solid black;
+    }
+
+    #grid th,
+    #grid td {
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        font-size: 20px;
+    }
+
+    .green {
+        background-color: green;
+    }
+
+    .red {
+        background-color: red;
+    }
+
+    .blink {
+        animation: blinker 1s linear infinite;
+    }
+
+    @keyframes blinker {
+        50% {
+            opacity: 0;
+        }
+    }
+
+    .big-timer {
+        font-size: 36px;
+        font-weight: bold;
+        color: #f00;
+    }
+</style>
