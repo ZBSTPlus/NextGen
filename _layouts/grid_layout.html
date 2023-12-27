@@ -28,12 +28,12 @@ layout: default
                     <tr>
                         <td class="col-4 text-nowrap">Correct Answers</td>
                         <td class="col-1 text-nowrap">:</td>
-                        <td id="correctAnswers" class="col-4 text-nowrap"></td>
+                        <td id="correctAnswersCount" class="col-4 text-nowrap"></td>
                     </tr>
                     <tr>
                         <td class="col-4 text-nowrap">Wrong Answers</td>
                         <td class="col-1 text-nowrap">:</td>
-                        <td id="wrongAnswers" class="col-4 text-nowrap"></td>
+                        <td id="wrongAnswersCount" class="col-4 text-nowrap"></td>
                     </tr>
                     <tr>
                         <td class="col-4 text-nowrap">Total Numbers Present</td>
@@ -55,64 +55,144 @@ layout: default
 {{ content }}
 
 <script>
+    var gs;
+    var t;
     var n = gs || 6;
-    var timer = t || 60;
+    var timer = t || 30;
+    var maxNumberInGrid;
+    var maxSpecialNumber;
     const grid = document.getElementById("grid");
     const timerDisplay = document.getElementById("timer");
-    const correctAnswersDisplay = document.getElementById("correctAnswers");
-    const wrongAnswersDisplay = document.getElementById("wrongAnswers");
+    const correctAnswersCountDisplay = document.getElementById("correctAnswersCount");
+    const wrongAnswersCountDisplay = document.getElementById("wrongAnswersCount");
     const totalNumsDisplay = document.getElementById("totalTypedNumbers");
     const winDeclarationDisplay = document.getElementById("winDeclaration")
+    const specialNumbersArray= generateSpecialNumbers();
+    const randomNumbersArray = generateRandomNumbersArray(maxNumberInGrid);
 
-    let correctAnswersCount = 0, wrongAnswersCount = 0, totalTypedNumbers = 0;
-    let totalNumbers = [], specialNumbers = [];
+    let correctAnswersCount = 0, wrongAnswersCount = 0;
+    let numbers;
+    let specialNumbers = [];
     let interval;
     let gameOver = false;
+    let specialNumbersType;
     resetButton.style.display = "none";
     gameValues.style.display = "none";
 
-
-    function resetGame() {
-        clearInterval(interval);
-        timer = t;
-        generateGrid(n);
-        [correctAnswersCount, wrongAnswersCount, correctAnswersDisplay.innerText, wrongAnswersDisplay.innerText, winDeclarationDisplay.innerHTML, gameOver] = [0,0,0,0,"",false]
-        winDeclarationDisplay.classList.add("d-none");
-        interval = setInterval(countdown, 1000);
+    //function to generate grid
+    function generateGrid(n) {
+        grid.innerHTML = "";
+        numbers = getRandomNumbersFromFinalArray();
+        specialNumbers = [];
+        for (let i = 0; i < n; i++) {
+            let row = grid.insertRow(i);
+            for (let j = 0; j < n; j++) {
+                const num = numbers[i*n+j];
+                if (isSpecialNumber(num)) {
+                    specialNumbers.push(num);
+                }
+                const cell = row.insertCell(j);
+                cell.innerText = num;
+                cell.addEventListener("click", () => isCorrect(num, cell));
+            }
+        }
+        totalNumsDisplay.innerText = specialNumbers.length;
     }
-    function startGame() {
-        clearInterval(interval);
-        resetButton.style.display = "block";
-        gameValues.style.display = "block";
-        timer = t;
-        generateGrid(n);
-        [correctAnswersCount, wrongAnswersCount, correctAnswersDisplay.innerText, wrongAnswersDisplay.innerText, winDeclarationDisplay.innerHTML, gameOver] = [0,0,0,0,"",false]
-        winDeclarationDisplay.classList.add("d-none");
-        interval = setInterval(countdown, 1000);
+
+    // Function to check if a number is special number
+    function isSpecialNumber(num) {
+        return specialNumbersArray.includes(num);
+    }
+
+    //function to check the selected number is special number or not
+    function isCorrect(num, cell) {
+        if (gameOver) {
+            return;
+        }
+
+        if (isSpecialNumber(num) && !cell.classList.contains("green")) {
+            correctAnswersCount++;
+            correctAnswersCountDisplay.innerText = correctAnswersCount;
+            cell.classList.add("green");
+        } else if (!cell.classList.contains("green")) {
+            cell.classList.add("red");
+            wrongAnswersCount++;
+            wrongAnswersCountDisplay.innerText = wrongAnswersCount;
+        }
+        cell.removeEventListener("click", () => isCorrect(num, cell));
+        if(wrongAnswersCount === 8){
+            clearInterval(interval);
+            winDeclarationDisplay.classList.remove("d-none","alert-success");
+            winDeclarationDisplay.classList.add("alert-danger");
+            winDeclarationDisplay.innerText = "Your chances are over, Try again";
+            gameOver = true;
+        }
+        if (correctAnswersCount === specialNumbers.length) {
+            clearInterval(interval);
+            winDeclarationDisplay.classList.remove("d-none");
+            winDeclarationDisplay.classList.add("alert-success");
+            winDeclarationDisplay.innerText = "Congratulations! You found all" +specialNumbersType+" numbers.";
+            gameOver = true;
+        }
+    }
+
+    function generateRandomNumbersArray() {
+        return new Array(Math.floor(gs*gs*0.8)+1).fill(1).map(x => Math.floor(Math.random() * maxNumberInGrid));
+    }
+
+    function shuffleArray(array) {
+        array.sort(() => Math.random() - 0.5);
+        return array;
     }
 
     function countdown() {
         if (timer < 0) {
             winDeclarationDisplay.classList.remove("d-none","alert-success");
             winDeclarationDisplay.classList.add("alert-danger");
-            winDeclarationDisplay.innerHTML = "Time's up! You found " + correctAnswers + " correct answers.";
+            winDeclarationDisplay.innerText = "Time's up! You found " + correctAnswersCount + " correct answers.";
             clearInterval(interval);
             gameOver = true;
             const cells = document.querySelectorAll("td");
-            cells.forEach((cell) => {
-                cell.removeEventListener("click", () => checkIfFibonacci(parseInt(cell.innerText), cell));
-            });
+                cells.forEach((cell) => {
+                    cell.removeEventListener("click", () => isCorrect(parseInt(cell.innerText), cell));
+                });
         } else {
-            timerDisplay.innerHTML = timer--;
+            timerDisplay.innerHTML = timer;
+            timer--;
         }
     }
-    function generateRandomNumbers(n = 70, maxN = 999) {
-        return new Array(n).fill(1).map(x => Math.floor(Math.random() * maxN))
+
+    //function to merge arrays of random numbers and fibonacci numbers and return a random number from them
+    function getRandomNumbersFromFinalArray() {
+        const finalArray = [...new Set([...randomNumbersArray, ...specialNumbersArray])];
+        shuffleArray(finalArray);
+        return finalArray;
+    }  
+
+    //function to reset the game
+    function resetGame() {
+        generateGrid(n);
+        clearInterval(interval);
+        interval = setInterval(countdown, 1000);
+        timer = t;
+        n = gs;
+        correctAnswersCount = 0;
+        correctAnswersCountDisplay.innerText = correctAnswersCount;
+        wrongAnswersCount = 0;
+        wrongAnswersCountDisplay.innerText = wrongAnswersCount;
+        gameOver = false;
+        winDeclarationDisplay.innerHTML = "";
+        winDeclarationDisplay.classList.add("d-none");
     }
-    function shuffleArray(array) {
-        array.sort(() => Math.random() - 0.5);
-        return array;
+
+    //function to start the game
+    function startGame() {
+        resetButton.style.display = "block";
+        gameValues.style.display = "block";
+        resetGame();
     }
+
+</script>
 
 </script>
 

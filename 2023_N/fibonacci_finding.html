@@ -14,87 +14,21 @@ You should not exceed more than 8 wrong answers
 ---
 
 <script>
-    let gs = 6;
-    let t = 60;
-    let fibonacciList;
-    const maxFibonacci = 10000; // Max Fibonacci number to be included
-
-    function generateGrid(n) {
-        grid.innerHTML = "";
-        numbers = [];
-        ourNumbers = [];
-        for (let i = 0; i < n; i++) {
-            let row = grid.insertRow(i);
-            for (let j = 0; j < n; j++) {
-                const num = getRandomIndexFromFinalArray();
-                if (isFibonacci(num)) {
-                    ourNumbers.push(num);
-                }
-                numbers.push(num);
-                const cell = row.insertCell(j);
-                cell.innerText = num;
-                cell.addEventListener("click", () => checkIfFibonacci(num, cell));
-            }
-        }
-        totalNumsDisplay.innerHTML = ourNumbers.length;
-    }
-
-    // Function to check if a number is Fibonacci
-    function isFibonacci(num) {
-        return fibonacciList.includes(num);
-    }
-
-    //function to check the selected number is fibonacci or not
-    function checkIfFibonacci(num, cell) {
-        if (gameOver) {
-            return;
-        }
-
-        if (isFibonacci(num) && !cell.classList.contains("green")) {
-            correctAnswers++;
-            correctAnswersDisplay.innerText = correctAnswers;
-            cell.classList.add("green");
-        } else if (!cell.classList.contains("green")) {
-            cell.classList.add("red");
-            wrongAnswers++;
-            wrongAnswersDisplay.innerText = wrongAnswers;
-        }
-        cell.removeEventListener("click", () => checkIfFibonacci(num, cell));
-        if (wrongAnswers === 8) {
-            clearInterval(interval)
-            winDeclarationDisplay.classList.remove("d-none");
-            winDeclarationDisplay.classList.remove("alert-success");
-            winDeclarationDisplay.classList.add("alert-danger");
-            winDeclarationDisplay.innerHTML = "Your chances are over, Try again";
-            gameOver = true;
-        }
-        if (correctAnswers === ourNumbers.length) {
-            clearInterval(interval);
-            winDeclarationDisplay.classList.remove("d-none");
-            winDeclarationDisplay.innerHTML = "Congratulations! You found all Fibonacci numbers.";
-            gameOver = true;
-        }
-    }
-
-    function generateFibonacciUnique() {
-        const _fibonacci = [0, 1];
-        let nextTerm = 1;
-        while (nextTerm < maxFibonacci) {
-            _fibonacci.push(nextTerm);
-            nextTerm = _fibonacci.at(-1) + fibonacci.at(-2);
-        }
-        fibonacciList = _fibonacci;
-
-        _fibonacci.sort(() => Math.random() - 0.5);
-        return _fibonacci;
-    };
+    gs = 6;
+    t = 30;
+    specialNumbersType = "Fiboacci";
+    maxNumberInGrid = 999;
     
-    function getRandomIndexFromFinalArray() {
-        const randomNumbers = generateRandomNumbers();
-        const fibonacciNumbers = generateFibonacciUnique();
-        const finalArray = [...new Set([...randomNumbers, ...fibonacciNumbers])];
-        const randomIndex = Math.floor(Math.random() * finalArray.length);
-        return finalArray[randomIndex];
-    }
+    //function to generate random special numbers(fibonacci numbers)
+    function generateSpecialNumbers(gs) {
+        const fibonacci = [0, 1];
+        let nextTerm = 1;
+        while (nextTerm <= maxNumberInGrid) {
+            fibonacci.push(nextTerm);
+            nextTerm = fibonacci[fibonacci.length - 1] + fibonacci[fibonacci.length - 2];
+        }
+        shuffleArray(fibonacci);
+        return fibonacci;
+    };
 
 </script>
