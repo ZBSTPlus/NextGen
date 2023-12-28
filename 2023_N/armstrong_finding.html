@@ -1,0 +1,47 @@
+---
+layout: grid_layout
+title: Armstrong Number
+description: |
+    In this game the Player must select all the Armstrong numbers exist in the given grid in the
+    given time limit.
+rules: |
+    Select the Armstrong numbers which are displayed.
+    Armstrong number is a number that is equal to the sum of cubes of its digits.
+    Try to finish the game within the time limit.
+    You should not exceed more than 8 wrong answers
+---
+
+<script>
+    let gs = 6;
+    let t = 30;
+    let specialNumbersType = "Armstrong Number";
+    let percentageOfSpl = 0.3;
+    var maxNumberInGrid = 9999;
+
+    
+    //function to generate random special numbers(Armstrong Number)
+    function generateSpecialNumbers() {
+        const twisted = [];
+        for (let i = 0; i < maxNumberInGrid; i++) {
+        if (isArmstrongNumber(i)) {
+            twisted.push(i);
+        }
+     }
+        return twisted;
+    };
+
+    function isArmstrongNumber(number) {
+    const numDigits = String(number).length;
+    let sum = 0;
+    let temp = number;
+
+  while (temp > 0) {
+    const digit = temp % 10;
+    sum += Math.pow(digit, numDigits);
+    temp = Math.floor(temp / 10);
+  }
+
+  return sum === number;
+}
+
+</script>
