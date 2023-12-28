@@ -1,0 +1,34 @@
+---
+layout: grid_layout
+title: Find the buzz numbers
+description: |
+    In this game the Player must select all the buzz numbers exist in the given grid in the
+    given time limit.
+rules: |
+    Select the Buzz numbers which are displayed.
+    A number is said to be Buzz Number if it ends with 7 or is divisible by 7.
+    Try to finish the game within the time limit.
+    You should not exceed more than 8 wrong answers
+---
+
+<script>
+    let gs = 6;
+    let t = 30;
+    let specialNumbersType = "Buzz";
+    let percentageOfSpl = 0.3;
+    var maxNumberInGrid = 999;
+
+    
+    //function to generate random special numbers(fibonacci numbers)
+    function generateSpecialNumbers() {
+        const buzz = [];
+        for(let i=0;i<=maxNumberInGrid;i++){
+            if(i % 7 === 0 || i % 10 === 7){
+                buzz.push(i);
+            }
+        }
+        shuffleArray(buzz);
+        return buzz;
+    };
+   
+</script>
