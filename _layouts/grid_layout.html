@@ -124,7 +124,7 @@ layout: default
         }
         if (correctAnswersCount === specialNumbers.length) {
             clearInterval(interval);
-            winDeclarationDisplay.classList.remove("d-none");
+            winDeclarationDisplay.classList.remove("d-none","alert-danger");
             winDeclarationDisplay.classList.add("alert-success");
             winDeclarationDisplay.innerText = "Congratulations! You found all" +specialNumbersType+" numbers.";
             gameOver = true;
