@@ -29,8 +29,7 @@ rules: |
             fibonacci.push(nextTerm);
             nextTerm = fibonacci[fibonacci.length - 1] + fibonacci[fibonacci.length - 2];
         }
-        shuffleArray(fibonacci);
-        return fibonacci.slice(0,Math.ceil(gs*gs*percentageOfSpl)+1);
+        return fibonacci;
     };
 
 </script>
