@@ -1,0 +1,49 @@
+---
+layout: grid_layout
+title: Find the Twisted Prime
+description: |
+    In this game the Player must select all the Twisted Prime numbers exist in the given grid in the
+    given time limit.
+rules: |
+    Select the Twisted prime numbers which are displayed.
+    A number is called a twisted prime number if it is a prime number and reverse of this number is also a prime number.
+    Try to finish the game within the time limit.
+    You should not exceed more than 8 wrong answers
+---
+
+<script>
+    let gs = 6;
+    let t = 30;
+    let specialNumbersType = "Twisted prime";
+    let percentageOfSpl = 0.3;
+    var maxNumberInGrid = 999;
+
+    
+    //function to generate random special numbers(Twisted prime)
+    function generateSpecialNumbers(gs) {
+        const twisted = [];
+        for (let i = 2; i < maxNumberInGrid; i++) {
+            if (isTwistedPrime(i)) { 
+            twisted.push(i);
+            }
+        }
+        shuffleArray(twisted);
+        return twisted.slice(0,Math.ceil(gs*gs*percentageOfSpl)+1);
+    };
+
+    function isPrime(num) {
+        if (num <= 1) return false;
+        for (let i = 2; i <= Math.sqrt(num); i++) {
+            if (num % i === 0) {
+            return false;
+            }
+        }
+        return true;
+    }
+
+    function isTwistedPrime(num) {
+    const reversedNum = parseInt(num.toString().split('').reverse().join(''));
+    return isPrime(num) && isPrime(reversedNum);
+    }
+
+</script>
