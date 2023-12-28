@@ -1,0 +1,56 @@
+---
+layout: grid_layout
+title: Find the buzz numbers
+description: |
+    In this game the Player must select all the happy numbers exist in the given grid in the
+    given time limit.
+rules: |
+    Select all the happy numbers which are displayed.
+    A happy number is a natural number Sum of square of individual digits 
+    until sum becomes single digit and final digit sum =1.then it is called happy number
+    Example: n=13
+    Sum = 1*1+3*3=1+9=10
+    Sum = 1*1+0*0=1 (single digit)
+    Try to finish the game within the time limit.
+    You should not exceed more than 8 wrong answers
+---
+
+<script>
+    let gs = 6;
+    let t = 30;
+    let specialNumbersType = "Happy";
+    let num;
+    let percentageOfSpl = 0.2;
+    var maxNumberInGrid = 999;
+
+    //function to generate random special numbers(happy numbers)
+    function generateSpecialNumbers(num) {
+        let happy = [];
+
+        for (let i = 1; i <= 1000; i++) {
+        if (isHappyNumber(i)) {
+            happy.push(i);
+        }
+        }
+        return happy;
+
+    };
+    function isHappyNumber(num) {
+    let seen = new Set();
+    while (num !== 1 && !seen.has(num)) {
+        seen.add(num);
+        num = sumOfSquares(num);
+    }
+    return num === 1;
+    }
+    function sumOfSquares(num) {
+    let sum = 0;
+    while (num > 0) {
+        const digit = num % 10;
+        sum += digit * digit;
+        num = Math.floor(num / 10);
+    }
+    return sum;
+    }
+
+</script>
