@@ -63,7 +63,9 @@ layout: default
     const wrongAnswersCountDisplay = document.getElementById("wrongAnswersCount");
     const totalNumsDisplay = document.getElementById("totalTypedNumbers");
     const winDeclarationDisplay = document.getElementById("winDeclaration")
-    const specialNumbersArray= generateSpecialNumbers(n);
+    const specialNumbersArray= generateSpecialNumbers();
+    const specialNumbersArray1=generateSpecialNumbers();
+    const specialNumbersArray3=specialNumbersArray.slice(0,Math.ceil(n*n*percentageOfSpl)+1);
     const randomNumbersArray = generateRandomNumbersArray();
 
     let correctAnswersCount = 0, wrongAnswersCount = 0;
@@ -96,7 +98,7 @@ layout: default
 
     // Function to check if a number is special number
     function isSpecialNumber(num) {
-        return specialNumbersArray.includes(num);
+        return specialNumbersArray1.includes(num);
     }
 
     //function to check the selected number is special number or not
@@ -159,7 +161,8 @@ layout: default
 
     //function to merge arrays of random numbers and fibonacci numbers and return a random number from them
     function getRandomNumbersFromFinalArray() {
-        const finalArray = [...new Set([...randomNumbersArray, ...specialNumbersArray])];
+        
+        const finalArray = [...new Set([...randomNumbersArray, ...specialNumbersArray3])];
         shuffleArray(finalArray);
         return finalArray;
     }  
