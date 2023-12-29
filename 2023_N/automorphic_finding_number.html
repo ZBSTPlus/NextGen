@@ -1,0 +1,40 @@
+---
+layout: grid_layout
+title: Find the Automorphic Numbers
+description: |
+    In this game the Player must select all the Automorphic Numbers exist in the given grid in the
+    given time limit.
+rules: |
+    Select the Automorphic Numbers which are displayed.
+    A number is called an Automorphic number if and only if its square ends in the same digits as the number itself.
+    Example: As 76*76 = 5776 
+    You should not exceed more than 8 wrong answers
+---
+
+<script>
+    let gs = 6;
+    let t = 30;
+    let specialNumbersType = "Automorphic";
+    let percentageOfSpl = 0.2;
+    var maxNumberInGrid = 9999;
+
+    
+    //function to generate random special numbers(Automorphic Number)
+    function generateSpecialNumbers() {
+        const automorphic = [];
+        for (let i = 1; i <= maxNumberInGrid; i++) {
+        if (isAutomorphicNumber(i)) {
+            automorphic.push(i);
+        }
+    }
+        return automorphic;
+    };
+
+    function isAutomorphicNumber(number) {
+    const square = number * number;
+    const squareStr = square.toString();
+    const numberStr = number.toString();
+
+    return squareStr.endsWith(numberStr);
+}
+</script>
