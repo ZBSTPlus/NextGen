@@ -1,0 +1,48 @@
+---
+layout: grid_layout
+title: Automorphic Number
+description: |
+    In this game the Player must select all the Automorphic numbers exist in the given grid in the
+    given time limit.
+rules: |
+    Select the Automorphic numbers which are displayed.
+    An automorphic number is a number whose square ends with the same digits as the number itself.
+    Try to finish the game within the time limit.
+    You should not exceed more than 8 wrong answers
+---
+
+<script>
+    let gs = 6;
+    let t = 30;
+    let specialNumbersType = "Automorphic Number";
+    let percentageOfSpl = 0.3;
+    var maxNumberInGrid = 9999;
+
+    
+    //function to generate random special numbers(Automorphic Number)
+    function generateSpecialNumbers() {
+        const twisted = [];
+        for (let i = 0; i < maxNumberInGrid; i++) {
+        if (isAutomorphicNumber(i)) {
+            twisted.push(i);
+        }
+     }
+        return twisted;
+    };
+
+    function isAutomorphicNumber(number) {
+  const square = number * number;
+  const numDigits = String(number).length;
+  const lastDigits = square % Math.pow(10, numDigits);
+
+  return lastDigits === number;
+}
+
+function printAutomorphicNumbers(limit) {
+  for (let i = 0; i <= limit; i++) {
+    if (isAutomorphicNumber(i)) {
+      console.log(i);
+    }
+  }
+}
+</script>
