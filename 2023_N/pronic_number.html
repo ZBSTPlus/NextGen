@@ -1,0 +1,36 @@
+---
+layout: grid_layout
+title: Find the Pronic Numbers
+description: |
+    In this game the Player must select all the Pronic Numbers exist in the given grid in the
+    given time limit.
+rules: |
+    Select the Pronic Numbers which are displayed.
+    A pronic number is a number that is the product of two consecutive integers
+    You should not exceed more than 8 wrong answers
+---
+
+<script>
+    let gs = 6;
+    let t = 30;
+    let specialNumbersType = "Pronic";
+    let percentageOfSpl = 0.3;
+    var maxNumberInGrid = 999;
+
+    // Function to generate random special numbers (Pronic)
+    function generateSpecialNumbers() {
+        const pronic = [];
+        for (let i = 0; i <= maxNumberInGrid; i++) {
+            if (isPronicNumber(i)) {
+                pronic.push(i);
+            }
+        }
+        return pronic;
+    }
+
+    function isPronicNumber(number) {
+        const sqrt = Math.sqrt(number);
+        return Math.floor(sqrt) * (Math.floor(sqrt) + 1) === number;
+    }
+</script>
+
