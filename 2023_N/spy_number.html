@@ -1,0 +1,46 @@
+---
+layout: grid_layout
+title: Find the SPY Numbers
+description: |
+    In this game the Player must select all the SPY numbers exist in the given grid in the
+    given time limit.
+rules: |
+    Select all the SPY numbers which are displayed.
+    A SPY number is a number where the sum of its digits equals the product of its digits.
+    Try to finish the game within the time limit.
+    You should not exceed more than 8 wrong answers
+---
+
+<script>
+    let gs = 6;
+    let t = 30;
+    let specialNumbersType = "Happy";
+    let num;
+    let percentageOfSpl = 0.2;
+    var maxNumberInGrid = 999;
+
+    //function to generate random special numbers(spy numbers)
+    function generateSpecialNumbers(num) {
+        let spy = [];
+
+        for (let i = 1; i <=maxNumberInGrid; i++) {
+            if (isSpyNumber(i)) {
+                spy.push(i);
+            }
+        }
+        return spy;
+
+    };
+    function isSpyNumber(number) {
+    // Convert the number to an array of digits
+    const digits = Array.from(String(number), Number);
+
+    // Calculate the sum and product of the digits
+    const sumOfDigits = digits.reduce((sum, digit) => sum + digit, 0);
+    const productOfDigits = digits.reduce((product, digit) => product * digit, 1);
+
+    // Check if the sum is equal to the product
+    return sumOfDigits === productOfDigits;
+}
+
+</script>
