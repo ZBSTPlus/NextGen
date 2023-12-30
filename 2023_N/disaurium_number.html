@@ -1,0 +1,54 @@
+---
+layout: grid_layout
+title: Find the Disarium Prime Numbers
+description: |
+  In this game the Player must select all the disarium numbers exist in the given grid in the
+  given time limit.
+rules: |
+  Select all the disarium numbers which are displayed.
+  A number if the sum of its power of the positions 
+  from left to right is equal to the number.
+  Example: 11 + 32 + 53 = 1 + 9 + 125 = 135 
+  You should not exceed more than 8 wrong answers.
+---
+
+<script>
+  let gs = 6;
+  let t = 30;
+  let specialNumbersType = "Disarium";
+  let num;
+  let percentageOfSpl = 0.2;
+  var maxNumberInGrid = 9999;
+
+  //function to generate random special numbers(disarium numbers)
+  function generateSpecialNumbers() {
+    let disarium = [];
+
+    
+      for (let i = 1; i <= maxNumberInGrid; i++) {
+        if (isDisariumNumber(i)) {
+            disarium.push(i);
+        }
+    }
+    return disarium;
+
+  };
+  
+  function isDisariumNumber(number) {
+    const numberStr = number.toString();
+    const length = numberStr.length;
+    let sum = 0;
+
+    for (let i = 0; i < length; i++) {
+        const digit = parseInt(numberStr[i]);
+        sum += Math.pow(digit, i + 1);
+    }
+
+    return sum === number;
+}
+
+
+
+</script>
+
+  

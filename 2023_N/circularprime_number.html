@@ -1,0 +1,62 @@
+---
+layout: grid_layout
+title: Find the Circular Prime Numbers
+description: |
+  In this game the Player must select all the circular prime numbers exist in the given grid in the
+  given time limit.
+rules: |
+  Select all the circular prime numbers which are displayed.
+  A circular prime is a prime number with the property that the number
+  generated at each intermediate step when cyclically permuting its digits will be prime.
+  Try to finish the game within the time limit.
+  You should not exceed more than 8 wrong answers.
+---
+
+<script>
+  let gs = 6;
+  let t = 30;
+  let specialNumbersType = "Circular Prime";
+  let num;
+  let percentageOfSpl = 0.2;
+  var maxNumberInGrid = 999;
+
+  //function to generate random special numbers(circular prime numbers)
+  function generateSpecialNumbers() {
+    let circularPrime = [];
+
+    for (let i = 2; i <= maxNumberInGrid; i++) {
+      if (isCircularPrime(i)) {
+        circularPrime.push(i);
+      }
+    }
+    return circularPrime;
+
+  };
+
+  function isPrime(num) {
+    if (num < 2) {
+      return false;
+    }
+    for (let i = 2; i <= Math.sqrt(num); i++) {
+      if (num % i === 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function rotateDigits(number) {
+    const numberStr = number.toString();
+    const rotations = [];
+    for (let i = 0; i < numberStr.length; i++) {
+      const rotated = parseInt(numberStr.slice(i) + numberStr.slice(0, i));
+      rotations.push(rotated);
+    }
+    return rotations;
+  }
+  function isCircularPrime(number) {
+    const rotations = rotateDigits(number);
+    return rotations.every((rotated) => isPrime(rotated));
+  }
+
+</script>
