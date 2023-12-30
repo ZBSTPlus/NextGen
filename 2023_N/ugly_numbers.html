@@ -1,0 +1,44 @@
+---
+layout: grid_layout
+title: Find the Ugly Numbers
+description: |
+    In this game the Player must select all the Ugly numbers exist in the given grid in the
+    given time limit.
+rules: |
+    Select the Ugly numbers which are displayed.
+    Ugly numbers are those number whose prime factors are 2, 3 or 5.
+    You should not exceed more than 8 wrong answers
+---
+
+<script>
+    let gs = 6;
+    let t = 30;
+    let specialNumbersType = "Ugly";
+    let percentageOfSpl = 0.3;
+    var maxNumberInGrid = 999;
+
+    
+    //function to generate random special numbers(Twisted prime)
+    function generateSpecialNumbers() {
+        const ugly = [];
+        for (let i = 1; i <= maxNumberInGrid; i++) {
+        if (isUglyNumber(i)) {
+            ugly.push(i);
+        }
+    }
+        return ugly;
+    };
+
+    function isUglyNumber(number) {
+    while (number % 2 === 0) {
+        number /= 2;
+    }
+    while (number % 3 === 0) {
+        number /= 3;
+    }
+    while (number % 5 === 0) {
+        number /= 5;
+    }
+    return number === 1;
+}
+</script>
