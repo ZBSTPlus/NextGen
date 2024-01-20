@@ -1,0 +1,52 @@
+---
+layout: grid_layout
+title: Find the numbers of Fibonacci Series
+description: |
+    In this game the Player must select all the polygonal numbers exist in the given grid in the
+    given time limit.
+rules: |
+    Select the Polygonal numbers which are displayed.
+    Polygonal number is a number represented as dots or pebbles arranged in the shape of a regular polygon.
+    The dots are thought of as alphas (units). These are one type of 2-dimensional figurate numbers.
+    Example: The number 10 for example, can be arranged as a triangle
+    Try to finish the game within the time limit.
+    You should not exceed more than 8 wrong answers
+---
+
+<script>
+    let gs = 6;
+    let t = 30;
+    let specialNumbersType = "Polygonal";
+    let percentageOfSpl = 0.3;
+    var maxNumberInGrid = 999;
+
+
+    //function to generate random special numbers(polygonal numbers)
+    function generateSpecialNumbers(gs) {
+        const polygonal = [];
+        for (let i = 1; i <= limit; i++) {
+            if (isTriangular(i) || isSquare(i) || isPentagonal(i)) {
+                polygonal.push(i);
+            }
+        }
+        return polygonal;
+    };
+
+    function isTriangular(num) {
+        // Check if num is a triangular number
+        return (Math.sqrt(8 * num + 1) - 1) % 2 === 0;
+    }
+
+    function isSquare(num) {
+        // Check if num is a square number
+        return Math.sqrt(num) % 1 === 0;
+    }
+
+    function isPentagonal(num) {
+        // Check if num is a pentagonal number
+        return (Math.sqrt(24 * num + 1) + 1) % 6 === 0;
+    }
+
+
+
+</script>
