@@ -1,0 +1,201 @@
+---
+layout: default
+---
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <button class="btn btn-primary" onclick="startGame()" id="startGame1">Start Game</button>
+        </div>
+    </div><br>
+    <div class="row justify-content-center">
+        <div class="col col-9">
+            <div class="card" id="card">
+                <div class="card-header">
+                    <div class="row  fs-4">
+                        <div class="col col-2">Points: <span id="points"></span></div>
+                        <div class="col col-8 text-center">Question - <span id="questionNum"></span></div>
+                        <div class="col col-2 text-end">Timer: <span class="text-danger" id="timer"></span></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col alert d-none mt-3 col-6 text-center" id="correctness"></div>
+                    </div>
+                    <div class = "row text-center fs-5" id="displayResults"></div>
+                    <div class="row" id="quiz">
+                        <div class="row  text-center fs-5"><span id="question">gg</span></div><hr>
+                        <div class="row text-center">
+                            <div class="col"><button class="btn btn-outline-primary" id="11" onclick="checkAnswer(1)"><snap id="1"></button></div>
+                            <div class="col"><button class="btn btn-outline-primary" id="12" onclick="checkAnswer(2)"><snap id="2"></button></button></div>
+                            <div class="col"><button class="btn btn-outline-primary" id="13" onclick="checkAnswer(3)"><snap id="3"></button></button></div>
+                            <div class="col"><button class="btn btn-outline-primary" id="14" onclick="checkAnswer(4)"><snap id="4"></button></button></div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col col-4 text-center"><button class="btn btn-danger" onclick="resetGame()">Rest Game</button></div>
+                        <div class="col col-4"></div>
+                        <div class="col col-4 text-center" id="nextQstn"><button class="btn btn-danger" onclick="nextQuestion()">Next Question</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div><br><br>
+    
+</div>
+
+{{content}}
+
+<script>
+
+    var timer = t || 10;
+    var maxQuestions = q || 5;
+    let interval;
+    let questNum = 1;
+    let pointsCount = 0;
+    let correctOption;
+    let specialNumber;
+    let btnClicked;
+    const points = document.getElementById("points");
+    const questionNum = document.getElementById("questionNum");
+    const timerDisplay = document.getElementById("timer");
+    const specialNumbersArray = generateSpecialNumbers();
+    const correctnessDisplay = document.getElementById("correctness");
+    const displayResults = document.getElementById("displayResults");
+    const quiz = document.getElementById("quiz");
+
+    displayResults.style.display = "none";
+    card.style.display = "none";
+    nextQstn.style.display = "none";
+    points.innerText = pointsCount + " / " + maxQuestions;
+    questionNum.innerText = questNum;
+
+    function startGame() {
+        card.style.display = "block";
+        quiz.style.display = "block";
+        startGame1.style.display = "none";
+        assignNumbers();
+        startTimer();
+        questNum = 1;
+        questionNum.innerText = questNum;
+        pointsCount = 0;
+        points.innerText = pointsCount + " / " + maxQuestions;
+    }
+
+    function startTimer() {
+        timer = t || 10;
+        clearInterval(interval);
+        interval = setInterval(countdown, 1000);
+    }
+
+    function resetGame() {
+        startGame();
+        displayResults.style.display = "none";
+        enableButtons();
+    }
+
+    function checkAnswer (btnClicked) {
+        correctness.style.display = "block";
+        disableButtons();
+        clearInterval(interval);
+        if(btnClicked === correctOption) {
+            pointsCount++;
+            points.innerText = pointsCount + " / " + maxQuestions;
+            nextQstn.style.display = "block";
+            correctnessDisplay.classList.remove("d-none","alert-danger");
+            correctnessDisplay.classList.add("alert-success");
+            correctnessDisplay.innerText = "Correct Answer, Click on Next Question";
+        }else{
+            correctnessDisplay.classList.remove("d-none","alert-success");
+            correctnessDisplay.classList.add("alert-danger");
+            correctnessDisplay.innerText = "Wrong answer, Correct option is: "+correctOption;
+        }
+        if(questNum < maxQuestions) {
+            nextQstn.style.display = "block";
+        }else{
+            nextQstn.style.display = "none";
+        }
+        if(maxQuestions === questNum) {
+            quiz.style.display = "none";
+            displayResults.style.display = "block";
+            displayResults.innerText = "Your Score is: " + pointsCount +" / "+ maxQuestions;
+            correctness.style.display = "none";
+        }
+    }
+
+    function assignNumbers() {
+        const finalArray1 = getRandomNumbersFromFinalArray();
+        var index;
+        var btnVal;
+        for(let i=0;i<4;i++){
+            index = (i + 1).toString();
+            btnVal = finalArray1[i];
+            document.getElementById(index).innerText = btnVal;
+            if(specialNumber === btnVal){
+                correctOption = (i+1);
+            }
+            console.log(correctOption);
+        }
+    }
+
+    function generateRandomNumbersArray(maxNum) {
+        return new Array(Math.ceil(3)).fill(1).map(x => Math.floor(Math.random() * maxNum));
+    }
+
+    function nextQuestion() {
+        if(questNum === maxQuestions){
+            clearInterval(interval);
+        }else{
+            startTimer();
+        }
+        questNum++;
+        questionNum.innerText = questNum;
+        nextQstn.style.display = "none";
+        correctnessDisplay.classList.add("d-none");
+        assignNumbers();
+        enableButtons();
+        
+    }
+
+    function getRandomNumbersFromFinalArray() {
+        const randomNumbersArray = generateRandomNumbersArray(maxNum);
+        const finalArray = randomNumbersArray.concat(specialNumbersArray[Math.floor(Math.random() * specialNumbersArray.length-1)]);
+        specialNumber = finalArray[3];
+        shuffleArray(finalArray);
+        return finalArray;
+    }
+
+    function countdown() {
+        if (timer < 0) {
+            clearInterval(interval);
+            nextQstn.style.display = "block";
+            correctnessDisplay.classList.remove("d-none", "alert-success");
+            correctnessDisplay.classList.add("alert-danger");
+            correctnessDisplay.innerText = "Time's up, Correct Option is: " + correctOption;
+            disableButtons();
+        } else {
+            timerDisplay.innerHTML = timer;
+            timer--;
+        }
+    }
+
+    function disableButtons() {
+        for(let i=11;i<=14;i++){
+            document.getElementById(i.toString()).disabled = true;
+        }
+    }    
+
+    function enableButtons() {
+        for(let i=11;i<=14;i++){
+            document.getElementById(i.toString()).disabled = false;
+        }
+    }
+
+    function shuffleArray(array) {
+        array.sort(() => Math.random() - 0.5);
+        return array;
+    }
+</script>

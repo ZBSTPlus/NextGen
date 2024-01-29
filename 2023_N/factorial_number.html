@@ -1,53 +1,66 @@
 ---
 layout: grid_layout
-title: Find the numbers of Fibonacci Series
+title: Find the Factorial numbers
 description: |
-    In this game the Player must select all the polygonal numbers exist in the given grid in the
-    given time limit.
+    In this game the Player must select all the factorial numbers exist in the given grid in the
+    given time maxNumberInGrid.
 rules: |
-    Select the Polygonal numbers which are displayed.
-    Polygonal number is a number represented as dots or pebbles arranged in the shape of a regular polygon.
-    The dots are thought of as alphas (units). These are one type of 2-dimensional figurate numbers.
-    Example: The number 10 for example, can be arranged as a triangle
-    Try to finish the game within the time limit.
+    Select the Factorial numbers which are displayed.
+    Factorial Numbers are the numbers which are factorials of some other numbers.
+    Try to finish the game within the time maxNumberInGrid.
     You should not exceed more than 8 wrong answers
 ---
 
 <script>
     let gs = 6;
     let t = 30;
-    let specialNumbersType = "Polygonal";
-    let percentageOfSpl = 0.3;
+    let specialNumbersType = "Factorial";
+    let percentageOfSpl = 0.1;
     var maxNumberInGrid = 999;
 
 
-    //function to generate random special numbers(polygonal numbers)
+    //function to generate random special numbers(factorial numbers)
     function generateSpecialNumbers(gs) {
-        const polygonal = [];
-        for (let i = 1; i <= limit; i++) {
-            if (isTriangular(i) || isSquare(i) || isPentagonal(i)) {
-                polygonal.push(i);
-            }
+        const fact = [];
+        let currentNumber = 1;
+
+    while (true) {
+        const factorial = calculateFactorial(currentNumber);
+
+        if (factorial > maxNumberInGrid) {
+            break;
         }
-        return polygonal;
+
+        fact.push(factorial);
+        currentNumber++;
+    }
+        return fact;
     };
 
-    function factorial(n) {
+    function calculateFactorial(n) {
     if (n === 0 || n === 1) {
         return 1;
     } else {
-        return n * factorial(n - 1);
+        return n * calculateFactorial(n - 1);
     }
-    }
+}
 
-    for (let i = 1; i <= 1000; i++) {
-    const fact = factorial(i);
-    if (fact < 1000) {
-        console.log(`Factorial of ${i} is: ${fact}`);
-    } else {
-        break; // Exit the loop if the factorial exceeds 1000
+function printFactorials(maxNumberInGrid) {
+    let currentNumber = 1;
+
+    while (true) {
+        const factorial = calculateFactorial(currentNumber);
+
+        if (factorial > maxNumberInGrid) {
+            break;
+        }
+
+        console.log(factorial);
+        currentNumber++;
     }
-    }
+}
+
+
 
 
 
