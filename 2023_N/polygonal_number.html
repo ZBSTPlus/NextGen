@@ -1,6 +1,6 @@
 ---
 layout: grid_layout
-title: Find the numbers of Fibonacci Series
+title: Find the Polygonal Numbers
 description: |
     In this game the Player must select all the polygonal numbers exist in the given grid in the
     given time limit.
@@ -17,14 +17,14 @@ rules: |
     let gs = 6;
     let t = 30;
     let specialNumbersType = "Polygonal";
-    let percentageOfSpl = 0.3;
+    let percentageOfSpl = 0.2;
     var maxNumberInGrid = 999;
 
 
     //function to generate random special numbers(polygonal numbers)
     function generateSpecialNumbers(gs) {
         const polygonal = [];
-        for (let i = 1; i <= limit; i++) {
+        for (let i = 1; i <= maxNumberInGrid; i++) {
             if (isTriangular(i) || isSquare(i) || isPentagonal(i)) {
                 polygonal.push(i);
             }

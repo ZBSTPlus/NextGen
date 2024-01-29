@@ -1,0 +1,34 @@
+---
+layout: question_layout
+title: Find the Cubic Number
+description: |
+    This is a quiz type game on cubic numbers.
+rules: |
+    This is a quiz game with some number of questions.
+    You have to find the Perfect square number among the given 4 options.
+    A cubic number is a number which is cube of another number.
+    You have 10 seconds for each question to answer.
+---
+
+<script>
+    let t = 10;
+    let q = 5;
+    let maxNum = 10000;
+    const question = document.getElementById("question");
+    question.innerText = "Find the perfect squares among these Numbers";
+    
+    function generateSpecialNumbers() {
+        const cubic = [];
+        for (let i = 1; i <= maxNum; i++) {
+            const cubicNumber = i ** 3;
+            if (cubicNumber < maxNum) {
+                cubic.push(cubicNumber);
+            } else {
+                break;
+            }
+        }
+        return cubic;
+    }
+    
+
+</script>

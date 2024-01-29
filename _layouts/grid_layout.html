@@ -161,7 +161,6 @@ layout: default
     function getRandomNumbersFromFinalArray() {
         shuffleArray(specialNumbersArray);
         const specialNumbersArray1 = specialNumbersArray.slice(0, Math.ceil(n*n*percentageOfSpl)+1);
-        console.log(specialNumbersArray1);
         const finalArray = [...new Set([...randomNumbersArray, ...specialNumbersArray1])];
         shuffleArray(finalArray);
         return finalArray;
@@ -172,8 +171,8 @@ layout: default
         generateGrid(n);
         clearInterval(interval);
         interval = setInterval(countdown, 1000);
-        timer = t;
-        n = gs;
+        timer = t || 30;
+        n = gs || 6;
         correctAnswersCount = 0;
         correctAnswersCountDisplay.innerText = correctAnswersCount;
         wrongAnswersCount = 0;
