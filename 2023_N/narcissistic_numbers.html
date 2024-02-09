@@ -1,0 +1,36 @@
+---
+layout: question_layout
+title: Find the  Narcissistic Number
+description: |
+    This is a quiz type game on  Narcissistic numbers.
+    A narcissistic number is a number that is the sum of its own digits 
+    each raised to the power of the number of digits in the number.
+---
+
+<script>
+    let t = 10;
+    let q = 5;
+    let maxNum = 1000;
+    const question = document.getElementById("question");
+    question.innerText = "Find the narcissistic numbers among these Numbers";
+    
+    function generateSpecialNumbers() {
+        const Narcissistic = [];
+        for (let i = 0; i < maxNum; i++) {
+            if (isNarcissistic(i)) {
+                Narcissistic.push(i);
+            }
+        }
+        
+        return Narcissistic;
+    }
+
+    function isNarcissistic(num) {
+    const digits = num.toString().split('');
+    const numDigits = digits.length;
+    const sum = digits.reduce((acc, digit) => acc + Math.pow(parseInt(digit), numDigits), 0);
+    return sum === num;
+}
+    
+
+</script>
