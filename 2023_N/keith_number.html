@@ -1,0 +1,47 @@
+---
+layout: question_layout
+title: Find the  Keith Number
+description: |
+    This is a quiz type game on  Keith numbers.
+    A Keith number is a number that generates a sequence of its digits 
+    by adding previous occurrences of digits, following certain rules.
+---
+
+<script>
+    let t = 10;
+    let q = 5;
+    let maxNum = 10000;
+    const question = document.getElementById("question");
+    question.innerText = "Find the Keith numbers among these Numbers";
+    
+    function generateSpecialNumbers() {
+        let keithNumbers = [];
+        for (let i = 10; i < maxNum; i++) {
+            if (isKeithNumber(i)) {
+            keithNumbers.push(i);
+            }
+        }
+    
+    return keithNumbers;
+    }
+
+
+    function isKeithNumber(num) {
+    let digits = Array.from(String(num), Number);
+    let sum = digits.reduce((a, b) => a + b, 0);
+    let sequence = [...digits];
+    
+    while (sequence[sequence.length - 1] < num) {
+        let next = sequence.slice(-digits.length).reduce((a, b) => a + b, 0);
+        sequence.push(next);
+        if (next === num) return true;
+    }
+    
+    return false;
+}
+
+console.log("Keith numbers under 10000:", getKeithNumbers(10000));
+
+
+
+</script>
