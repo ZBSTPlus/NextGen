@@ -1,0 +1,49 @@
+---
+layout: question_layout
+title: Find the  Squarefull Number
+description: |
+    This is a quiz type game on  Squarefull numbers.
+    A squarefull number is a positive integer where every prime factor 
+    occurs with an even exponent.
+---
+
+<script>
+    let t = 10;
+    let q = 5;
+    let maxNum = 1000;
+    const question = document.getElementById("question");
+    question.innerText = "Find the squarefull numbers among these Numbers";
+    
+    function generateSpecialNumbers() {
+        let SquarefullNumber = [];
+        for (let i = 1; i < maxNum; i++) {
+            if (isSquarefull(i)) {
+                SquarefullNumber.push(i);
+            }
+        }    
+    
+        return SquarefullNumber;
+    }
+
+    function isSquarefull(num) {
+    let count = new Map();
+    let n = num;
+    for (let i = 2; i * i <= n; i++) {
+        while (n % i == 0) {
+            count.set(i, (count.get(i) || 0) + 1);
+            n /= i;
+        }
+    }
+    if (n > 1) {
+        count.set(n, (count.get(n) || 0) + 1);
+    }
+
+    for (let [key, value] of count.entries()) {
+        if (value % 2 !== 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+</script>
