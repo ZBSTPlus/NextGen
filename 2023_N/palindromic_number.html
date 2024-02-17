@@ -1,0 +1,36 @@
+---
+layout: question_layout
+title: Find the  Palindromic Number
+description: |
+    This is a quiz type game on  Palindromic numbers.
+    A palindromic number is a number that remains 
+    the same when its digits are reversed.
+---
+
+<script>
+    let t = 10;
+    let q = 5;
+    let maxNum = 100000;
+    const question = document.getElementById("question");
+    question.innerText = "Find the Palindromic numbers among these Numbers";
+    
+    function generateSpecialNumbers() {
+        let PalindromicNumber = [];
+        for (let i = 1; i < maxNum; i++) {
+            if (isPalindrome(i)) {
+                PalindromicNumber.push(i);
+            }
+        }    
+    
+        return PalindromicNumber;
+    }
+
+    function isPalindrome(num) {
+    const str = num.toString();
+    return str === str.split('').reverse().join('');
+}
+
+
+
+
+</script>

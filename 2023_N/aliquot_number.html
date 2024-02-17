@@ -1,0 +1,48 @@
+---
+layout: question_layout
+title: Find the  Aliquot Number
+description: |
+    This is a quiz type game on  Aliquot numbers.
+    A aliquot part number is a positive integer that evenly divides
+    another positive integer without leaving a remainder
+---
+
+<script>
+    let t = 10;
+    let q = 5;
+    let maxNum = 1000;
+    const question = document.getElementById("question");
+    question.innerText = "Find the aliquot numbers among these Numbers";
+    
+    function generateSpecialNumbers() {
+        let AliquotNumber = [];
+        for (let i = 1; i < maxNum; i++) {
+            if (isAliquot(i)) {
+            AliquotNumber.push(i);
+            }
+        }
+    
+    return AliquotNumber;
+    }
+
+
+function getDivisors(num) {
+    const divisors = [];
+    for (let i = 1; i <= Math.floor(Math.sqrt(num)); i++) {
+        if (num % i === 0) {
+            divisors.push(i);
+            if (i !== num / i) {
+                divisors.push(num / i);
+            }
+        }
+    }
+    return divisors;
+}
+
+function isAliquot(num) {
+    const divisors = getDivisors(num);
+    const sum = divisors.reduce((acc, curr) => acc + curr, 0);
+    return sum > num;
+}
+
+</script>
